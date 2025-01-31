@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0C90F861-0D19-456F-89AC-1E4B6B26EB98}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "avito_src", "avito_src", "{2FD50146-D397-4CE0-A4AA-27EE5993589D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTechAvito.Core", "src\avito_src\RemTechAvito.Core\RemTechAvito.Core.csproj", "{19D97A14-AB77-4D4A-8C85-C01B60EFE240}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common_src", "common_src", "{5C62E129-E0DA-41C2-B389-D4575D32E5AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTechCommon", "src\common_src\RemTechCommon\RemTechCommon.csproj", "{26FA0D8D-C383-4B3C-B964-FFCB46DF1F1F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2FD50146-D397-4CE0-A4AA-27EE5993589D} = {0C90F861-0D19-456F-89AC-1E4B6B26EB98}
+		{19D97A14-AB77-4D4A-8C85-C01B60EFE240} = {2FD50146-D397-4CE0-A4AA-27EE5993589D}
+		{5C62E129-E0DA-41C2-B389-D4575D32E5AE} = {0C90F861-0D19-456F-89AC-1E4B6B26EB98}
+		{26FA0D8D-C383-4B3C-B964-FFCB46DF1F1F} = {5C62E129-E0DA-41C2-B389-D4575D32E5AE}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{19D97A14-AB77-4D4A-8C85-C01B60EFE240}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19D97A14-AB77-4D4A-8C85-C01B60EFE240}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19D97A14-AB77-4D4A-8C85-C01B60EFE240}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19D97A14-AB77-4D4A-8C85-C01B60EFE240}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26FA0D8D-C383-4B3C-B964-FFCB46DF1F1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26FA0D8D-C383-4B3C-B964-FFCB46DF1F1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26FA0D8D-C383-4B3C-B964-FFCB46DF1F1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26FA0D8D-C383-4B3C-B964-FFCB46DF1F1F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
