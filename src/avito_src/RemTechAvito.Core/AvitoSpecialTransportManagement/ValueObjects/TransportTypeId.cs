@@ -2,9 +2,9 @@
 
 namespace RemTechAvito.Core.AvitoSpecialTransportManagement.ValueObjects;
 
-public sealed record AvitoAuthorId
+public sealed record TransportTypeId
 {
     public Guid Id { get; }
 
-    public AvitoAuthorId(IGuidGenerationStrategy strategy) => Id = strategy.Generate();
+    public TransportTypeId(IGuidGenerationStrategy strategy) => Id = strategy.Generate();
 }
