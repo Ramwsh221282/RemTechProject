@@ -1,4 +1,6 @@
-﻿namespace RemTechCommon;
+﻿using RemTechCommon.Utils.ResultPattern;
+
+namespace RemTechCommon.Utils.Converters;
 
 public static class StringToUlongConverter
 {

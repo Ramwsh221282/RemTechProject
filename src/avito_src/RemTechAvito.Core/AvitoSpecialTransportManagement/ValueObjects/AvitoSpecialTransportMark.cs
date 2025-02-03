@@ -1,6 +1,6 @@
-﻿using RemTechCommon;
+﻿using RemTechCommon.Utils.ResultPattern;
 
-namespace RemTechAvito.Core.AvitoSpecialTransportFilters;
+namespace RemTechAvito.Core.AvitoSpecialTransportManagement.ValueObjects;
 
 public sealed record AvitoSpecialTransportMark
 {

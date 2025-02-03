@@ -1,4 +1,5 @@
 ﻿using RemTechCommon;
+using RemTechCommon.Utils.ResultPattern;
 
 namespace RemTechAvito.Core.AvitoSpecialTransportManagement.ValueObjects;
 

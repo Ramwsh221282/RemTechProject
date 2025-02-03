@@ -8,7 +8,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTechAvito.Core", "src\av
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common_src", "common_src", "{5C62E129-E0DA-41C2-B389-D4575D32E5AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTechCommon", "src\common_src\RemTechCommon\RemTechCommon.csproj", "{26FA0D8D-C383-4B3C-B964-FFCB46DF1F1F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTech.Common", "src\common_src\RemTech.Common\RemTech.Common.csproj", "{26FA0D8D-C383-4B3C-B964-FFCB46DF1F1F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "parser_contracts", "parser_contracts", "{FC1938D3-2A5F-4B66-8C46-D487145E48EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "implementations", "implementations", "{B05A3F2C-C934-4138-801F-A35BE102347B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTech.Parser.Implementation", "src\common_src\RemTech.Parser\implementations\RemTech.Parser.Implementation\RemTech.Parser.Implementation.csproj", "{C8029F4D-07EC-4C2E-8B0E-35535BED3587}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTech.Parser.Contracts", "src\common_src\RemTech.Parser\RemTech.Parser.Contracts\RemTech.Parser.Contracts.csproj", "{3930409E-26C7-4466-87AC-26CCBC0F50BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTech.Parser.Implementation.Tests", "src\common_src\RemTech.Parser\Tests\RemTech.Parser.Implementation.Tests\RemTech.Parser.Implementation.Tests.csproj", "{6B3D8F05-F927-4934-A58F-8A4734B784C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +30,11 @@ Global
 		{19D97A14-AB77-4D4A-8C85-C01B60EFE240} = {2FD50146-D397-4CE0-A4AA-27EE5993589D}
 		{5C62E129-E0DA-41C2-B389-D4575D32E5AE} = {0C90F861-0D19-456F-89AC-1E4B6B26EB98}
 		{26FA0D8D-C383-4B3C-B964-FFCB46DF1F1F} = {5C62E129-E0DA-41C2-B389-D4575D32E5AE}
+		{FC1938D3-2A5F-4B66-8C46-D487145E48EE} = {5C62E129-E0DA-41C2-B389-D4575D32E5AE}
+		{B05A3F2C-C934-4138-801F-A35BE102347B} = {FC1938D3-2A5F-4B66-8C46-D487145E48EE}
+		{C8029F4D-07EC-4C2E-8B0E-35535BED3587} = {B05A3F2C-C934-4138-801F-A35BE102347B}
+		{3930409E-26C7-4466-87AC-26CCBC0F50BB} = {FC1938D3-2A5F-4B66-8C46-D487145E48EE}
+		{6B3D8F05-F927-4934-A58F-8A4734B784C7} = {B05A3F2C-C934-4138-801F-A35BE102347B}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{19D97A14-AB77-4D4A-8C85-C01B60EFE240}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -30,5 +45,17 @@ Global
 		{26FA0D8D-C383-4B3C-B964-FFCB46DF1F1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26FA0D8D-C383-4B3C-B964-FFCB46DF1F1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26FA0D8D-C383-4B3C-B964-FFCB46DF1F1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8029F4D-07EC-4C2E-8B0E-35535BED3587}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8029F4D-07EC-4C2E-8B0E-35535BED3587}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8029F4D-07EC-4C2E-8B0E-35535BED3587}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8029F4D-07EC-4C2E-8B0E-35535BED3587}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3930409E-26C7-4466-87AC-26CCBC0F50BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3930409E-26C7-4466-87AC-26CCBC0F50BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3930409E-26C7-4466-87AC-26CCBC0F50BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3930409E-26C7-4466-87AC-26CCBC0F50BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B3D8F05-F927-4934-A58F-8A4734B784C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B3D8F05-F927-4934-A58F-8A4734B784C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B3D8F05-F927-4934-A58F-8A4734B784C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B3D8F05-F927-4934-A58F-8A4734B784C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

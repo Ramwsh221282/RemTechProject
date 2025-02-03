@@ -1,4 +1,4 @@
-﻿namespace RemTechCommon;
+﻿namespace RemTechCommon.Utils.GuidUtils;
 
 public sealed class ConcreteGuidGenerator : IGuidGenerationStrategy
 {

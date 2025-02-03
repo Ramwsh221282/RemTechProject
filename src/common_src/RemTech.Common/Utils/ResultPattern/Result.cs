@@ -1,4 +1,4 @@
-﻿namespace RemTechCommon;
+﻿namespace RemTechCommon.Utils.ResultPattern;
 
 public sealed record Error(string Description)
 {
