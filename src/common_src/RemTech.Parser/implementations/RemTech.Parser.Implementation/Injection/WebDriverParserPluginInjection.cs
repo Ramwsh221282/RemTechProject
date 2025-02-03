@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using System.Reflection;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using RemTech.Parser.Contracts.Contracts;
 using RemTech.Parser.Contracts.Contracts.Commands;
@@ -17,21 +18,36 @@ public sealed class WebDriverParserPluginInjection : IWebDriverInjection
         services.AddSingleton<WebDriverInstanceOptions>();
         services.AddSingleton<WebDriverInstance>();
         services.AddSingleton<WebDriverDispatcher>();
+        services.AddSingleton<IWebDriverApi, WebDriverApi>();
 
+        InjectCommandHandlers(services);
+        InjectHandlerValidators(services);
+        InjectQueryHandlers(services);
+
+        return services;
+    }
+
+    private void InjectCommandHandlers(IServiceCollection services) =>
         services.Scan(s =>
             s.FromAssemblies(typeof(WebDriverParserPluginInjection).Assembly)
                 .AddClasses(classes => classes.AssignableTo(typeof(IWebDriverCommandHandler<>)))
                 .AsSelfWithInterfaces()
                 .WithScopedLifetime()
         );
+
+    private void InjectQueryHandlers(IServiceCollection services) =>
+        services.Scan(scan =>
+            scan.FromAssemblies(typeof(WebDriverParserPluginInjection).Assembly)
+                .AddClasses(classes => classes.AssignableTo(typeof(IWebDriverQueryHandler<,>)))
+                .AsSelfWithInterfaces()
+                .WithScopedLifetime()
+        );
+
+    private void InjectHandlerValidators(IServiceCollection services) =>
         services.Scan(s =>
             s.FromAssemblies(typeof(WebDriverParserPluginInjection).Assembly)
                 .AddClasses(classes => classes.AssignableTo(typeof(AbstractValidator<>)))
                 .AsSelfWithInterfaces()
                 .WithScopedLifetime()
         );
-
-        services.AddSingleton<IWebDriverApi, WebDriverApi>();
-        return services;
-    }
 }

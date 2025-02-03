@@ -6,8 +6,8 @@ using Serilog;
 
 namespace RemTech.Parser.Implementation.Commands.ScrollToTop;
 
-public sealed class ScrollToTopCommandHandler
-    : BaseWebDriverCommand,
+public sealed class ScrollToTopHandlerHandler
+    : BaseWebDriverHandler,
         IWebDriverCommandHandler<ScrollToTopCommand>
 {
     private const string Script = "window.scrollTo(0, 0);";
@@ -15,7 +15,7 @@ public sealed class ScrollToTopCommandHandler
     private const string GetScrollPositionScript =
         "return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;";
 
-    public ScrollToTopCommandHandler(WebDriverInstance instance, ILogger logger)
+    public ScrollToTopHandlerHandler(WebDriverInstance instance, ILogger logger)
         : base(instance, logger) { }
 
     public async Task<Result> Handle(ScrollToTopCommand command)

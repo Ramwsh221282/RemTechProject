@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RemTech.Parser.Contracts.Contracts;
 using RemTech.Parser.Contracts.Contracts.Commands;
+using RemTech.Parser.Contracts.Contracts.Queries;
 using RemTech.Parser.Implementation.Injection;
 using RemTechCommon.Injections;
 using RemTechCommon.Utils.ResultPattern;
@@ -55,6 +56,41 @@ public sealed class WebDriverApiTests
 
         Result topScrolling = await _api.ExecuteCommand(new ScrollToTopCommand());
         Assert.True(topScrolling.IsSuccess);
+
+        Result stopping = await _api.ExecuteCommand(new StopWebDriverCommand());
+        Assert.True(stopping.IsSuccess);
+    }
+
+    [Fact]
+    public async Task Test_Avito_Get_Transport_Types_Filter_Input_Container()
+    {
+        Result starting = await _api.ExecuteCommand(new StartWebDriverCommand());
+        Assert.True(starting.IsSuccess);
+
+        Result opening = await _api.ExecuteCommand(
+            new OpenPageCommand(
+                "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki-ASgBAgICAURU4E0"
+            )
+        );
+        Assert.True(opening.IsSuccess);
+
+        Result bottomScrolling = await _api.ExecuteCommand(new ScrollToDownCommand());
+        Assert.True(bottomScrolling.IsSuccess);
+
+        Result topScrolling = await _api.ExecuteCommand(new ScrollToTopCommand());
+        Assert.True(topScrolling.IsSuccess);
+
+        const string path =
+            ".//div[@class='styles-module-col-F4VNN styles-module-col_span_12-bhIkA']";
+        GetElementByXPathQuery query = new GetElementByXPathQuery(path);
+
+        Result<WebElementObject> element = await _api.ExecuteQuery<
+            GetElementQuery,
+            WebElementObject
+        >(query);
+
+        Assert.True(element.IsSuccess);
+        Assert.Equal(0, element.Value.Position);
 
         Result stopping = await _api.ExecuteCommand(new StopWebDriverCommand());
         Assert.True(stopping.IsSuccess);

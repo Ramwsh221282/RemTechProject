@@ -10,8 +10,4 @@
       <ProjectReference Include="..\..\RemTech.Common\RemTech.Common.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Contracts\Queries\" />
-    </ItemGroup>
-
 </Project>

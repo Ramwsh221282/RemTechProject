@@ -6,8 +6,8 @@ using Serilog;
 
 namespace RemTech.Parser.Implementation.Commands.ScrollToDown;
 
-public sealed class ScrollToDownCommandHandler
-    : BaseWebDriverCommand,
+public sealed class ScrollToDownHandlerHandler
+    : BaseWebDriverHandler,
         IWebDriverCommandHandler<ScrollToDownCommand>
 {
     private const string GetCurrentHeightScript =
@@ -16,7 +16,7 @@ public sealed class ScrollToDownCommandHandler
     private const string ScrollToBottomScript =
         "window.scrollTo(0, document.documentElement.scrollHeight);";
 
-    public ScrollToDownCommandHandler(WebDriverInstance instance, ILogger logger)
+    public ScrollToDownHandlerHandler(WebDriverInstance instance, ILogger logger)
         : base(instance, logger) { }
 
     public async Task<Result> Handle(ScrollToDownCommand command)

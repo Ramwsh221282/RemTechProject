@@ -5,11 +5,11 @@ using Serilog;
 
 namespace RemTech.Parser.Implementation.Commands.StopWebDriver;
 
-public sealed class StopWebDriverCommandHandler
-    : BaseWebDriverCommand,
+public sealed class StopWebDriverHandlerHandler
+    : BaseWebDriverHandler,
         IWebDriverCommandHandler<StopWebDriverCommand>
 {
-    public StopWebDriverCommandHandler(WebDriverInstance instance, ILogger logger)
+    public StopWebDriverHandlerHandler(WebDriverInstance instance, ILogger logger)
         : base(instance, logger) { }
 
     public async Task<Result> Handle(StopWebDriverCommand command)

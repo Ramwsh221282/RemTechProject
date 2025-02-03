@@ -5,11 +5,11 @@ using Serilog;
 
 namespace RemTech.Parser.Implementation.Commands.StartWebDriver;
 
-public sealed class StartWebDriverCommandHandler
-    : BaseWebDriverCommand,
+public sealed class StartWebDriverHandlerHandler
+    : BaseWebDriverHandler,
         IWebDriverCommandHandler<StartWebDriverCommand>
 {
-    public StartWebDriverCommandHandler(WebDriverInstance instance, ILogger logger)
+    public StartWebDriverHandlerHandler(WebDriverInstance instance, ILogger logger)
         : base(instance, logger) { }
 
     public async Task<Result> Handle(StartWebDriverCommand command)

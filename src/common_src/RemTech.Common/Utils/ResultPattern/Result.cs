@@ -66,9 +66,14 @@ public sealed class Result<T> : Result
 
 public static class ResultExtensions
 {
-    public static Result LogAndReturn(this Result result, ILogger logger, string Message)
+    public static Result LogAndReturn(this Result result, ILogger logger, string message)
     {
-        logger.Information(Message);
+        if (result.IsFailure)
+            return result.Error.LogAndReturn(logger);
+        result.Log(logger, message);
         return result;
     }
+
+    public static void Log(this Result result, ILogger logger, string message) =>
+        logger.Information(message);
 }

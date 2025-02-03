@@ -7,13 +7,13 @@ using Serilog;
 
 namespace RemTech.Parser.Implementation.Commands.OpenPage;
 
-public sealed class OpenPageCommandHandler
-    : BaseWebDriverCommand,
+public sealed class OpenPageHandlerHandler
+    : BaseWebDriverHandler,
         IWebDriverCommandHandler<OpenPageCommand>
 {
     private readonly OpenPageCommandValidator _validator;
 
-    public OpenPageCommandHandler(
+    public OpenPageHandlerHandler(
         WebDriverInstance instance,
         ILogger logger,
         OpenPageCommandValidator validator
