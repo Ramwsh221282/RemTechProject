@@ -1,6 +1,10 @@
-﻿namespace RemTech.Parser.Implementation.Core;
+﻿using RemTech.Parser.Contracts.Contracts;
+using RemTechCommon.Utils.ResultPattern;
 
-public interface IWebDriverCommandHandler
+namespace RemTech.Parser.Implementation.Core;
+
+public interface IWebDriverCommandHandler<in TCommand>
+    where TCommand : IWebDriverCommand
 {
-    
+    Task<Result> Handle(TCommand command);
 }

@@ -1,3 +1,3 @@
 ﻿namespace RemTech.Parser.Contracts.Contracts.Commands;
 
-public record ScrollToTopCommand();
+public sealed record ScrollToTopCommand : IWebDriverCommand;

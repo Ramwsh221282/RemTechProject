@@ -1,6 +1,3 @@
 ﻿namespace RemTech.Parser.Contracts.Contracts.Commands;
 
-public class StartWebDriverCommand
-{
-    
-}
+public sealed record StartWebDriverCommand : IWebDriverCommand;

@@ -1,6 +1,55 @@
-﻿namespace RemTech.Parser.Implementation.Commands.ScrollToDown;
+﻿using OpenQA.Selenium.Support.Extensions;
+using RemTech.Parser.Contracts.Contracts.Commands;
+using RemTech.Parser.Implementation.Core;
+using RemTechCommon.Utils.ResultPattern;
+using Serilog;
 
-public class ScrollToDownCommandHandler
+namespace RemTech.Parser.Implementation.Commands.ScrollToDown;
+
+public sealed class ScrollToDownCommandHandler
+    : BaseWebDriverCommand,
+        IWebDriverCommandHandler<ScrollToDownCommand>
 {
-    
+    private const string GetCurrentHeightScript =
+        "return Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);";
+
+    private const string ScrollToBottomScript =
+        "window.scrollTo(0, document.documentElement.scrollHeight);";
+
+    public ScrollToDownCommandHandler(WebDriverInstance instance, ILogger logger)
+        : base(instance, logger) { }
+
+    public async Task<Result> Handle(ScrollToDownCommand command)
+    {
+        if (_instance.Instance == null || _instance.IsDisposed)
+            return WebDriverPluginErrors.Disposed.LogAndReturn(_logger);
+
+        bool isScrolled = false;
+        long initialHeight = _instance.Instance.ExecuteJavaScript<long>(GetCurrentHeightScript);
+
+        try
+        {
+            while (!isScrolled)
+            {
+                _instance.Instance.ExecuteJavaScript(ScrollToBottomScript);
+                long currentHeight = _instance.Instance.ExecuteJavaScript<long>(
+                    GetCurrentHeightScript
+                );
+                if (!IsEndOfPage(ref initialHeight, ref currentHeight))
+                    continue;
+                isScrolled = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Error error = new Error($"Error occured: {ex.Message}");
+            return error.LogAndReturn(_logger);
+        }
+
+        Result result = Result.Success().LogAndReturn(_logger, "Page scrolled to Down");
+        return await Task.FromResult(result);
+    }
+
+    private static bool IsEndOfPage(ref long initialHeight, ref long currentHeight) =>
+        currentHeight == initialHeight;
 }

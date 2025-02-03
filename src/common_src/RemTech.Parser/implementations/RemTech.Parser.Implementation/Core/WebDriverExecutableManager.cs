@@ -1,11 +1,10 @@
-﻿using RemTech.Parser.Contracts.Contracts;
-using RemTechCommon.Utils.ResultPattern;
+﻿using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriverManager;
 
 namespace RemTech.Parser.Implementation.Core;
 
-public sealed class WebDriverExecutableManager : IWebDriverExecutableManager
+public sealed class WebDriverExecutableManager
 {
     private readonly ILogger _logger;
 

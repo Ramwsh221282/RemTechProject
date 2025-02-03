@@ -1,6 +1,10 @@
-﻿namespace RemTech.Parser.Implementation.Core;
+﻿using RemTech.Parser.Contracts.Contracts;
+using RemTechCommon.Utils.ResultPattern;
 
-public interface IWebDriverQueryHandler
+namespace RemTech.Parser.Implementation.Core;
+
+public interface IWebDriverQueryHandler<in TQuery, TResult>
+    where TQuery : IWebDriverQuery<TResult>
 {
-    
+    Task<Result<TResult>> Execute(TQuery query);
 }

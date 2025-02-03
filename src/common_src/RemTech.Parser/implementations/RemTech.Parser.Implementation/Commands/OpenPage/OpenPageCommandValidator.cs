@@ -1,6 +1,12 @@
-﻿namespace RemTech.Parser.Implementation.Commands.OpenPage;
+﻿using FluentValidation;
+using RemTech.Parser.Contracts.Contracts.Commands;
 
-public class OpenPageCommandValidator
+namespace RemTech.Parser.Implementation.Commands.OpenPage;
+
+public sealed class OpenPageCommandValidator : AbstractValidator<OpenPageCommand>
 {
-    
+    public OpenPageCommandValidator()
+    {
+        RuleFor(com => com.PageUrl).NotNull().NotEmpty().WithMessage("Page url was empty or null");
+    }
 }

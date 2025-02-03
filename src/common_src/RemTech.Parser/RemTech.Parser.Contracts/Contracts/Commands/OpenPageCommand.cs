@@ -1,6 +1,3 @@
 ﻿namespace RemTech.Parser.Contracts.Contracts.Commands;
 
-public class OpenPageCommand
-{
-    
-}
+public sealed record OpenPageCommand(string? PageUrl) : IWebDriverCommand;

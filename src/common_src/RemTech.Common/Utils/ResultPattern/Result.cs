@@ -1,8 +1,22 @@
-﻿namespace RemTechCommon.Utils.ResultPattern;
+﻿using Serilog;
+
+namespace RemTechCommon.Utils.ResultPattern;
 
 public sealed record Error(string Description)
 {
     public static Error None = new("");
+}
+
+public static class ErrorExtensions
+{
+    public static void LogError(this Error error, ILogger logger) =>
+        logger.Error("{Message}", error.Description);
+
+    public static Error LogAndReturn(this Error error, ILogger logger)
+    {
+        error.LogError(logger);
+        return error;
+    }
 }
 
 public class Result
@@ -48,4 +62,13 @@ public sealed class Result<T> : Result
     public static implicit operator Result<T>(T value) => Success(value);
 
     public static implicit operator Result<T>(Error error) => Failure(error);
+}
+
+public static class ResultExtensions
+{
+    public static Result LogAndReturn(this Result result, ILogger logger, string Message)
+    {
+        logger.Information(Message);
+        return result;
+    }
 }

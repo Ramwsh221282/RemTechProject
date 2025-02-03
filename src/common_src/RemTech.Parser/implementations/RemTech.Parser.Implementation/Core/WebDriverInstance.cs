@@ -1,42 +1,52 @@
 ﻿using OpenQA.Selenium;
-using RemTech.Parser.Contracts.Contracts;
+using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 
 namespace RemTech.Parser.Implementation.Core;
 
-public sealed class WebDriverInstance : IWebDriverInstance
+public sealed class WebDriverInstance
 {
-    private readonly WebDriverInstanceOptions _options = new WebDriverInstanceOptions();
     private readonly ILogger _logger;
-    private IWebDriver? _instance;
+
+    private readonly WebDriverFactory _factory;
     public bool IsDisposed { get; private set; }
+    public IWebDriver? Instance { get; private set; }
 
-    public WebDriverInstance(ILogger logger) => _logger = logger;
-
-    public void Instantiate()
+    public WebDriverInstance(ILogger logger, WebDriverFactory factory)
     {
-        IsDisposed = false;
-        _instance = _options.InstantiateDriverWithOptions();
-        _logger.Information("Instantiated new web driver instance");
+        _logger = logger;
+        _factory = factory;
     }
 
-    public void Dispose()
+    public Result Instantiate()
     {
-        if (IsDisposed)
+        IsDisposed = false;
+        Result<IWebDriver> instance = _factory.Create();
+
+        if (instance.IsFailure)
         {
-            _logger.Error("The web driver instance has already been instantiated");
-            return;
+            Error error = instance.Error;
+            _logger.Error("{Error}", error.Description);
+            return instance.Error;
+        }
+        Instance = instance.Value;
+        _logger.Information("Instantiated new web driver instance");
+        return Result.Success();
+    }
+
+    public Result Dispose()
+    {
+        if (IsDisposed || Instance == null)
+        {
+            Error error = WebDriverPluginErrors.AlreadyDisposed;
+            _logger.Error("{Error}", error.Description);
+            return error;
         }
 
-        if (_instance == null)
-        {
-            _logger.Error("The web driver instance has already been instantiated");
-            return;
-        }
-
-        _instance.Dispose();
-        _instance = null;
+        Instance.Dispose();
+        Instance = null;
         IsDisposed = true;
         _logger.Information("Disposed web driver instance");
+        return Result.Success();
     }
 }

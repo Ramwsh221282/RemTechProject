@@ -1,23 +1,27 @@
-﻿using RemTech.Parser.Contracts.Contracts;
+﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 
 namespace RemTech.Parser.Implementation.Core;
 
-public sealed class WebDriverFactory : IWebDriverFactory
+public sealed class WebDriverFactory
 {
     private readonly ILogger _logger;
+
+    private readonly WebDriverInstanceOptions _options;
 
     private readonly string _chromeExecutablePath =
         WebDriverPluginConstants.GetExpectedChromeDriverExecutablePath();
 
-    public WebDriverFactory(ILogger logger)
+    public WebDriverFactory(ILogger logger, WebDriverInstanceOptions options)
     {
         _logger = logger;
+        _options = options;
         logger.Information("Web Driver Factory created");
     }
 
-    public Result<IWebDriverInstance> Create()
+    public Result<IWebDriver> Create()
     {
         bool isExists = EnsureChromeDriverExists();
         if (!isExists)
@@ -25,10 +29,13 @@ public sealed class WebDriverFactory : IWebDriverFactory
                 "Cannot instantiate web driver instance. No web driver executable exists"
             );
 
-        IWebDriverInstance instance = new WebDriverInstance(_logger);
-        instance.Instantiate();
-        _logger.Information("New Web driver instance instantiated");
-        return Result<IWebDriverInstance>.Success(instance);
+        ChromeDriverService service = ChromeDriverService.CreateDefaultService();
+        service.HideCommandPromptWindow = true;
+        service.EnableVerboseLogging = false;
+        service.EnableAppendLog = false;
+
+        IWebDriver driver = new ChromeDriver(service, _options.Options);
+        return Result<IWebDriver>.Success(driver);
     }
 
     private bool EnsureChromeDriverExists()

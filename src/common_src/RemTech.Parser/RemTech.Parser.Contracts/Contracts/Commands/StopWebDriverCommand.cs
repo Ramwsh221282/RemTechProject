@@ -1,3 +1,3 @@
 ﻿namespace RemTech.Parser.Contracts.Contracts.Commands;
 
-public record StopWebDriverCommand();
+public sealed record StopWebDriverCommand : IWebDriverCommand;

@@ -1,4 +1,5 @@
 ﻿using System.Security.Principal;
+using System.Text;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
@@ -6,25 +7,58 @@ namespace RemTech.Parser.Implementation.Core;
 
 public sealed class WebDriverInstanceOptions
 {
-    private readonly ChromeOptions _options;
+    public ChromeOptions Options { get; }
 
     public WebDriverInstanceOptions()
     {
-        _options = new ChromeOptions();
-        _options.PageLoadStrategy = PageLoadStrategy.None;
-        _options.AddArgument(WebDriverPluginConstants.ChromeUserDataDirectory);
-        _options.AddArgument("--start-maximized");
-        _options.AddArgument("--disable-blink-features=AutomationControlled");
-        _options.AddArgument("--disable-web-securtity");
-        _options.AddArgument("--ignore-certificate-errors");
-        _options.AddArgument("--no-sandbox");
-        _options.AddArgument("--disable-gpu");
-        _options.AddArgument("-disable-dev-shm-usage");
-        _options.AddArgument("--allow-running-insecure-content");
-        _options.AddArgument("--disable-extensions");
-        _options.AcceptInsecureCertificates = true;
-        _options.AddAdditionalOption("useAutomationExtensions", false);
+        string profile = WebDriverPluginConstants.ProfilePath;
+        StringBuilder profileOptionsBuilder = new();
+        profileOptionsBuilder.Append("user-data-dir=");
+        profileOptionsBuilder.Append(profile);
+        Options = new ChromeOptions();
+        Options.PageLoadStrategy = PageLoadStrategy.Eager;
+        Options.AddArgument(profileOptionsBuilder.ToString());
+        Options.AddArgument("--start-maximized");
+        Options.AddArgument("--disable-blink-features=AutomationControlled");
+        Options.AddExcludedArguments("excludeSwitches", "enable-automation");
+        Options.AddArgument("--disable-web-security");
+        Options.AddArgument("--ignore-certificate-errors");
+        Options.AddArgument("--no-sandbox");
+        Options.AddArgument("--disable-gpu");
+        Options.AddArgument("--disable-dev-shm-usage");
+        Options.AddArgument("--allow-running-insecure-content");
+        Options.AddArgument("--disable-infobars"); // Отключение всплывающих окон информации о браузере
+        Options.AddArgument("--disable-extensions"); // Отключение всех расширений
+        Options.AddArgument("--disable-images"); // Отключение загрузки изображений (если не требуются)
+        Options.AddArgument("--disable-popup-blocking"); // Отключение блокировки всплывающих окон
+        Options.AddArgument("--fast-enable"); // Включение ускоренной работы JavaScript (если доступно)
+        Options.AcceptInsecureCertificates = true;
+        Options.AddAdditionalOption("useAutomationExtensions", false);
+
+        // Options = new ChromeOptions();
+        // Options.PageLoadStrategy = PageLoadStrategy.None;
+        // Options.AddArgument(WebDriverPluginConstants.ChromeUserDataDirectory);
+        // Options.AddArgument("--start-maximized");
+        // Options.AddArgument("--disable-blink-features=AutomationControlled");
+        // Options.AddArgument("--disable-web-securtity");
+        // Options.AddArgument("--ignore-certificate-errors");
+        // Options.AddArgument("--no-sandbox");
+        // Options.AddArgument("--disable-gpu");
+        // Options.AddArgument("-disable-dev-shm-usage");
+        // Options.AddArgument("--allow-running-insecure-content");
+        // Options.AddArgument("--disable-extensions");
+        // Options.AcceptInsecureCertificates = true;
+        // Options.AddAdditionalOption("useAutomationExtensions", false);
     }
 
-    public IWebDriver InstantiateDriverWithOptions() => new ChromeDriver(_options);
+    private string GetChromeUserAppDataPath()
+    {
+        WindowsIdentity? identity = WindowsIdentity.GetCurrent();
+        if (identity == null)
+            throw new InvalidOperationException("No active windows identity");
+        string lastUserName = identity.Name.Split('\\').Last();
+        return "user-data-dir=C:\\Users\\"
+            + lastUserName
+            + "\\AppData\\Local\\Google\\Chrome\\User Data";
+    }
 }

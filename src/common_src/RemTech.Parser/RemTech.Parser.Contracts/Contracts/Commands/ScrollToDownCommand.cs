@@ -1,6 +1,3 @@
 ﻿namespace RemTech.Parser.Contracts.Contracts.Commands;
 
-public class ScrollToDownCommand
-{
-    
-}
+public sealed record ScrollToDownCommand : IWebDriverCommand;
