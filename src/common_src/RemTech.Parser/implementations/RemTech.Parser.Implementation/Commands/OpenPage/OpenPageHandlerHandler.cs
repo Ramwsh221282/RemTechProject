@@ -23,21 +23,31 @@ public sealed class OpenPageHandlerHandler
     public async Task<Result> Handle(OpenPageCommand command)
     {
         if (_instance.Instance == null || _instance.IsDisposed)
-            return WebDriverPluginErrors.Disposed.LogAndReturn(_logger);
+        {
+            Error error = WebDriverPluginErrors.Disposed;
+            _logger.Error("{Error}", error.Description);
+            return error;
+        }
 
         ValidationResult result = await _validator.ValidateAsync(command);
         if (!result.IsValid)
-            return result.ToError().LogAndReturn(_logger);
+        {
+            Error error = result.ToError();
+            _logger.Error("{Error}", error.Description);
+            return error;
+        }
 
         await _instance.Instance.Navigate().GoToUrlAsync(command.PageUrl);
         string url = _instance.Instance.Url;
 
-        if (url == command.PageUrl)
-            return Result
-                .Success()
-                .LogAndReturn(_logger, $"Opened page with url: {command.PageUrl}");
+        if (url != command.PageUrl)
+        {
+            Error error = new Error("Opened page url is different from command page url.");
+            _logger.Error("{Error}", error.Description);
+            return error;
+        }
 
-        Error error = new Error("Opened page url is different from command page url.");
-        return error.LogAndReturn(_logger);
+        _logger.Information("Opened page with {Url}", url);
+        return Result.Success();
     }
 }

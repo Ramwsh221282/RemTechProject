@@ -80,8 +80,7 @@ public sealed class WebDriverApiTests
         Result topScrolling = await _api.ExecuteCommand(new ScrollToTopCommand());
         Assert.True(topScrolling.IsSuccess);
 
-        const string path =
-            ".//div[@class='styles-module-col-F4VNN styles-module-col_span_12-bhIkA']";
+        const string path = ".//div[@class='form-mainFilters-y0xZT']";
         GetElementByXPathQuery query = new GetElementByXPathQuery(path);
 
         Result<WebElementObject> element = await _api.ExecuteQuery<
@@ -91,6 +90,68 @@ public sealed class WebDriverApiTests
 
         Assert.True(element.IsSuccess);
         Assert.Equal(0, element.Value.Position);
+
+        Result stopping = await _api.ExecuteCommand(new StopWebDriverCommand());
+        Assert.True(stopping.IsSuccess);
+    }
+
+    [Fact]
+    public async Task FindElementInsideOfExistingElement()
+    {
+        Result starting = await _api.ExecuteCommand(new StartWebDriverCommand());
+        Assert.True(starting.IsSuccess);
+
+        Result opening = await _api.ExecuteCommand(
+            new OpenPageCommand(
+                "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki-ASgBAgICAURU4E0"
+            )
+        );
+        Assert.True(opening.IsSuccess);
+
+        Result bottomScrolling = await _api.ExecuteCommand(new ScrollToDownCommand());
+        Assert.True(bottomScrolling.IsSuccess);
+
+        Result topScrolling = await _api.ExecuteCommand(new ScrollToTopCommand());
+        Assert.True(topScrolling.IsSuccess);
+
+        const string path = ".//div[@class='form-mainFilters-y0xZT']";
+        GetElementByXPathQuery query_1 = new GetElementByXPathQuery(path);
+
+        Result<WebElementObject> element_1 = await _api.ExecuteQuery<
+            GetElementQuery,
+            WebElementObject
+        >(query_1);
+
+        Assert.True(element_1.IsSuccess);
+        Assert.Equal(0, element_1.Value.Position);
+
+        const string tag = "form";
+        GetElementInsideOfElementQuery query_2 = new GetElementInsideOfElementQuery(
+            new GetElementByTagQuery(tag),
+            element_1
+        );
+
+        Result<WebElementObject> element_2 = await _api.ExecuteQuery<
+            GetElementInsideOfElementQuery,
+            WebElementObject
+        >(query_2);
+        Assert.True(element_2.IsSuccess);
+        Assert.Equal(1, element_2.Value.Position);
+
+        const string path_2 =
+            ".//div[@class='styles-module-col-F4VNN styles-module-col_span_12-bhIkA']";
+        GetElementInsideOfElementQuery query_3 = new GetElementInsideOfElementQuery(
+            new GetElementByXPathQuery(path_2),
+            element_2
+        );
+
+        Result<WebElementObject> element_3 = await _api.ExecuteQuery<
+            GetElementInsideOfElementQuery,
+            WebElementObject
+        >(query_3);
+
+        Assert.True(element_3.IsSuccess);
+        Assert.Equal(2, element_3.Value.Position);
 
         Result stopping = await _api.ExecuteCommand(new StopWebDriverCommand());
         Assert.True(stopping.IsSuccess);

@@ -21,7 +21,11 @@ public sealed class ScrollToTopHandlerHandler
     public async Task<Result> Handle(ScrollToTopCommand command)
     {
         if (_instance.Instance == null || _instance.IsDisposed)
-            return WebDriverPluginErrors.Disposed.LogAndReturn(_logger);
+        {
+            Error error = WebDriverPluginErrors.Disposed;
+            _logger.Error("{Error}", error.Description);
+            return error;
+        }
 
         bool isScrolled = false;
         while (!isScrolled)
@@ -29,12 +33,14 @@ public sealed class ScrollToTopHandlerHandler
             long currentHeight = _instance.Instance.ExecuteJavaScript<long>(
                 GetScrollPositionScript
             );
+
             if (currentHeight == 0)
                 isScrolled = true;
+
             _instance.Instance.ExecuteJavaScript(Script);
         }
 
-        Result result = Result.Success().LogAndReturn(_logger, "Executed Scroll To Top Command");
-        return await Task.FromResult(result);
+        _logger.Information("Executed Scroll To Top Command");
+        return await Task.FromResult(Result.Success());
     }
 }

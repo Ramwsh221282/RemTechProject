@@ -6,40 +6,44 @@ using RemTechCommon.Utils.Extensions;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 
-namespace RemTech.Parser.Implementation.Queries;
+namespace RemTech.Parser.Implementation.Queries.GetElement;
 
-public sealed class GetElementByXPathQueryHandler
+public sealed class GetElementQueryHandler
     : BaseWebDriverHandler,
         IWebDriverQueryHandler<GetElementQuery, WebElementObject>
 {
-    private readonly GetElementByXPathQueryValidator _validator;
+    private readonly GetElementQueryValidator _validator;
 
-    public GetElementByXPathQueryHandler(
+    public GetElementQueryHandler(
         WebDriverInstance instance,
         ILogger logger,
-        GetElementByXPathQueryValidator validator
+        GetElementQueryValidator validator
     )
         : base(instance, logger) => _validator = validator;
 
     public async Task<Result<WebElementObject>> Execute(GetElementQuery query)
     {
-        if (_instance.Instance == null || _instance.IsDisposed)
-            return WebDriverPluginErrors.Disposed.LogAndReturn(_logger);
-
         ValidationResult validation = await _validator.ValidateAsync(query);
         if (!validation.IsValid)
-            return validation.ToError().LogAndReturn(_logger);
+        {
+            Error error = validation.ToError();
+            _logger.Error("{Error}", error.Description);
+            return error;
+        }
 
         Result<WebElementObject> result = _instance.GetElement(query);
         if (result.IsFailure)
-            return result.Error.LogAndReturn(_logger);
+        {
+            Error error = result.Error;
+            _logger.Error("{Error}", error.Description);
+            return error;
+        }
 
         _logger.Information(
             "Got element with path: {Path} and type {Type}",
             query.Path,
             query.Type
         );
-
         return await Task.FromResult(result);
     }
 }

@@ -15,10 +15,14 @@ public sealed class StopWebDriverHandlerHandler
     public async Task<Result> Handle(StopWebDriverCommand command)
     {
         Result result = _instance.Dispose();
-        return await Task.FromResult(
-            result.IsFailure
-                ? result.Error.LogAndReturn(_logger)
-                : result.LogAndReturn(_logger, "Web Driver Instance Stopped")
-        );
+        if (result.IsFailure)
+        {
+            Error error = result.Error;
+            _logger.Error("{Error}", error.Description);
+            return error;
+        }
+
+        _logger.Information("Web Driver Instance Stopped");
+        return await Task.FromResult(Result.Success());
     }
 }

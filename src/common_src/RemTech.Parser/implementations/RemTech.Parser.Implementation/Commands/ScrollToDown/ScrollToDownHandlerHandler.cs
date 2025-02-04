@@ -22,7 +22,11 @@ public sealed class ScrollToDownHandlerHandler
     public async Task<Result> Handle(ScrollToDownCommand command)
     {
         if (_instance.Instance == null || _instance.IsDisposed)
-            return WebDriverPluginErrors.Disposed.LogAndReturn(_logger);
+        {
+            Error error = WebDriverPluginErrors.Disposed;
+            _logger.Error("{Error}", error.Description);
+            return error;
+        }
 
         bool isScrolled = false;
         long initialHeight = _instance.Instance.ExecuteJavaScript<long>(GetCurrentHeightScript);
@@ -43,11 +47,12 @@ public sealed class ScrollToDownHandlerHandler
         catch (Exception ex)
         {
             Error error = new Error($"Error occured: {ex.Message}");
-            return error.LogAndReturn(_logger);
+            _logger.Error("{Error}", error.Description);
+            return error;
         }
 
-        Result result = Result.Success().LogAndReturn(_logger, "Page scrolled to Down");
-        return await Task.FromResult(result);
+        _logger.Information("Page scrolled to Down");
+        return await Task.FromResult(Result.Success());
     }
 
     private static bool IsEndOfPage(ref long initialHeight, ref long currentHeight) =>

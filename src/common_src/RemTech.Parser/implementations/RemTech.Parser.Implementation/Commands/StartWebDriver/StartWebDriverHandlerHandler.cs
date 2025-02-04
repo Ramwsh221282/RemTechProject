@@ -15,13 +15,21 @@ public sealed class StartWebDriverHandlerHandler
     public async Task<Result> Handle(StartWebDriverCommand command)
     {
         if (_instance.Instance != null && _instance.IsDisposed == false)
-            return new Error("Web driver is not created").LogAndReturn(_logger);
+        {
+            Error error = new Error("Web driver is not created");
+            _logger.Error("{Error}", error.Description);
+            return error;
+        }
 
         Result result = _instance.Instantiate();
-        return await Task.FromResult(
-            result.IsFailure
-                ? result.Error.LogAndReturn(_logger)
-                : result.LogAndReturn(_logger, "Started Web Driver Instance")
-        );
+        if (result.IsFailure)
+        {
+            Error error = result.Error;
+            _logger.Error("{Error}", error.Description);
+            return error;
+        }
+
+        _logger.Information("Started Web Driver Instance");
+        return await Task.FromResult(Result.Success());
     }
 }

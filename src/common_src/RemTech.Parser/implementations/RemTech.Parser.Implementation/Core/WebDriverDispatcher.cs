@@ -14,9 +14,11 @@ public sealed class WebDriverDispatcher
         where TCommand : IWebDriverCommand
     {
         using var scope = _factory.CreateScope();
+
         IWebDriverCommandHandler<TCommand> handler = scope.ServiceProvider.GetRequiredService<
             IWebDriverCommandHandler<TCommand>
         >();
+
         return await handler.Handle(command);
     }
 
@@ -24,9 +26,11 @@ public sealed class WebDriverDispatcher
         where TQuery : IWebDriverQuery<TResult>
     {
         using var scope = _factory.CreateScope();
+
         IWebDriverQueryHandler<TQuery, TResult> handler = scope.ServiceProvider.GetRequiredService<
             IWebDriverQueryHandler<TQuery, TResult>
         >();
+
         return await handler.Execute(query);
     }
 }
