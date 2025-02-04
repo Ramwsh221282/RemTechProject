@@ -5,11 +5,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
-        <InvariantGlobalization>true</InvariantGlobalization>
-        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="coverlet.collector" Version="6.0.2"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1"/>
         <PackageReference Include="xunit" Version="2.9.2"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2"/>
@@ -17,12 +16,6 @@
 
     <ItemGroup>
         <Using Include="Xunit"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\RemTech.Common\RemTech.Common.csproj" />
-      <ProjectReference Include="..\..\implementations\RemTech.Parser.Implementation\RemTech.Parser.Implementation.csproj" />
-      <ProjectReference Include="..\..\RemTech.Parser.Contracts\RemTech.Parser.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

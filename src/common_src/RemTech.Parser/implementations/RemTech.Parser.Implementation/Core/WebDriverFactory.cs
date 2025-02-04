@@ -11,13 +11,20 @@ public sealed class WebDriverFactory
 
     private readonly WebDriverInstanceOptions _options;
 
+    private readonly WebDriverExecutableManager _manager;
+
     private readonly string _chromeExecutablePath =
         WebDriverPluginConstants.GetExpectedChromeDriverExecutablePath();
 
-    public WebDriverFactory(ILogger logger, WebDriverInstanceOptions options)
+    public WebDriverFactory(
+        ILogger logger,
+        WebDriverInstanceOptions options,
+        WebDriverExecutableManager manager
+    )
     {
         _logger = logger;
         _options = options;
+        _manager = manager;
         logger.Information("Web Driver Factory created");
     }
 
@@ -25,9 +32,16 @@ public sealed class WebDriverFactory
     {
         bool isExists = EnsureChromeDriverExists();
         if (!isExists)
-            return new Error(
-                "Cannot instantiate web driver instance. No web driver executable exists"
-            );
+        {
+            Result<string> installation = InstallChromeDriver(isExists);
+            if (installation.IsFailure)
+            {
+                Error error = installation.Error;
+                _logger.Error("{Error}", error.Description);
+                return error;
+            }
+            _logger.Information("Chrome driver installed. Path: {Path}", installation.Value);
+        }
 
         ChromeDriverService service = ChromeDriverService.CreateDefaultService();
         service.HideCommandPromptWindow = true;
@@ -52,5 +66,21 @@ public sealed class WebDriverFactory
             _logger.Error("Web driver executable doesn't exist");
             return false;
         }
+    }
+
+    private Result<string> InstallChromeDriver(bool isExists)
+    {
+        if (isExists)
+            return new Error("Conflict with installation. Driver already exists");
+
+        if (Directory.Exists(WebDriverPluginConstants.ChromeDriversCataloguePath))
+        {
+            _logger.Information("Detected existing chrome drivers");
+            Directory.Delete(WebDriverPluginConstants.ChromeDriversCataloguePath, true);
+            _logger.Information("Previous chrome drivers removed");
+        }
+
+        Result<string> installation = _manager.Install();
+        return installation;
     }
 }

@@ -70,10 +70,47 @@ public sealed class WebDriverInstance
     }
 
     public Result<WebElementObjectInternal> GetExistingElement(int position) => _elements[position];
+
+    public Result<WebElementObjectInternal> GetExistingElement(WebElementObject element) =>
+        _elements[element.Position];
 }
 
 public static class WebDriverInstanceExtensions
 {
+    public static Result<WebElementObject[]> GetElements(
+        this WebDriverInstance instance,
+        WebElementObjectInternal internalElement,
+        GetElementQuery query
+    )
+    {
+        if (instance.IsDisposed || instance.Instance == null)
+            return WebDriverPluginErrors.AlreadyDisposed;
+
+        Result<By> by = query.GetElementSearchType();
+        if (by.IsFailure)
+            return by.Error;
+
+        try
+        {
+            IWebElement element = internalElement.Element;
+            IReadOnlyCollection<IWebElement> elements = element.FindElements(by.Value);
+            WebElementObject[] array = elements
+                .Select(el => instance.AddElement(el, query))
+                .ToArray();
+            return array;
+        }
+        catch
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append("Failed to get elements with path: ");
+            stringBuilder.Append(query.Path);
+            stringBuilder.Append(" and type");
+            stringBuilder.Append(query.Type);
+            stringBuilder.Append(" do not exist.");
+            return new Error(stringBuilder.ToString());
+        }
+    }
+
     public static Result<WebElementObject> GetElement(
         this WebDriverInstance driver,
         GetElementQuery query

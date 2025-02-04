@@ -156,4 +156,56 @@ public sealed class WebDriverApiTests
         Result stopping = await _api.ExecuteCommand(new StopWebDriverCommand());
         Assert.True(stopping.IsSuccess);
     }
+
+    [Fact]
+    public async Task Find_Multiple_Elements_SameXPath_In_One_Element()
+    {
+        Result starting = await _api.ExecuteCommand(new StartWebDriverCommand());
+        Assert.True(starting.IsSuccess);
+
+        Result opening = await _api.ExecuteCommand(
+            new OpenPageCommand(
+                "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki-ASgBAgICAURU4E0"
+            )
+        );
+        Assert.True(opening.IsSuccess);
+
+        Result bottomScrolling = await _api.ExecuteCommand(new ScrollToDownCommand());
+        Assert.True(bottomScrolling.IsSuccess);
+
+        Result topScrolling = await _api.ExecuteCommand(new ScrollToTopCommand());
+        Assert.True(topScrolling.IsSuccess);
+
+        const string path = ".//div[@class='form-mainFilters-y0xZT']";
+        GetElementByXPathQuery query_1 = new GetElementByXPathQuery(path);
+
+        Result<WebElementObject> element_1 = await _api.ExecuteQuery<
+            GetElementQuery,
+            WebElementObject
+        >(query_1);
+
+        Assert.True(element_1.IsSuccess);
+        Assert.Equal(0, element_1.Value.Position);
+
+        const string path_2 =
+            ".//div[@class='styles-module-root-G07MD styles-module-root_dense-kUp8z styles-module-root_compensate_bottom-WEqOQ']";
+        GetElementsInsideOfElementQuery query_2 = new GetElementsInsideOfElementQuery(
+            element_1,
+            new GetElementByXPathQuery(path_2)
+        );
+        Result<WebElementObject[]> elements = await _api.ExecuteQuery<
+            GetElementsInsideOfElementQuery,
+            WebElementObject[]
+        >(query_2);
+        Assert.True(elements.IsSuccess);
+
+        for (int index = 0; index < elements.Value.Length; index++)
+        {
+            int position = index + 1;
+            Assert.Equal(position, elements.Value[index].Position);
+        }
+
+        Result stopping = await _api.ExecuteCommand(new StopWebDriverCommand());
+        Assert.True(stopping.IsSuccess);
+    }
 }

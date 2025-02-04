@@ -16,7 +16,7 @@ public sealed class StartWebDriverHandlerHandler
     {
         if (_instance.Instance != null && _instance.IsDisposed == false)
         {
-            Error error = new Error("Web driver is not created");
+            Error error = new Error("Web driver is already instantiated");
             _logger.Error("{Error}", error.Description);
             return error;
         }

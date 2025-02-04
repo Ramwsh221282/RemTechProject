@@ -7,23 +7,21 @@ public static class WebDriverPluginConstants
 {
     internal static ChromeConfig DriverConfig = new ChromeConfig();
 
-    internal static readonly string CompatibleVersion = DriverConfig.GetLatestVersion();
+    internal static readonly string CompatibleVersion = DriverConfig.GetMatchingBrowserVersion();
 
     internal static readonly string PluginPath = Path.Combine(
         ApplicationPathConstants.PluginsDirectory,
         "WebDriverPlugin"
     );
 
+    internal static readonly string ChromeDriversCataloguePath = Path.Combine(PluginPath, "Chrome");
+
     internal static readonly string ExpectedChromeDriverPath = Path.Combine(
-        PluginPath,
-        "Chrome",
+        ChromeDriversCataloguePath,
         CompatibleVersion
     );
 
-    internal static readonly string ProfilePath = Path.Combine(
-        GetExpectedChromeDriverExecutableDirectory(),
-        "Profile"
-    );
+    internal static readonly string ProfilePath = Path.Combine(PluginPath, "Profile");
 
     internal static string GetExpectedChromeDriverExecutableDirectory() =>
         Environment.Is64BitOperatingSystem

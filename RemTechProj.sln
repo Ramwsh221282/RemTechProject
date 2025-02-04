@@ -20,6 +20,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTech.Parser.Contracts", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTech.Parser.Implementation.Tests", "src\common_src\RemTech.Parser\Tests\RemTech.Parser.Implementation.Tests\RemTech.Parser.Implementation.Tests.csproj", "{6B3D8F05-F927-4934-A58F-8A4734B784C7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTechAvito.Application", "src\avito_src\RemTechAvito.Application\RemTechAvito.Application.csproj", "{D4A84771-2C2E-44C9-8AD5-1EDDE4DD7DEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTech.Parser.Plugin.Tests", "src\common_src\RemTech.Parser\Tests\RemTech.Parser.Plugin.Tests\RemTech.Parser.Plugin.Tests.csproj", "{051370E8-A2DC-423D-B8DF-3D70CA4BB500}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +39,8 @@ Global
 		{C8029F4D-07EC-4C2E-8B0E-35535BED3587} = {B05A3F2C-C934-4138-801F-A35BE102347B}
 		{3930409E-26C7-4466-87AC-26CCBC0F50BB} = {FC1938D3-2A5F-4B66-8C46-D487145E48EE}
 		{6B3D8F05-F927-4934-A58F-8A4734B784C7} = {B05A3F2C-C934-4138-801F-A35BE102347B}
+		{D4A84771-2C2E-44C9-8AD5-1EDDE4DD7DEA} = {2FD50146-D397-4CE0-A4AA-27EE5993589D}
+		{051370E8-A2DC-423D-B8DF-3D70CA4BB500} = {B05A3F2C-C934-4138-801F-A35BE102347B}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{19D97A14-AB77-4D4A-8C85-C01B60EFE240}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -57,5 +63,13 @@ Global
 		{6B3D8F05-F927-4934-A58F-8A4734B784C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B3D8F05-F927-4934-A58F-8A4734B784C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B3D8F05-F927-4934-A58F-8A4734B784C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4A84771-2C2E-44C9-8AD5-1EDDE4DD7DEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4A84771-2C2E-44C9-8AD5-1EDDE4DD7DEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4A84771-2C2E-44C9-8AD5-1EDDE4DD7DEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4A84771-2C2E-44C9-8AD5-1EDDE4DD7DEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{051370E8-A2DC-423D-B8DF-3D70CA4BB500}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{051370E8-A2DC-423D-B8DF-3D70CA4BB500}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{051370E8-A2DC-423D-B8DF-3D70CA4BB500}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{051370E8-A2DC-423D-B8DF-3D70CA4BB500}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
