@@ -1,3 +1,3 @@
-﻿namespace RemTech.WebDriver.Plugin.Commands.StopWebDriver;
+﻿namespace WebDriver.Core.Commands.StopWebDriver;
 
-internal sealed record StopWebDriverCommand : ICommand;
+public sealed record StopWebDriverCommand : ICommand;

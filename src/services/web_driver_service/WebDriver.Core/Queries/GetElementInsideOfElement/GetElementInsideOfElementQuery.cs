@@ -1,7 +1,7 @@
-﻿using RemTech.WebDriver.Plugin.Core;
-using RemTech.WebDriver.Plugin.Queries.GetElement;
+﻿using WebDriver.Core.Core;
+using WebDriver.Core.Queries.GetElement;
 
-namespace RemTech.WebDriver.Plugin.Queries.GetElementInsideOfElement;
+namespace WebDriver.Core.Queries.GetElementInsideOfElement;
 
-internal record GetElementInsideOfElementQuery(GetElementQuery Query, WebElementObject Element)
+public record GetElementInsideOfElementQuery(Guid ExistingId, GetElementQuery Requested)
     : IQuery<WebElementObject>;

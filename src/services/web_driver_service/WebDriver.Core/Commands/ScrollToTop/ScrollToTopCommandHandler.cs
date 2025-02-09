@@ -1,11 +1,11 @@
 ﻿using OpenQA.Selenium.Support.Extensions;
-using RemTech.WebDriver.Plugin.Core;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
+using WebDriver.Core.Core;
 
-namespace RemTech.WebDriver.Plugin.Commands.ScrollToTop;
+namespace WebDriver.Core.Commands.ScrollToTop;
 
-internal sealed class ScrollToTopCommandHandler
+public sealed class ScrollToTopCommandHandler
     : BaseWebDriverHandler,
         IWebDriverCommandHandler<ScrollToTopCommand>
 {

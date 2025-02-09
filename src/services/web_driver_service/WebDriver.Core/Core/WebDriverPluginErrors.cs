@@ -1,6 +1,6 @@
 ﻿using RemTechCommon.Utils.ResultPattern;
 
-namespace RemTech.WebDriver.Plugin.Core;
+namespace WebDriver.Core.Core;
 
 internal static class WebDriverPluginErrors
 {

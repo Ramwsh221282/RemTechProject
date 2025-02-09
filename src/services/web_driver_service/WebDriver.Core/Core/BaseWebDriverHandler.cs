@@ -1,8 +1,8 @@
 ﻿using Serilog;
 
-namespace RemTech.WebDriver.Plugin.Core;
+namespace WebDriver.Core.Core;
 
-internal abstract class BaseWebDriverHandler
+public abstract class BaseWebDriverHandler
 {
     protected readonly WebDriverInstance _instance;
     protected readonly ILogger _logger;

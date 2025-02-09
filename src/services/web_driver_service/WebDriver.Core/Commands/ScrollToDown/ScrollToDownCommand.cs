@@ -1,3 +1,3 @@
-﻿namespace RemTech.WebDriver.Plugin.Commands.ScrollToDown;
+﻿namespace WebDriver.Core.Commands.ScrollToDown;
 
-internal sealed record ScrollToDownCommand : ICommand;
+public sealed record ScrollToDownCommand : ICommand;

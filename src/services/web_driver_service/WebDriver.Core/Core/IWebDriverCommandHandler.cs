@@ -1,9 +1,9 @@
-﻿using RemTech.WebDriver.Plugin.Commands;
-using RemTechCommon.Utils.ResultPattern;
+﻿using RemTechCommon.Utils.ResultPattern;
+using WebDriver.Core.Commands;
 
-namespace RemTech.WebDriver.Plugin.Core;
+namespace WebDriver.Core.Core;
 
-internal interface IWebDriverCommandHandler<in TCommand>
+public interface IWebDriverCommandHandler<in TCommand>
     where TCommand : ICommand
 {
     Task<Result> Handle(TCommand command);

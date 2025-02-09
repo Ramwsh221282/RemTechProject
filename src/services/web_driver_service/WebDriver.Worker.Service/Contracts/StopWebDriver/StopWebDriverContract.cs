@@ -1,17 +1,28 @@
 ﻿using Rabbit.RPC.Server.Abstractions.Communication;
+using RemTechCommon.Utils.ResultPattern;
+using WebDriver.Core.Commands.StopWebDriver;
+using WebDriver.Core.Core;
 
 namespace WebDriver.Worker.Service.Contracts.StopWebDriver;
 
 internal sealed record StopWebDriverContract : IContract;
 
-internal sealed record StopWebDriverContractResponse(bool IsStopped);
+internal sealed record StopWebDriverResponse(bool IsStopped);
 
 internal sealed class StopWebDriverContractHandler : IContractHandler<StopWebDriverContract>
 {
+    private readonly WebDriverApi _api;
+
+    public StopWebDriverContractHandler(WebDriverApi api) => _api = api;
+
     public async Task<ContractActionResult> Handle(StopWebDriverContract contract)
     {
-        StopWebDriverContractResponse response = new(true);
-        ContractActionResult result = new(response);
-        return await Task.FromResult(result);
+        StopWebDriverCommand command = new StopWebDriverCommand();
+        Result closing = await _api.ExecuteCommand(command);
+        if (closing.IsFailure)
+            return new ContractActionResult(closing.Error.Description);
+
+        StopWebDriverResponse response = new StopWebDriverResponse(true);
+        return new ContractActionResult(response);
     }
 }

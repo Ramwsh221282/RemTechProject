@@ -1,3 +1,3 @@
-﻿namespace RemTech.WebDriver.Plugin.Commands.StartWebDriver;
+﻿namespace WebDriver.Core.Commands.StartWebDriver;
 
-internal sealed record StartWebDriverCommand : ICommand;
+public sealed record StartWebDriverCommand : ICommand;

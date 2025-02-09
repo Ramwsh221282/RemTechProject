@@ -1,11 +1,11 @@
-﻿using RemTech.WebDriver.Plugin.Core;
-using RemTechCommon.Utils.Extensions;
+﻿using RemTechCommon.Utils.Extensions;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
+using WebDriver.Core.Core;
 
-namespace RemTech.WebDriver.Plugin.Queries.GetElementsInsideOfElement;
+namespace WebDriver.Core.Queries.GetElementsInsideOfElement;
 
-internal sealed class GetElementsInsideOfElementQueryHandler
+public sealed class GetElementsInsideOfElementQueryHandler
     : BaseWebDriverHandler,
         IWebDriverQueryHandler<GetElementsInsideOfElementQuery, WebElementObject[]>
 {
@@ -28,15 +28,10 @@ internal sealed class GetElementsInsideOfElementQueryHandler
             return error;
         }
 
-        Result<WebElementObjectInternal> existing = _instance.GetExistingElement(query.Parent);
-        if (existing.IsFailure)
-        {
-            Error error = existing.Error;
-            _logger.Error("{Error}", error.Description);
-            return error;
-        }
-
-        Result<WebElementObject[]> elements = _instance.GetElements(existing, query.Query);
+        Result<WebElementObject[]> elements = _instance.GetMultipleElements(
+            query.ExistingId,
+            query.Requested
+        );
         if (elements.IsFailure)
         {
             Error error = elements.Error;
@@ -47,8 +42,8 @@ internal sealed class GetElementsInsideOfElementQueryHandler
         _logger.Information(
             "Found {count} elements with search type: {Type} and path: {Path}",
             elements.Value.Length,
-            query.Query.Type,
-            query.Query.Path
+            query.Requested.Type,
+            query.Requested.Path
         );
         return elements.Value;
     }

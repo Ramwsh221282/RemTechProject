@@ -1,10 +1,10 @@
-﻿using RemTech.WebDriver.Plugin.Core;
-using RemTechCommon.Utils.ResultPattern;
+﻿using RemTechCommon.Utils.ResultPattern;
 using Serilog;
+using WebDriver.Core.Core;
 
-namespace RemTech.WebDriver.Plugin.Commands.StopWebDriver;
+namespace WebDriver.Core.Commands.StopWebDriver;
 
-internal sealed class StopWebDriverCommandHandler
+public sealed class StopWebDriverCommandHandler
     : BaseWebDriverHandler,
         IWebDriverCommandHandler<StopWebDriverCommand>
 {

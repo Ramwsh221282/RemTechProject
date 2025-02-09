@@ -1,3 +1,3 @@
-﻿namespace RemTech.WebDriver.Plugin.Commands.OpenPage;
+﻿namespace WebDriver.Core.Commands.OpenPage;
 
-internal sealed record OpenPageCommand(string? PageUrl) : ICommand;
+public sealed record OpenPageCommand(string? PageUrl) : ICommand;

@@ -1,23 +1,21 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using RemTech.WebDriver.Plugin.Core;
 using WebDriver.Core.Core;
 
 namespace WebDriver.Core.Injection;
 
-public sealed class WebDriverPluginLoader
+public static class WebDriverPluginLoader
 {
-    public IServiceCollection RegisterServices(IServiceCollection services)
+    public static void RegisterWebDriverServices(this IServiceCollection services)
     {
-        services = RegisterHandlers(services);
-        services = RegisterWebDriverDependencies(services);
-        return services;
+        services.RegisterWebDriverDependencies();
+        services.RegisterHandlers();
     }
 
-    private IServiceCollection RegisterHandlers(IServiceCollection services)
+    private static void RegisterHandlers(this IServiceCollection services)
     {
         services.Scan(x =>
-            x.FromAssemblyOf<WebDriverPluginLoader>()
+            x.FromAssemblies(typeof(WebDriverPluginLoader).Assembly)
                 .AddClasses(classess => classess.AssignableTo(typeof(IWebDriverCommandHandler<>)))
                 .AsSelfWithInterfaces()
                 .WithScopedLifetime()
@@ -28,10 +26,9 @@ public sealed class WebDriverPluginLoader
                 .AsSelfWithInterfaces()
                 .WithScopedLifetime()
         );
-        return services;
     }
 
-    private IServiceCollection RegisterWebDriverDependencies(IServiceCollection services)
+    private static void RegisterWebDriverDependencies(this IServiceCollection services)
     {
         services.AddSingleton<WebDriverFactory>();
         services.AddSingleton<WebDriverExecutableManager>();
@@ -39,6 +36,5 @@ public sealed class WebDriverPluginLoader
         services.AddSingleton<WebDriverInstance>();
         services.AddSingleton<WebDriverDispatcher>();
         services.AddSingleton<WebDriverApi>();
-        return services;
     }
 }

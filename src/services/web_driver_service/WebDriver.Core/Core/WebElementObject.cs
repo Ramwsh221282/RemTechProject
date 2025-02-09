@@ -1,15 +1,19 @@
-﻿namespace RemTech.WebDriver.Plugin.Core;
+﻿using OpenQA.Selenium;
 
-internal record WebElementObject
+namespace WebDriver.Core.Core;
+
+public record WebElementObject
 {
     public string ElementPath { get; }
     public string ElementPathType { get; }
-    public int Position { get; }
+    public Guid ElementId { get; }
+    public IWebElement Model { get; }
 
-    protected WebElementObject(string path, string type, int position)
+    public WebElementObject(string path, string type, IWebElement model)
     {
         ElementPath = path;
         ElementPathType = type;
-        Position = position;
+        ElementId = Guid.NewGuid();
+        Model = model;
     }
 }

@@ -1,3 +1,3 @@
-﻿namespace RemTech.WebDriver.Plugin.Commands.ScrollToTop;
+﻿namespace WebDriver.Core.Commands.ScrollToTop;
 
-internal sealed record ScrollToTopCommand : ICommand;
+public sealed record ScrollToTopCommand : ICommand;

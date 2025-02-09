@@ -1,11 +1,11 @@
 ﻿using OpenQA.Selenium.Support.Extensions;
-using RemTech.WebDriver.Plugin.Core;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
+using WebDriver.Core.Core;
 
-namespace RemTech.WebDriver.Plugin.Commands.ScrollToDown;
+namespace WebDriver.Core.Commands.ScrollToDown;
 
-internal sealed class ScrollToDownCommandHandler
+public sealed class ScrollToDownCommandHandler
     : BaseWebDriverHandler,
         IWebDriverCommandHandler<ScrollToDownCommand>
 {

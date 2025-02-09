@@ -1,9 +1,9 @@
-﻿using RemTech.WebDriver.Plugin.Queries;
-using RemTechCommon.Utils.ResultPattern;
+﻿using RemTechCommon.Utils.ResultPattern;
+using WebDriver.Core.Queries;
 
-namespace RemTech.WebDriver.Plugin.Core;
+namespace WebDriver.Core.Core;
 
-internal interface IWebDriverQueryHandler<in TQuery, TResult>
+public interface IWebDriverQueryHandler<in TQuery, TResult>
     where TQuery : IQuery<TResult>
 {
     Task<Result<TResult>> Execute(TQuery query);

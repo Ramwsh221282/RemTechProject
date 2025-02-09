@@ -2,11 +2,10 @@
 using OpenQA.Selenium.Chrome;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
-using WebDriver.Core.Core;
 
-namespace RemTech.WebDriver.Plugin.Core;
+namespace WebDriver.Core.Core;
 
-internal sealed class WebDriverFactory
+public sealed class WebDriverFactory
 {
     private readonly ILogger _logger;
 

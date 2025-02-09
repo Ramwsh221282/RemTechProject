@@ -1,18 +1,18 @@
-﻿using System.Text;
-using OpenQA.Selenium;
-using RemTech.WebDriver.Plugin.Queries.GetElement;
+﻿using OpenQA.Selenium;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
+using WebDriver.Core.Queries.GetElement;
 
-namespace RemTech.WebDriver.Plugin.Core;
+namespace WebDriver.Core.Core;
 
-internal sealed class WebDriverInstance
+public sealed class WebDriverInstance
 {
     private readonly ILogger _logger;
 
     private readonly WebDriverFactory _factory;
 
-    private readonly WebElementObjectPool _elements;
+    private readonly WebElementObjectsPool _pool = new WebElementObjectsPool();
+
     public bool IsDisposed { get; private set; }
     public IWebDriver? Instance { get; private set; }
 
@@ -20,7 +20,6 @@ internal sealed class WebDriverInstance
     {
         _logger = logger;
         _factory = factory;
-        _elements = new WebElementObjectPool(_logger);
     }
 
     public Result Instantiate()
@@ -33,10 +32,10 @@ internal sealed class WebDriverInstance
             _logger.Error("{Error}", error.Description);
             return instance.Error;
         }
+
         Instance = instance.Value;
         _logger.Information("Instantiated new web driver instance");
-
-        _elements.Refresh();
+        _pool.Refresh();
         return Result.Success();
     }
 
@@ -53,65 +52,98 @@ internal sealed class WebDriverInstance
         Instance = null;
         IsDisposed = true;
         _logger.Information("Disposed web driver instance");
-        _elements.Refresh();
+        _pool.Refresh();
         return Result.Success();
     }
 
-    public WebElementObject AddElement(IWebElement element, GetElementQuery query)
-    {
-        WebElementObjectInternal internalElement = new WebElementObjectInternal(
-            query.Path,
-            query.Type,
-            _elements.NextElementPosition,
-            element
-        );
-        _elements.Add(internalElement);
-        return internalElement;
-    }
+    public Result AddInPool(WebElementObject element) => _pool.RegisterObject(element);
 
-    public Result<WebElementObjectInternal> GetExistingElement(int position) => _elements[position];
-
-    public Result<WebElementObjectInternal> GetExistingElement(WebElementObject element) =>
-        _elements[element.Position];
+    public Result<WebElementObject> GetFromPool(Guid id) => _pool[id];
 }
 
 internal static class WebDriverInstanceExtensions
 {
-    public static Result<WebElementObject[]> GetElements(
+    public static Result<WebElementObject[]> GetMultipleElements(
         this WebDriverInstance instance,
-        WebElementObjectInternal internalElement,
+        Guid id,
         GetElementQuery query
     )
     {
         if (instance.IsDisposed || instance.Instance == null)
             return WebDriverPluginErrors.AlreadyDisposed;
 
+        Result<WebElementObject> existing = instance.GetFromPool(id);
+        if (existing.IsFailure)
+            return existing.Error;
+
         Result<By> by = query.GetElementSearchType();
         if (by.IsFailure)
             return by.Error;
 
         try
         {
-            IWebElement element = internalElement.Element;
-            IReadOnlyCollection<IWebElement> elements = element.FindElements(by.Value);
-            WebElementObject[] array = elements
-                .Select(el => instance.AddElement(el, query))
+            IReadOnlyCollection<IWebElement> models = existing.Value.Model.FindElements(by.Value);
+            if (models.Count == 0)
+                return new Error(
+                    $"No children elements with path: {query.Path} and {query.Type} found"
+                );
+            WebElementObject[] result = models
+                .Select(m => new WebElementObject(query.Path, query.Type, m))
                 .ToArray();
-            return array;
+
+            for (int index = 0; index < result.Length; index++)
+            {
+                Result registration = instance.AddInPool(result[index]);
+                if (registration.IsFailure)
+                    return registration.Error;
+            }
+
+            return result;
         }
         catch
         {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append("Failed to get elements with path: ");
-            stringBuilder.Append(query.Path);
-            stringBuilder.Append(" and type");
-            stringBuilder.Append(query.Type);
-            stringBuilder.Append(" do not exist.");
-            return new Error(stringBuilder.ToString());
+            return new Error(
+                $"No children elements with path: {query.Path} and {query.Type} found"
+            );
         }
     }
 
-    public static Result<WebElementObject> GetElement(
+    public static Result<WebElementObject> GetSingleElement(
+        this WebDriverInstance driver,
+        Guid id,
+        GetElementQuery query
+    )
+    {
+        if (driver.IsDisposed || driver.Instance == null)
+            return WebDriverPluginErrors.AlreadyDisposed;
+
+        Result<WebElementObject> existing = driver.GetFromPool(id);
+        if (existing.IsFailure)
+            return existing.Error;
+
+        Result<By> by = query.GetElementSearchType();
+        if (by.IsFailure)
+            return by.Error;
+
+        try
+        {
+            WebElementObject element = new WebElementObject(
+                query.Path,
+                query.Type,
+                existing.Value.Model.FindElement(by)
+            );
+            Result registration = driver.AddInPool(element);
+            return registration.IsSuccess ? element : registration.Error;
+        }
+        catch
+        {
+            return new Error(
+                $"Cannot find child element with type: {query.Type} and path: {query.Path}"
+            );
+        }
+    }
+
+    public static Result<WebElementObject> GetSingleElement(
         this WebDriverInstance driver,
         GetElementQuery query
     )
@@ -125,48 +157,17 @@ internal static class WebDriverInstanceExtensions
 
         try
         {
-            IWebElement element = driver.Instance.FindElement(by.Value);
-            return driver.AddElement(element, query);
+            WebElementObject result = new WebElementObject(
+                query.Path,
+                query.Type,
+                driver.Instance.FindElement(by.Value)
+            );
+            Result registration = driver.AddInPool(result);
+            return registration.IsSuccess ? result : registration.Error;
         }
         catch
         {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append("The element with path: ");
-            stringBuilder.Append(query.Path);
-            stringBuilder.Append(" and type");
-            stringBuilder.Append(query.Type);
-            stringBuilder.Append(" does not exist.");
-            return new Error(stringBuilder.ToString());
-        }
-    }
-
-    public static Result<WebElementObject> GetElement(
-        this WebDriverInstance driver,
-        WebElementObjectInternal internalElement,
-        GetElementQuery query
-    )
-    {
-        if (driver.IsDisposed || driver.Instance == null)
-            return WebDriverPluginErrors.AlreadyDisposed;
-
-        Result<By> by = query.GetElementSearchType();
-        if (by.IsFailure)
-            return by.Error;
-
-        try
-        {
-            IWebElement element = internalElement.Element.FindElement(by.Value);
-            return driver.AddElement(element, query);
-        }
-        catch
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append("The element with path: ");
-            stringBuilder.Append(query.Path);
-            stringBuilder.Append(" and type");
-            stringBuilder.Append(query.Type);
-            stringBuilder.Append(" does not exist.");
-            return new Error(stringBuilder.ToString());
+            return new Error($"Can't find element with path: {query.Path} and type: {query.Type}.");
         }
     }
 

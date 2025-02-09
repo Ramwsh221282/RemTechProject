@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 
-namespace RemTech.WebDriver.Plugin.Commands.OpenPage;
+namespace WebDriver.Core.Commands.OpenPage;
 
-internal sealed class OpenPageCommandValidator : AbstractValidator<OpenPageCommand>
+public sealed class OpenPageCommandValidator : AbstractValidator<OpenPageCommand>
 {
     public OpenPageCommandValidator()
     {

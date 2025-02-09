@@ -1,10 +1,10 @@
-﻿using RemTech.WebDriver.Plugin.Commands;
-using RemTech.WebDriver.Plugin.Queries;
-using RemTechCommon.Utils.ResultPattern;
+﻿using RemTechCommon.Utils.ResultPattern;
+using WebDriver.Core.Commands;
+using WebDriver.Core.Queries;
 
-namespace RemTech.WebDriver.Plugin.Core;
+namespace WebDriver.Core.Core;
 
-internal sealed class WebDriverApi
+public sealed class WebDriverApi
 {
     private readonly WebDriverDispatcher _dispatcher;
 

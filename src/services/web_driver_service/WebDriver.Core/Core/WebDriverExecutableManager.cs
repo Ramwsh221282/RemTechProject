@@ -1,11 +1,10 @@
-﻿using RemTech.WebDriver.Plugin.Core;
-using RemTechCommon.Utils.ResultPattern;
+﻿using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriverManager;
 
 namespace WebDriver.Core.Core;
 
-internal sealed class WebDriverExecutableManager
+public sealed class WebDriverExecutableManager
 {
     private readonly ILogger _logger;
 
@@ -16,7 +15,7 @@ internal sealed class WebDriverExecutableManager
     }
 
     private readonly DriverManager _manager = new DriverManager(
-        downloadDirectory: WebDriverPluginConstants.PluginPath
+        downloadDirectory: WebDriverPluginConstants.ChromeDriversCataloguePath
     );
 
     public Result<string> Install()

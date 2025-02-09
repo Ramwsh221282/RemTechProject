@@ -1,14 +1,25 @@
 ﻿using FluentValidation;
 
-namespace RemTech.WebDriver.Plugin.Queries.GetElementInsideOfElement;
+namespace WebDriver.Core.Queries.GetElementInsideOfElement;
 
-internal sealed class GetElementInsideOfElementQueryValidator
+public sealed class GetElementInsideOfElementQueryValidator
     : AbstractValidator<GetElementInsideOfElementQuery>
 {
     public GetElementInsideOfElementQueryValidator()
     {
-        RuleFor(req => req.Element).NotNull().WithMessage("Parent element is required.");
-        RuleFor(req => req.Query.Path).NotNull().NotEmpty().WithMessage("Query path is required.");
-        RuleFor(req => req.Query.Type).NotNull().WithMessage("Query type is required.");
+        RuleFor(req => req.ExistingId)
+            .NotNull()
+            .NotEmpty()
+            .NotEqual(Guid.Empty)
+            .WithMessage("Parent element id is required.");
+
+        RuleFor(req => req.Requested.Path)
+            .NotNull()
+            .NotEmpty()
+            .WithMessage("Requested element path is required");
+        RuleFor(req => req.Requested.Type)
+            .NotNull()
+            .NotEmpty()
+            .WithMessage("Requested element type is required");
     }
 }

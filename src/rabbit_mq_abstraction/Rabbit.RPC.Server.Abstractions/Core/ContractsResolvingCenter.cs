@@ -54,10 +54,12 @@ public sealed class ContractsResolvingCenter
                     $"Cannot resolve request: {requestType.Name} because no handlers registered."
                 );
             }
+
             Task<ContractActionResult> task =
                 (Task<ContractActionResult>)
                     handlerMethod.Invoke(handler, new object[] { contract })!;
             ContractActionResult response = await task;
+
             _logger.Information("Request of type: {RequestType} is handled", requestType.Name);
             return response;
         }

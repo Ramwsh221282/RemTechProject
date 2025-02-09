@@ -1,11 +1,11 @@
-﻿using RemTech.WebDriver.Plugin.Core;
-using RemTechCommon.Utils.Extensions;
+﻿using RemTechCommon.Utils.Extensions;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
+using WebDriver.Core.Core;
 
-namespace RemTech.WebDriver.Plugin.Queries.GetElementInsideOfElement;
+namespace WebDriver.Core.Queries.GetElementInsideOfElement;
 
-internal sealed class GetElementInsideOfElementQueryHandler
+public sealed class GetElementInsideOfElementQueryHandler
     : BaseWebDriverHandler,
         IWebDriverQueryHandler<GetElementInsideOfElementQuery, WebElementObject>
 {
@@ -28,17 +28,10 @@ internal sealed class GetElementInsideOfElementQueryHandler
             return error;
         }
 
-        Result<WebElementObjectInternal> existingElement = _instance.GetExistingElement(
-            query.Element.Position
+        Result<WebElementObject> element = _instance.GetSingleElement(
+            query.ExistingId,
+            query.Requested
         );
-        if (existingElement.IsFailure)
-        {
-            Error error = existingElement.Error;
-            _logger.Error("{Error}", error.Description);
-            return error;
-        }
-
-        Result<WebElementObject> element = _instance.GetElement(existingElement, query.Query);
         if (element.IsFailure)
         {
             Error error = element.Error;
@@ -47,12 +40,10 @@ internal sealed class GetElementInsideOfElementQueryHandler
         }
 
         _logger.Information(
-            "Child element with path: {ChildPath} and type: {ChildType} was found in parent element with path: {ParentPath} and type: {ParentType}",
-            query.Query.Path,
-            query.Query.Type,
-            query.Element.ElementPath,
-            query.Element.ElementPathType
+            "Children elements (Path: {ChildPath} Type: {ChildType}) found",
+            query.Requested.Path,
+            query.Requested.Type
         );
-        return await Task.FromResult(element);
+        return element;
     }
 }

@@ -2,9 +2,9 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
-namespace RemTech.WebDriver.Plugin.Core;
+namespace WebDriver.Core.Core;
 
-internal sealed class WebDriverInstanceOptions
+public sealed class WebDriverInstanceOptions
 {
     public ChromeOptions Options { get; }
 

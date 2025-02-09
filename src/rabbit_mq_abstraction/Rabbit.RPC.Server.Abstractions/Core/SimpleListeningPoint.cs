@@ -39,8 +39,11 @@ internal sealed class SimpleListeningPoint : IListeningPoint
         {
             if (IsInitialized)
                 return;
+            _logger.Information("Starting service: {Name}", ServiceName);
             _connection = await _factory.CreateConnection();
             _channel = await _connection.CreateChannelAsync();
+            uint cleaned = await _channel.QueuePurgeAsync(_queueName);
+            _logger.Information("Purged {Amount} of messages from queue", cleaned);
             _consumer = await CreateCommandConsumer();
             _consumer.ReceivedAsync += HandleAccepting;
             await StartConsuming(_consumer);

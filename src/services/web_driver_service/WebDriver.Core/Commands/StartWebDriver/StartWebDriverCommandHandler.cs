@@ -1,10 +1,10 @@
-﻿using RemTech.WebDriver.Plugin.Core;
-using RemTechCommon.Utils.ResultPattern;
+﻿using RemTechCommon.Utils.ResultPattern;
 using Serilog;
+using WebDriver.Core.Core;
 
-namespace RemTech.WebDriver.Plugin.Commands.StartWebDriver;
+namespace WebDriver.Core.Commands.StartWebDriver;
 
-internal sealed class StartWebDriverCommandHandler
+public sealed class StartWebDriverCommandHandler
     : BaseWebDriverHandler,
         IWebDriverCommandHandler<StartWebDriverCommand>
 {

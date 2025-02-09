@@ -1,11 +1,30 @@
-﻿using RemTech.WebDriver.Plugin.Core;
+﻿using RemTechCommon.Utils.ResultPattern;
+using WebDriver.Core.Core;
 
-namespace RemTech.WebDriver.Plugin.Queries.GetElement;
+namespace WebDriver.Core.Queries.GetElement;
 
-internal abstract record GetElementQuery(string Path, string Type) : IQuery<WebElementObject>;
+public abstract record GetElementQuery(string Path, string Type) : IQuery<WebElementObject>;
 
-internal record GetElementByXPathQuery(string Path) : GetElementQuery(Path, "xpath");
+internal sealed record GetElementByXPathQuery(string Path) : GetElementQuery(Path, "xpath");
 
-internal record GetElementByClassQuery(string Path) : GetElementQuery(Path, "class");
+internal sealed record GetElementByClassQuery(string Path) : GetElementQuery(Path, "class");
 
-internal record GetElementByTagQuery(string TagName) : GetElementQuery(TagName, "tag");
+internal sealed record GetElementByTagQuery(string TagName) : GetElementQuery(TagName, "tag");
+
+public static class GetElementQueryFactory
+{
+    public static Result<GetElementQuery> Create(string Path, string Type)
+    {
+        if (string.IsNullOrWhiteSpace(Path))
+            return new Error("Element path is required.");
+        if (string.IsNullOrWhiteSpace(Type))
+            return new Error("Element type is required.");
+        return Type switch
+        {
+            "xpath" => new GetElementByXPathQuery(Path),
+            "class" => new GetElementByClassQuery(Path),
+            "tag" => new GetElementByTagQuery(Path),
+            _ => new Error("Unknown element query type"),
+        };
+    }
+}

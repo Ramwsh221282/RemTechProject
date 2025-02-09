@@ -1,3 +1,3 @@
-﻿namespace RemTech.WebDriver.Plugin.Commands;
+﻿namespace WebDriver.Core.Commands;
 
 public interface ICommand { }

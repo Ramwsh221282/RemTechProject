@@ -1,12 +1,12 @@
 ﻿using FluentValidation.Results;
-using RemTech.WebDriver.Plugin.Core;
 using RemTechCommon.Utils.Extensions;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
+using WebDriver.Core.Core;
 
-namespace RemTech.WebDriver.Plugin.Commands.OpenPage;
+namespace WebDriver.Core.Commands.OpenPage;
 
-internal sealed class OpenPageCommandHandler
+public sealed class OpenPageCommandHandler
     : BaseWebDriverHandler,
         IWebDriverCommandHandler<OpenPageCommand>
 {

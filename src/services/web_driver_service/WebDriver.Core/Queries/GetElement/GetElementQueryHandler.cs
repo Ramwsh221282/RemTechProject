@@ -1,35 +1,19 @@
-﻿using FluentValidation.Results;
-using RemTech.WebDriver.Plugin.Core;
-using RemTechCommon.Utils.Extensions;
-using RemTechCommon.Utils.ResultPattern;
+﻿using RemTechCommon.Utils.ResultPattern;
 using Serilog;
+using WebDriver.Core.Core;
 
-namespace RemTech.WebDriver.Plugin.Queries.GetElement;
+namespace WebDriver.Core.Queries.GetElement;
 
-internal sealed class GetElementQueryHandler
+public sealed class GetElementQueryHandler
     : BaseWebDriverHandler,
         IWebDriverQueryHandler<GetElementQuery, WebElementObject>
 {
-    private readonly GetElementQueryValidator _validator;
-
-    public GetElementQueryHandler(
-        WebDriverInstance instance,
-        ILogger logger,
-        GetElementQueryValidator validator
-    )
-        : base(instance, logger) => _validator = validator;
+    public GetElementQueryHandler(WebDriverInstance instance, ILogger logger)
+        : base(instance, logger) { }
 
     public async Task<Result<WebElementObject>> Execute(GetElementQuery query)
     {
-        ValidationResult validation = await _validator.ValidateAsync(query);
-        if (!validation.IsValid)
-        {
-            Error error = validation.ToError();
-            _logger.Error("{Error}", error.Description);
-            return error;
-        }
-
-        Result<WebElementObject> result = _instance.GetElement(query);
+        Result<WebElementObject> result = _instance.GetSingleElement(query);
         if (result.IsFailure)
         {
             Error error = result.Error;

@@ -1,3 +1,3 @@
-﻿namespace RemTech.WebDriver.Plugin.Queries;
+﻿namespace WebDriver.Core.Queries;
 
-public interface IQuery<TResult> { }
+public interface IQuery<TResult>;
