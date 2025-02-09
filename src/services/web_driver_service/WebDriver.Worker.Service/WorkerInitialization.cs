@@ -3,6 +3,7 @@ using WebDriver.Core.Injection;
 using WebDriver.Worker.Service.Contracts.GetMultipleChildren;
 using WebDriver.Worker.Service.Contracts.GetSingleChildElement;
 using WebDriver.Worker.Service.Contracts.GetSingleElement;
+using WebDriver.Worker.Service.Contracts.GetTextFromElement;
 using WebDriver.Worker.Service.Contracts.OpenWebDriverPage;
 using WebDriver.Worker.Service.Contracts.ScrollPageDown;
 using WebDriver.Worker.Service.Contracts.ScrollPageTop;
@@ -41,6 +42,10 @@ public static class WorkerInitialization
         registration.RegisterContract<
             GetMultipleChildrenContract,
             GetMultipleChildrenContractHandler
+        >();
+        registration.RegisterContract<
+            GetTextFromElementContract,
+            GetTextFromElementContractHandler
         >();
 
         registration.RegisterConnectionFactory(
