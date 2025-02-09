@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.Json;
 using Rabbit.RPC.Server.Abstractions.Communication;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -16,7 +17,8 @@ internal sealed class SimpleListeningPoint : IListeningPoint
     private IConnection _connection = null!;
     private IChannel _channel = null!;
     private AsyncEventingBasicConsumer _consumer = null!;
-    private bool _isInitialized;
+    public bool IsInitialized { get; private set; }
+    public string ServiceName { get; set; } = "Unknown Service Name";
 
     public SimpleListeningPoint(
         ICustomConnectionFactory factory,
@@ -33,15 +35,30 @@ internal sealed class SimpleListeningPoint : IListeningPoint
 
     public async Task InitializeListener()
     {
-        if (_isInitialized)
-            return;
-        _connection = await _factory.CreateConnection();
-        _channel = await _connection.CreateChannelAsync();
-        _consumer = await CreateCommandConsumer();
-        _consumer.ReceivedAsync += HandleAccepting;
-        await StartConsuming(_consumer);
-        _isInitialized = true;
-        _logger.Information($"Server is initialized and listening to {_queueName}");
+        try
+        {
+            if (IsInitialized)
+                return;
+            _connection = await _factory.CreateConnection();
+            _channel = await _connection.CreateChannelAsync();
+            _consumer = await CreateCommandConsumer();
+            _consumer.ReceivedAsync += HandleAccepting;
+            await StartConsuming(_consumer);
+            IsInitialized = true;
+            _logger.Information(
+                "Service {Name} is initialized and listening to queue: {_queueName}",
+                ServiceName,
+                _queueName
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(
+                "Cannot initialize service {ServiceName}. Exception: {Message}",
+                ServiceName,
+                ex.Message
+            );
+        }
     }
 
     private async Task<AsyncEventingBasicConsumer> CreateCommandConsumer()
@@ -63,10 +80,15 @@ internal sealed class SimpleListeningPoint : IListeningPoint
     private async Task HandleAccepting(object model, BasicDeliverEventArgs ea)
     {
         byte[] data = ea.Body.ToArray();
-        string json = Encoding.UTF8.GetString(data);
-        string response = await _process.HandleMessage(json);
-        _logger.Information($"Received request: {response}");
-        await SendResponse(response, ea);
+        string receivedJson = Encoding.UTF8.GetString(data);
+        _logger.Information(
+            "{ServiceName} Received request: {Response}",
+            ServiceName,
+            receivedJson
+        );
+        ContractActionResult response = await _process.HandleMessage(receivedJson);
+        string responseJson = JsonSerializer.Serialize(response);
+        await SendResponse(responseJson, ea);
     }
 
     private async Task SendResponse(string responseJson, BasicDeliverEventArgs ea)
@@ -84,12 +106,17 @@ internal sealed class SimpleListeningPoint : IListeningPoint
         );
 
         await channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
-        _logger.Information($"Sent response: {responseJson}");
+        _logger.Information(
+            "{ServiceName} sent response: {responseJson}",
+            ServiceName,
+            responseJson
+        );
     }
 
     public async ValueTask DisposeAsync()
     {
         await _channel.DisposeAsync();
         await _connection.DisposeAsync();
+        _logger.Information("Service {ServiceName} stopped.");
     }
 }

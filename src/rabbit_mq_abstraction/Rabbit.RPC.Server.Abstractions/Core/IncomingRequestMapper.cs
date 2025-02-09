@@ -16,43 +16,65 @@ public sealed class IncomingRequestMapper
         _logger = logger;
     }
 
-    public IContract? MapToContract(string json)
+    public ContractMappingResult MapToContract(string json)
     {
-        _logger.Information("Received json: {Json} for mapping", json);
-        using JsonDocument document = JsonDocument.Parse(json);
-
-        if (
-            !document.RootElement.TryGetProperty(
-                "OperationName",
-                out JsonElement operationNameProperty
-            )
-        )
+        try
         {
-            _logger.Error("Json {Json} is not of supported service operation type", json);
-            return null;
-        }
+            _logger.Information("Received json: {Json} for mapping", json);
+            using JsonDocument doc = JsonDocument.Parse(json);
+            if (!doc.RootElement.TryGetProperty("Name", out JsonElement contractNameProperty))
+            {
+                _logger.Error("Json {Json} hasn't contract name.", json);
+                return new($"Json {json} hasn't contract name.");
+            }
 
-        string? operationNameValue = operationNameProperty.GetString();
-        if (string.IsNullOrEmpty(operationNameValue))
+            string? contractNameValue = contractNameProperty.GetString();
+            if (string.IsNullOrEmpty(contractNameValue))
+            {
+                _logger.Error("Json {Json} contract name is empty.", json);
+                return new($"Json {json} contract name is empty.");
+            }
+
+            if (!_contractTypes.TryGetValue(contractNameValue, out Type? requestType))
+            {
+                _logger.Error("Json {Json} is not supported in this context.", json);
+                return new($"Json {json} is not supported in this context.");
+            }
+
+            doc.RootElement.TryGetProperty("Body", out JsonElement bodyProperty);
+            if (JsonSerializer.Deserialize(bodyProperty, requestType) is not IContract contract)
+            {
+                _logger.Error("Json {Json} is not supported in this context.", json);
+                return new($"Json {json} is not supported in this context.");
+            }
+
+            _logger.Information("Received contract {Type}", contract.GetType().Name);
+            return new(contract);
+        }
+        catch (Exception ex)
         {
-            _logger.Error("Json {Json} has no OperationName property value", json);
-            return null;
+            string message = ex.Message;
+            _logger.Error("Service exception: {Message}", message);
+            return new ContractMappingResult(message);
         }
+    }
+}
 
-        if (!_contractTypes.TryGetValue(operationNameValue, out Type? requestType))
-        {
-            _logger.Error("Json {Json} is not of supported service operation type", json);
-            return null;
-        }
+public sealed class ContractMappingResult
+{
+    public bool IsSuccess { get; }
+    public string Error { get; }
+    public IContract Contract { get; } = null!;
 
-        IContract? contract = JsonSerializer.Deserialize(json, requestType) as IContract;
+    public ContractMappingResult(string error)
+    {
+        Error = error;
+    }
 
-        _logger.Information(
-            "Deserialized json: {Json} into IContract of type: {Type}",
-            json,
-            contract?.GetType().Name
-        );
-
-        return contract;
+    public ContractMappingResult(IContract contract)
+    {
+        Error = string.Empty;
+        Contract = contract;
+        IsSuccess = true;
     }
 }

@@ -5,18 +5,19 @@ namespace WebDriver.Worker.Service;
 public class Worker : BackgroundService
 {
     private readonly IListeningPoint _point;
-    private readonly ILogger<Worker> _logger;
 
-    public Worker(IListeningPoint point, ILogger<Worker> logger)
+    public Worker(IListeningPoint point)
     {
         _point = point;
-        _logger = logger;
+        _point.ServiceName = "WebDriver.Worker.Service";
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("Worker Service has been started");
-        await _point.InitializeListener();
+        while (!_point.IsInitialized)
+        {
+            await _point.InitializeListener();
+        }
         await Task.Delay(Timeout.Infinite, stoppingToken);
         await _point.DisposeAsync();
     }

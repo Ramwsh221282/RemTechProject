@@ -1,31 +1,20 @@
-﻿using System.Text.Json;
-using Rabbit.RPC.Server.Abstractions.Communication;
-using RemTechCommon.Utils.ResultPattern;
+﻿using Rabbit.RPC.Server.Abstractions.Communication;
 
 namespace WebDriver.Worker.Service.Contracts.OpenWebDriverPage;
 
-public sealed record OpenWebDriverPageContract(
-    string Url,
-    string OperationName = nameof(OpenWebDriverPageContract)
-) : IContract;
+internal sealed record OpenWebDriverPageContract(string Url) : IContract;
 
-public sealed record OpenWebDriverPageResponse(Result<string> Result) : IContractResponse;
+internal sealed record OpenWebDriverPageResponse(string OpenedUrl);
 
-public sealed class OpenWebDriverPageContractHandler : IContractHandler<OpenWebDriverPageContract>
+internal sealed class OpenWebDriverPageContractHandler : IContractHandler<OpenWebDriverPageContract>
 {
-    public async Task<string> Handle(OpenWebDriverPageContract contract)
+    public async Task<ContractActionResult> Handle(OpenWebDriverPageContract contract)
     {
         if (string.IsNullOrWhiteSpace(contract.Url))
-        {
-            Error error = new Error("Url is not provided.");
-            Result<string> result = Result<string>.Failure(error);
-            string json = JsonSerializer.Serialize(result);
-            return await Task.FromResult(json);
-        }
+            return new("Url is not provided.");
 
-        Result<string> successfullResult = Result<string>.Success(contract.Url);
-        OpenWebDriverPageResponse response = new OpenWebDriverPageResponse(successfullResult);
-        string jsonResponse = JsonSerializer.Serialize(response);
-        return await Task.FromResult(jsonResponse);
+        return await Task.FromResult(
+            new ContractActionResult(new OpenWebDriverPageResponse(contract.Url))
+        );
     }
 }

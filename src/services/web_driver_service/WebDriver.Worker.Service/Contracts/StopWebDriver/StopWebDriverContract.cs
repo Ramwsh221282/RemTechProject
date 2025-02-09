@@ -1,20 +1,17 @@
-﻿using System.Text.Json;
-using Rabbit.RPC.Server.Abstractions.Communication;
-using RemTechCommon.Utils.ResultPattern;
+﻿using Rabbit.RPC.Server.Abstractions.Communication;
 
 namespace WebDriver.Worker.Service.Contracts.StopWebDriver;
 
-public sealed record StopWebDriverContract(string OperationName = nameof(StopWebDriverContract))
-    : IContract;
+internal sealed record StopWebDriverContract : IContract;
 
-public sealed record StopWebDriverContractResponse(Result Result);
+internal sealed record StopWebDriverContractResponse(bool IsStopped);
 
-public sealed class StopWebDriverContractHandler : IContractHandler<StopWebDriverContract>
+internal sealed class StopWebDriverContractHandler : IContractHandler<StopWebDriverContract>
 {
-    public async Task<string> Handle(StopWebDriverContract contract)
+    public async Task<ContractActionResult> Handle(StopWebDriverContract contract)
     {
-        Result result = Result.Success();
-        string json = JsonSerializer.Serialize(result);
-        return await Task.FromResult(json);
+        StopWebDriverContractResponse response = new(true);
+        ContractActionResult result = new(response);
+        return await Task.FromResult(result);
     }
 }

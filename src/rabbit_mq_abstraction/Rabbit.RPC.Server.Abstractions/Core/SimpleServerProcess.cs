@@ -1,5 +1,4 @@
 ﻿using Rabbit.RPC.Server.Abstractions.Communication;
-using Serilog;
 
 namespace Rabbit.RPC.Server.Abstractions.Core;
 
@@ -7,36 +6,27 @@ public sealed class SimpleServerProcess : IServerProcess
 {
     private readonly IncomingRequestMapper _mapper;
     private readonly ContractsResolvingCenter _center;
-    private readonly ILogger _logger;
 
-    public SimpleServerProcess(
-        IncomingRequestMapper mapper,
-        ContractsResolvingCenter center,
-        ILogger logger
-    )
+    public SimpleServerProcess(IncomingRequestMapper mapper, ContractsResolvingCenter center)
     {
         _mapper = mapper;
         _center = center;
-        _logger = logger;
     }
 
-    public async Task<string> HandleMessage(string receivedJson)
+    public async Task<ContractActionResult> HandleMessage(string receivedJson)
     {
-        IContract? contract = _mapper.MapToContract(receivedJson);
-        if (contract == null)
+        try
         {
-            _logger.Error("No contract allowed for: {Json}", receivedJson);
-            return "{}";
+            ContractMappingResult mapping = _mapper.MapToContract(receivedJson);
+            if (!mapping.IsSuccess)
+                return new(mapping.Error);
+
+            ContractActionResult response = await _center.ResolveContract(mapping.Contract);
+            return response;
         }
-
-        string responseJson = await _center.ResolveContract(contract);
-
-        _logger.Information(
-            "Resolved request: {Request} and created response: {Response}",
-            receivedJson,
-            responseJson
-        );
-
-        return responseJson;
+        catch (Exception ex)
+        {
+            return new ContractActionResult(ex.Message);
+        }
     }
 }

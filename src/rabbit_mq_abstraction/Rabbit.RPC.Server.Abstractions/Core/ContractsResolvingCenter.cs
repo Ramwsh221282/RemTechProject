@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Rabbit.RPC.Server.Abstractions.Communication;
 using Serilog;
 
@@ -24,29 +25,47 @@ public sealed class ContractsResolvingCenter
         _logger = logger;
     }
 
-    public async Task<string> ResolveContract(IContract contract)
+    public async Task<ContractActionResult> ResolveContract(IContract contract)
     {
-        Type requestType = contract.GetType();
-
-        _logger.Information("Received request of type: {RequestType}", requestType.Name);
-
-        if (!_contractHandlers.ContainsKey(requestType))
+        try
         {
-            _logger.Error("Request of type: {RequestType} is not registered", requestType.Name);
-            return "{}";
+            Type requestType = contract.GetType();
+            _logger.Information("Received request: {RequestType}", requestType.Name);
+
+            if (!_contractHandlers.ContainsKey(requestType))
+            {
+                _logger.Error("Request {Type} is not allowed.", requestType.Name);
+                return new($"Request {requestType.Name} is not allowed.");
+            }
+
+            Type handlerInterface = typeof(IContractHandler<>).MakeGenericType(requestType);
+            using IServiceScope scope = _factory.CreateScope();
+            IServiceProvider provider = scope.ServiceProvider;
+
+            object handler = provider.GetRequiredService(handlerInterface);
+            MethodInfo? handlerMethod = handlerInterface.GetMethod("Handle");
+            if (handlerMethod == null)
+            {
+                _logger.Error(
+                    "Cannot resolve request: {Type} because no handlers registered.",
+                    requestType.Name
+                );
+                return new ContractActionResult(
+                    $"Cannot resolve request: {requestType.Name} because no handlers registered."
+                );
+            }
+            Task<ContractActionResult> task =
+                (Task<ContractActionResult>)
+                    handlerMethod.Invoke(handler, new object[] { contract })!;
+            ContractActionResult response = await task;
+            _logger.Information("Request of type: {RequestType} is handled", requestType.Name);
+            return response;
         }
-
-        Type handlerInterface = typeof(IContractHandler<>).MakeGenericType(requestType);
-
-        using IServiceScope scope = _factory.CreateScope();
-        IServiceProvider provider = scope.ServiceProvider;
-        dynamic handler = provider.GetRequiredService(handlerInterface);
-        string result = await handler.Handle((dynamic)contract);
-        _logger.Information(
-            "Request of type: {RequestType} is handled. Result: {Result}",
-            requestType.Name,
-            result
-        );
-        return result;
+        catch (Exception ex)
+        {
+            string message = ex.Message;
+            _logger.Error("Service exception: {Exception}", message);
+            return new ContractActionResult(message);
+        }
     }
 }

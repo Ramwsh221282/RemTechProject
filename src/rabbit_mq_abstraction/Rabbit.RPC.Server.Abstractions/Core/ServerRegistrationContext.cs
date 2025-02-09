@@ -60,7 +60,7 @@ public sealed class ServerRegistrationContext
         {
             ContractsResolvingCenter resolving = p.GetRequiredService<ContractsResolvingCenter>();
             IncomingRequestMapper mapping = p.GetRequiredService<IncomingRequestMapper>();
-            IServerProcess process = new SimpleServerProcess(mapping, resolving, logger);
+            IServerProcess process = new SimpleServerProcess(mapping, resolving);
             return process;
         });
 

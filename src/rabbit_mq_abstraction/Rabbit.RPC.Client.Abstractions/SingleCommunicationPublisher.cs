@@ -26,14 +26,17 @@ public sealed class SingleCommunicationPublisher
         };
     }
 
-    public async Task<TResponse?> SendCommand<TMessage, TResponse>(
+    public async Task<ContractActionResult> SendCommand<TMessage>(
         TMessage message,
         CancellationToken ct = default
     )
+        where TMessage : IContract
     {
         using IConnection connection = await _factory.CreateConnectionAsync(ct);
         using IChannel channel = await connection.CreateChannelAsync(cancellationToken: ct);
-        using CommunicationContext<TResponse?> context = new(channel);
-        return await context.SendWithValueBack(message, _queueName, ct);
+        using CommunicationContext context = new(channel);
+        ContractRequest<TMessage> request = new ContractRequest<TMessage>(message);
+        ContractActionResult response = await context.Send(request, _queueName, ct);
+        return response;
     }
 }

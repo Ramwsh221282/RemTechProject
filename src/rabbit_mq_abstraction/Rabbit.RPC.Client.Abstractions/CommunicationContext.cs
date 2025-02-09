@@ -3,15 +3,17 @@ using System.Text;
 using System.Text.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using RemTechCommon.Utils.Converters;
-using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 
 namespace Rabbit.RPC.Client.Abstractions;
 
-internal sealed class CommunicationContext<TResponse> : IDisposable
+internal sealed class CommunicationContext : IDisposable
 {
-    private readonly ConcurrentDictionary<string, TaskCompletionSource<TResponse?>> _callbacks = [];
+    private readonly ConcurrentDictionary<
+        string,
+        TaskCompletionSource<ContractActionResult>
+    > _callbacks = [];
+
     private readonly IChannel _channel;
     private readonly AsyncEventingBasicConsumer _consumer;
     private readonly ILogger _logger = new LoggerConfiguration()
@@ -26,19 +28,16 @@ internal sealed class CommunicationContext<TResponse> : IDisposable
         _consumer.ReceivedAsync += CreateCallbackListener;
     }
 
-    public async Task<TResponse?> SendWithValueBack<TMessage>(
-        TMessage message,
+    public async Task<ContractActionResult> Send<TMessage>(
+        ContractRequest<TMessage> message,
         string queueName,
         CancellationToken ct = default
     )
+        where TMessage : IContract
     {
         string replyQueueName = await CreateTemporaryQueueName(ct);
-        BasicProperties properties = await GenerateCorellationProperties(
-            replyQueueName,
-            message,
-            ct
-        );
-        TaskCompletionSource<TResponse?> callback = RegisterReplyQueue(properties);
+        BasicProperties properties = await GenerateCorellationProperties(replyQueueName, ct);
+        TaskCompletionSource<ContractActionResult> callback = RegisterReplyQueue(properties);
         await SendMessage(message, queueName, properties, ct);
         using CancellationTokenRegistration ctr = ct.Register(() =>
         {
@@ -54,9 +53,8 @@ internal sealed class CommunicationContext<TResponse> : IDisposable
         return queue.QueueName;
     }
 
-    private async Task<BasicProperties> GenerateCorellationProperties<TMessage>(
+    private async Task<BasicProperties> GenerateCorellationProperties(
         string replyQueueName,
-        TMessage message,
         CancellationToken ct
     )
     {
@@ -66,18 +64,19 @@ internal sealed class CommunicationContext<TResponse> : IDisposable
             consumer: _consumer,
             cancellationToken: ct
         );
-        CommunicationContextMessage<TMessage> corellationMessage = new(message);
         BasicProperties properties = new BasicProperties()
         {
-            CorrelationId = corellationMessage.CorellationId,
+            CorrelationId = Guid.NewGuid().ToString(),
             ReplyTo = replyQueueName,
         };
         return properties;
     }
 
-    private TaskCompletionSource<TResponse?> RegisterReplyQueue(BasicProperties properties)
+    private TaskCompletionSource<ContractActionResult> RegisterReplyQueue(
+        BasicProperties properties
+    )
     {
-        TaskCompletionSource<TResponse?> taskCompletionSource =
+        TaskCompletionSource<ContractActionResult> taskCompletionSource =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
         _callbacks.TryAdd(properties.CorrelationId!, taskCompletionSource);
         return taskCompletionSource;
@@ -93,11 +92,7 @@ internal sealed class CommunicationContext<TResponse> : IDisposable
         string json = JsonSerializer.Serialize(message);
         byte[] body = Encoding.UTF8.GetBytes(json);
 
-        _logger.Information(
-            "Client send message: {Type} with body: {Json}",
-            typeof(TMessage).Name,
-            json
-        );
+        _logger.Information("Client send message: {Json}", json);
 
         await _channel.BasicPublishAsync(
             exchange: string.Empty,
@@ -120,22 +115,20 @@ internal sealed class CommunicationContext<TResponse> : IDisposable
 
         byte[] body = ea.Body.ToArray();
         string json = Encoding.UTF8.GetString(body);
-
-        _logger.Information("Client received response: {Json}", json);
-
-        Type type = typeof(TResponse);
-        if (type.Name == typeof(Result).Name)
-        {
-            Result resultValue = ResultJsonConverter.Convert(json);
-            string tempJson = JsonSerializer.Serialize(resultValue);
-            TResponse response = JsonSerializer.Deserialize<TResponse>(tempJson)!;
-            taskCompletionSource.SetResult(response);
-            return Task.CompletedTask;
-        }
-
-        TResponse? result = JsonSerializer.Deserialize<TResponse>(json);
-        _logger.Information("Response is deserialized into: {Tresult}", result);
+        ContractActionResult result = JsonSerializer.Deserialize<ContractActionResult>(json)!;
         taskCompletionSource.SetResult(result);
+        if (result.IsSuccess)
+            _logger.Information(
+                "Client received response: IsSuccess: {IsSuccess} Body: {Body}",
+                result.IsSuccess,
+                result.Body.ToString()
+            );
+        else
+            _logger.Error(
+                "Client received error response: IsSuccess: {IsSuccess} Error: {Error}",
+                result.IsSuccess,
+                result.Error
+            );
         return Task.CompletedTask;
     }
 

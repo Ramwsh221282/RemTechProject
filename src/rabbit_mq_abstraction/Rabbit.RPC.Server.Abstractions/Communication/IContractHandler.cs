@@ -7,5 +7,5 @@
 public interface IContractHandler<in TContract>
     where TContract : class, IContract
 {
-    Task<string> Handle(TContract contract);
+    Task<ContractActionResult> Handle(TContract contract);
 }

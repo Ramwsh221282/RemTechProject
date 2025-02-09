@@ -57,9 +57,9 @@ public sealed class Result<T> : Result
 
     public static new Result<T> Failure(Error error) => new(error);
 
-    public static implicit operator T(Result<T> result) => result.Value;
-
     public static implicit operator Result<T>(T value) => Success(value);
+
+    public static implicit operator T(Result<T> result) => result.Value;
 
     public static implicit operator Result<T>(Error error) => Failure(error);
 }

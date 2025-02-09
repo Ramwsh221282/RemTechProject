@@ -5,7 +5,4 @@
 /// Server should declare contracts.
 /// Client should declare the same contract that server does.
 /// </summary>
-public interface IContract
-{
-    public string OperationName { get; }
-}
+public interface IContract;

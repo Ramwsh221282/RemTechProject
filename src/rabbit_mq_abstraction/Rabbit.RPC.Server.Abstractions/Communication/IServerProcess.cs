@@ -5,5 +5,5 @@
 /// </summary>
 public interface IServerProcess
 {
-    Task<string> HandleMessage(string receivedJson);
+    Task<ContractActionResult> HandleMessage(string receivedJson);
 }

@@ -6,4 +6,6 @@
 public interface IListeningPoint : IAsyncDisposable
 {
     Task InitializeListener();
+    public bool IsInitialized { get; }
+    public string ServiceName { get; set; }
 }

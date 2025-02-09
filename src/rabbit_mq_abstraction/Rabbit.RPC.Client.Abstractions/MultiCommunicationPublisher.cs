@@ -39,14 +39,16 @@ public sealed class MultiCommunicationPublisher : IDisposable
         _isInitialized = true;
     }
 
-    public async Task<TResponse?> SendCommand<TMessage, TResponse>(
+    public async Task<ContractActionResult> SendCommand<TMessage>(
         TMessage message,
         CancellationToken ct = default
     )
+        where TMessage : IContract
     {
         await Initialize(ct);
-        using CommunicationContext<TResponse?> context = new(_channel);
-        return await context.SendWithValueBack(message, _queueName, ct);
+        using CommunicationContext context = new(_channel);
+        ContractRequest<TMessage> request = new(message);
+        return await context.Send(request, _queueName, ct: ct);
     }
 
     public void Dispose()
