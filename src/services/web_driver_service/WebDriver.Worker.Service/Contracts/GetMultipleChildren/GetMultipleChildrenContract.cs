@@ -1,8 +1,9 @@
 ﻿using Rabbit.RPC.Server.Abstractions.Communication;
 using RemTechCommon.Utils.ResultPattern;
-using WebDriver.Core.Core;
-using WebDriver.Core.Queries.GetElement;
-using WebDriver.Core.Queries.GetElementsInsideOfElement;
+using WebDriver.Application;
+using WebDriver.Application.DTO;
+using WebDriver.Application.Queries.GetElementsInsideOfElement;
+using WebDriver.Core.Models;
 using WebDriver.Worker.Service.Contracts.GetSingleElement;
 
 namespace WebDriver.Worker.Service.Contracts.GetMultipleChildren;
@@ -21,14 +22,10 @@ internal sealed class GetMultipleChildrenContractHandler
 
     public async Task<ContractActionResult> Handle(GetMultipleChildrenContract contract)
     {
-        Result<GetElementQuery> queryModel = GetElementQueryFactory.Create(
-            contract.Path,
-            contract.Type
-        );
-        if (queryModel.IsFailure)
-            return new ContractActionResult(queryModel.Error.Description);
+        ExistingElementDTO existing = new(contract.ParentId);
+        ElementPathDataDTO path = new(contract.Path, contract.Type);
 
-        GetElementsInsideOfElementQuery query = new(contract.ParentId, queryModel);
+        GetElementsInsideOfElementQuery query = new(existing, path);
         Result<WebElementObject[]> result = await _api.ExecuteQuery<
             GetElementsInsideOfElementQuery,
             WebElementObject[]
@@ -44,6 +41,7 @@ internal sealed class GetMultipleChildrenContractHandler
                 i.ElementId
             ))
             .ToArray();
+
         GetMultipleChildrenResponse response = new(items);
         return new ContractActionResult(response);
     }

@@ -1,7 +1,8 @@
 ﻿using Rabbit.RPC.Server.Abstractions.Communication;
 using RemTechCommon.Utils.ResultPattern;
-using WebDriver.Core.Commands.OpenPage;
-using WebDriver.Core.Core;
+using WebDriver.Application;
+using WebDriver.Application.Commands.OpenPage;
+using WebDriver.Application.DTO;
 
 namespace WebDriver.Worker.Service.Contracts.OpenWebDriverPage;
 
@@ -17,7 +18,9 @@ internal sealed class OpenWebDriverPageContractHandler : IContractHandler<OpenWe
 
     public async Task<ContractActionResult> Handle(OpenWebDriverPageContract contract)
     {
-        OpenPageCommand command = new OpenPageCommand(contract.Url);
+        WebPageDataDTO data = new(contract.Url);
+        OpenPageCommand command = new(data);
+
         Result opening = await _api.ExecuteCommand(command);
         if (opening.IsFailure)
             return new ContractActionResult(opening.Error.Description);

@@ -1,7 +1,8 @@
 ﻿using Rabbit.RPC.Server.Abstractions.Communication;
 using RemTechCommon.Utils.ResultPattern;
-using WebDriver.Core.Core;
-using WebDriver.Core.Queries.GetTextFromElement;
+using WebDriver.Application;
+using WebDriver.Application.DTO;
+using WebDriver.Application.Queries.GetTextFromElement;
 
 namespace WebDriver.Worker.Service.Contracts.GetTextFromElement;
 
@@ -18,16 +19,14 @@ internal sealed class GetTextFromElementContractHandler
 
     public async Task<ContractActionResult> Handle(GetTextFromElementContract contract)
     {
-        GetTextFromElementQuery query = new(contract.ExistingId);
-        Result<GetTextFromElementQueryResult> result = await _api.ExecuteQuery<
-            GetTextFromElementQuery,
-            GetTextFromElementQueryResult
-        >(query);
+        ExistingElementDTO existing = new(contract.ExistingId);
+        GetTextFromElementQuery query = new(existing);
 
+        Result<string> result = await _api.ExecuteQuery<GetTextFromElementQuery, string>(query);
         if (result.IsFailure)
             return new ContractActionResult(result.Error.Description);
 
-        GetTextFromElementResponse response = new(result.Value.Text);
+        GetTextFromElementResponse response = new(result.Value);
         return new ContractActionResult(response);
     }
 }

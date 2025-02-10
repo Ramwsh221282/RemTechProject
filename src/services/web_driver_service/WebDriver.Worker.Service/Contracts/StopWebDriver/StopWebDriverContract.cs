@@ -1,7 +1,7 @@
 ﻿using Rabbit.RPC.Server.Abstractions.Communication;
 using RemTechCommon.Utils.ResultPattern;
-using WebDriver.Core.Commands.StopWebDriver;
-using WebDriver.Core.Core;
+using WebDriver.Application;
+using WebDriver.Application.Commands.StopWebDriver;
 
 namespace WebDriver.Worker.Service.Contracts.StopWebDriver;
 

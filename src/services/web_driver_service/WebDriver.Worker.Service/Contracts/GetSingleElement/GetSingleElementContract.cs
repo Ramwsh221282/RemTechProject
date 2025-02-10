@@ -1,7 +1,9 @@
 ﻿using Rabbit.RPC.Server.Abstractions.Communication;
 using RemTechCommon.Utils.ResultPattern;
-using WebDriver.Core.Core;
-using WebDriver.Core.Queries.GetElement;
+using WebDriver.Application;
+using WebDriver.Application.DTO;
+using WebDriver.Application.Queries.GetElement;
+using WebDriver.Core.Models;
 
 namespace WebDriver.Worker.Service.Contracts.GetSingleElement;
 
@@ -17,17 +19,14 @@ internal sealed class GetSingleElementContractHandler : IContractHandler<GetSing
 
     public async Task<ContractActionResult> Handle(GetSingleElementContract contract)
     {
-        Result<GetElementQuery> query = GetElementQueryFactory.Create(
-            contract.ElementPath,
-            contract.ElementPathType
-        );
-        if (query.IsFailure)
-            return new ContractActionResult(query.Error.Description);
+        ElementPathDataDTO data = new(contract.ElementPath, contract.ElementPathType);
+        GetElementQuery query = new(data);
 
         Result<WebElementObject> element = await _api.ExecuteQuery<
             GetElementQuery,
             WebElementObject
         >(query);
+
         if (element.IsFailure)
             return new ContractActionResult(element.Error.Description);
 

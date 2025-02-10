@@ -1,4 +1,4 @@
-using WebDriver.Core.Core;
+using WebDriver.Application;
 using WebDriver.Worker.Service;
 
 var builder = Host.CreateApplicationBuilder(args);

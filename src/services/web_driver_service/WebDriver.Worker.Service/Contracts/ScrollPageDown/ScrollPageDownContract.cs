@@ -1,7 +1,7 @@
 ﻿using Rabbit.RPC.Server.Abstractions.Communication;
 using RemTechCommon.Utils.ResultPattern;
-using WebDriver.Core.Commands.ScrollToDown;
-using WebDriver.Core.Core;
+using WebDriver.Application;
+using WebDriver.Application.Commands.ScrollToDown;
 
 namespace WebDriver.Worker.Service.Contracts.ScrollPageDown;
 
@@ -19,6 +19,7 @@ internal sealed class ScrollPageDownContractHandler : IContractHandler<ScrollPag
     {
         ScrollToDownCommand command = new ScrollToDownCommand();
         Result scrolling = await _api.ExecuteCommand(command);
+
         if (scrolling.IsFailure)
             return new ContractActionResult(scrolling.Error);
 
