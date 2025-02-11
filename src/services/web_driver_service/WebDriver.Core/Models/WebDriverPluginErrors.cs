@@ -1,14 +1,10 @@
 ﻿using RemTechCommon.Utils.ResultPattern;
+using WebDriver.Core.Models.WebDriverStates;
 
 namespace WebDriver.Core.Models;
 
 internal static class WebDriverPluginErrors
 {
-    public static readonly Error AlreadyDisposed = new Error(
-        "Web Driver instance is already disposed."
-    );
-    public static readonly Error Disposed = new Error("Web Driver instance is disposed.");
-    public static readonly Error CannotGetElement = new Error("Cannot get requested element.");
-    public static readonly Error CannotDoAction = new Error("Cannot do action.");
-    public static readonly Error UnsupportedRequest = new Error("Unsupported request.");
+    public static Error StateError(IWebDriverState state) =>
+        new Error($"Cannot execute action. Web Driver State is: {state.StateName}");
 }

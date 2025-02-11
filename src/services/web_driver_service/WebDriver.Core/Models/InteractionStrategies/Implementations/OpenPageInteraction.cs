@@ -18,7 +18,6 @@ internal sealed class OpenPageInteraction : IInteractionStrategy<string>
         IWebDriver driver = request.Value;
         await driver.Navigate().GoToUrlAsync(_webPageUrl);
         string url = driver.Url;
-
         return url == _webPageUrl
             ? await Task.FromResult(url)
             : await Task.FromResult(

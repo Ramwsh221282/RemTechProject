@@ -1,6 +1,6 @@
 ﻿using Rabbit.RPC.Client.Abstractions;
 
-namespace WebDriver.Worker.Service.Tests.WebDriverServiceTests.TestContracts.StartWebDriver;
+namespace WebDriver.Worker.Service.Contracts;
 
 public record StartWebDriverContract(string LoadStrategy) : IContract;
 

@@ -11,13 +11,13 @@ internal sealed class ClickOnElementStrategy : IInteractionStrategy
 
     public async Task<Result> Perform(WebDriverInstance instance)
     {
-        Result<IWebDriver> request = instance.GetRunningDriver();
-        if (request.IsFailure)
-            return request.Error;
-
         Result<WebElementObject> element = instance.GetFromPool(_elementId);
         if (element.IsFailure)
-            return element.Error;
+            return element;
+
+        Result<IWebDriver> request = instance.GetRunningDriver();
+        if (request.IsFailure)
+            return request;
 
         try
         {

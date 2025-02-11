@@ -1,10 +1,8 @@
-﻿using System.Runtime.CompilerServices;
-using RemTechCommon.Utils.ResultPattern;
+﻿using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriver.Application.DTO;
 using WebDriver.Application.Handlers;
 using WebDriver.Core.Models;
-using WebDriver.Core.Models.InteractionStrategies;
 using Result = RemTechCommon.Utils.ResultPattern.Result;
 
 namespace WebDriver.Application.Commands.StartWebDriver;
@@ -18,8 +16,7 @@ internal sealed class StartWebDriverCommandHandler(WebDriverInstance instance, I
     public async Task<Result> Handle(StartWebDriverCommand command)
     {
         DriverStartDataDTO data = command.Data;
-        IInteractionStrategy strategy = InteractionStrategyFactory.Start(_logger, data.Strategy);
-        Result starting = await _instance.PerformInteraction(strategy);
+        Result starting = _instance.StartWebDriver(data.Strategy);
         if (starting.IsFailure)
         {
             Error error = starting.Error;
@@ -28,6 +25,6 @@ internal sealed class StartWebDriverCommandHandler(WebDriverInstance instance, I
         }
 
         _logger.Information("Web Driver Has been started with strategy: {Strategy}", data.Strategy);
-        return starting;
+        return await Task.FromResult(starting);
     }
 }

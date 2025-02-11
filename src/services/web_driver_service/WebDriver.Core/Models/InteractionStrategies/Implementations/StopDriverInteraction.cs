@@ -1,53 +1,38 @@
 ﻿using System.Diagnostics;
+using OpenQA.Selenium;
 using RemTechCommon.Utils.ResultPattern;
+using WebDriver.Core.Models.WebDriverStates;
+using WebDriver.Core.Models.WebDriverStates.States;
 
 namespace WebDriver.Core.Models.InteractionStrategies.Implementations;
 
-internal sealed class StopDriverInteraction : IInteractionStrategy
+internal sealed class StopDriverInteraction
 {
-    public async Task<Result> Perform(WebDriverInstance instance)
+    private readonly IWebDriver _instance;
+    private readonly IWebDriverState _state;
+
+    public StopDriverInteraction(IWebDriver driver, IWebDriverState state)
     {
-        if (instance.IsDisposed)
-            return await Task.FromResult(new Error("Web driver is already stopped"));
-        if (instance.Instance == null)
-            return await Task.FromResult(new Error("Web driver is already stopped"));
+        _instance = driver;
+        _state = state;
+    }
 
-        instance.Instance.Close();
-        instance.Instance.Quit();
-        instance.Instance.Dispose();
-        instance.IsDisposed = true;
-        instance.Instance = null;
+    public Result Perform(WebDriverInstance instance)
+    {
+        if (_state is not (SleepingState or ProcessingState))
+            return WebDriverPluginErrors.StateError(_state);
 
-        try
-        {
-            Process[] chromeDriverProcesses = Process.GetProcessesByName("chromedriver");
-            foreach (Process process in chromeDriverProcesses)
-            {
-                try
-                {
-                    process.Kill(true);
-                    process.WaitForExit(5000);
-                }
-                catch (Exception ex)
-                {
-                    return Result.Failure(
-                        new Error($"Error killing chromedriver process {process.Id}: {ex.Message}")
-                    );
-                }
-                finally
-                {
-                    process.Dispose();
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            return Result.Failure(new Error(ex.Message));
-        }
+        _instance.Close();
+        _instance.Quit();
+        _instance.Dispose();
 
-        if (!string.IsNullOrWhiteSpace(instance.UniqueProfilePath))
-            Directory.Delete(instance.UniqueProfilePath, true);
+        Process[] chromeDriverProcesses = Process.GetProcessesByName("chromedriver");
+        foreach (Process process in chromeDriverProcesses)
+            process.Kill(true);
 
-        return await Task.FromResult(Result.Success());
+        if (!string.IsNullOrWhiteSpace(instance.ProfilePath))
+            Directory.Delete(instance.ProfilePath, true);
+
+        return Result.Success();
     }
 }

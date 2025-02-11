@@ -1,6 +1,6 @@
 ﻿using Rabbit.RPC.Client.Abstractions;
 
-namespace WebDriver.Worker.Service.Tests.WebDriverServiceTests.TestContracts.GetSingleElement;
+namespace WebDriver.Worker.Service.Contracts;
 
 public record GetSingleElementContract(string ElementPath, string ElementPathType) : IContract;
 

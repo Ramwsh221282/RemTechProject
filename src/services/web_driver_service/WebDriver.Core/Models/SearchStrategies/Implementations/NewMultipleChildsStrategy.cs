@@ -44,12 +44,8 @@ internal sealed class NewMultipleChildsStrategy
                     )
                 );
 
-            for (int index = 0; index < result.Length; index++)
-            {
-                Result registration = instance.AddInPool(result[index]);
-                if (registration.IsFailure)
-                    return await Task.FromResult(registration.Error);
-            }
+            foreach (var t in result)
+                instance.AddInPool(t);
 
             return await Task.FromResult(result);
         }

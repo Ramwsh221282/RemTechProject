@@ -6,12 +6,8 @@ internal sealed class WebElementObjectsPool
 {
     private readonly Dictionary<Guid, WebElementObject> _objects = [];
 
-    public Result RegisterObject(WebElementObject element)
-    {
-        return _objects.TryAdd(element.ElementId, element)
-            ? Result.Success()
-            : new Error("Can't register web element object in objects pool");
-    }
+    public void RegisterObject(WebElementObject element) =>
+        _objects.Add(element.ElementId, element);
 
     public void Refresh() => _objects.Clear();
 

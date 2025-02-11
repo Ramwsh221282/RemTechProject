@@ -23,8 +23,6 @@ public static class WorkerInitialization
         string password
     )
     {
-        services.RegisterWebDriverServices();
-
         ServerRegistrationContext registration = new ServerRegistrationContext();
 
         registration.RegisterContract<StartWebDriverContract, StartWebDriverContractHandler>();
@@ -54,6 +52,7 @@ public static class WorkerInitialization
             new SimpleConnectionFactory(hostname, username, password)
         );
 
+        services.RegisterWebDriverServices();
         services = registration.RegisterServer(services, queueName);
     }
 }

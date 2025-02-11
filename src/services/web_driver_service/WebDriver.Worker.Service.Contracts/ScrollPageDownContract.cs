@@ -1,6 +1,6 @@
 ﻿using Rabbit.RPC.Client.Abstractions;
 
-namespace WebDriver.Worker.Service.Tests.WebDriverServiceTests.TestContracts.ScrollPageDown;
+namespace WebDriver.Worker.Service.Contracts;
 
 public record ScrollPageDownContract : IContract;
 

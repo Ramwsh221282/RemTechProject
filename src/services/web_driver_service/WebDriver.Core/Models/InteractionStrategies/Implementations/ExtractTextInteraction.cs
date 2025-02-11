@@ -13,16 +13,15 @@ internal sealed class ExtractTextInteraction : IInteractionStrategy<string>
 
     public async Task<Result<string>> Perform(WebDriverInstance instance)
     {
-        Result<IWebDriver> request = instance.GetRunningDriver();
-        if (request.IsFailure)
-            return await Task.FromResult(request.Error);
-
         Result<WebElementObject> element = instance.GetFromPool(_elementId);
         if (element.IsFailure)
             return element.Error;
 
-        IWebDriver driver = request.Value;
+        Result<IWebDriver> request = instance.GetRunningDriver();
+        if (request.IsFailure)
+            return await Task.FromResult(request.Error);
 
+        IWebDriver driver = request.Value;
         string text = driver.ExecuteJavaScript<string>(Script, element.Value.Model)!;
         return text;
     }

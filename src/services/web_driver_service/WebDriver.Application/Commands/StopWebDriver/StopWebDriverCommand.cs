@@ -2,8 +2,6 @@
 using Serilog;
 using WebDriver.Application.Handlers;
 using WebDriver.Core.Models;
-using WebDriver.Core.Models.InteractionStrategies;
-using Result = RemTechCommon.Utils.ResultPattern.Result;
 
 namespace WebDriver.Application.Commands.StopWebDriver;
 
@@ -15,8 +13,7 @@ internal sealed class StopWebDriverCommandHandler(WebDriverInstance instance, IL
 {
     public async Task<Result> Handle(StopWebDriverCommand command)
     {
-        IInteractionStrategy strategy = InteractionStrategyFactory.Stop();
-        Result stopping = await _instance.PerformInteraction(strategy);
+        Result stopping = _instance.StopWebDriver();
         if (stopping.IsFailure)
         {
             Error error = stopping.Error;
@@ -25,6 +22,6 @@ internal sealed class StopWebDriverCommandHandler(WebDriverInstance instance, IL
         }
 
         _logger.Information("Web Driver has been stopped");
-        return stopping;
+        return await Task.FromResult(stopping);
     }
 }

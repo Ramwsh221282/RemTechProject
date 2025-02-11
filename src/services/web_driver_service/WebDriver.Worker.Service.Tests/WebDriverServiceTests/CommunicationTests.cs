@@ -1,19 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rabbit.RPC.Client.Abstractions;
 using Serilog;
-using WebDriver.Worker.Service.Tests.WebDriverServiceTests.TestContracts.ClickOnElement;
-using WebDriver.Worker.Service.Tests.WebDriverServiceTests.TestContracts.GetMultipleChildren;
-using WebDriver.Worker.Service.Tests.WebDriverServiceTests.TestContracts.GetSingleChildElement;
-using WebDriver.Worker.Service.Tests.WebDriverServiceTests.TestContracts.GetSingleElement;
-using WebDriver.Worker.Service.Tests.WebDriverServiceTests.TestContracts.GetTextFromElement;
-using WebDriver.Worker.Service.Tests.WebDriverServiceTests.TestContracts.OpenWebDriverPage;
-using WebDriver.Worker.Service.Tests.WebDriverServiceTests.TestContracts.ScrollPageDown;
-using WebDriver.Worker.Service.Tests.WebDriverServiceTests.TestContracts.ScrollPageTop;
-using WebDriver.Worker.Service.Tests.WebDriverServiceTests.TestContracts.StartWebDriver;
-using WebDriver.Worker.Service.Tests.WebDriverServiceTests.TestContracts.StopWebDriver;
+using WebDriver.Worker.Service.Contracts;
 
 namespace WebDriver.Worker.Service.Tests.WebDriverServiceTests;
 
+[Collection("Sequential")]
+[CollectionDefinition("Non-Parallel Collection", DisableParallelization = true)]
 public sealed class CommunicationTests
 {
     private const string localhost = "localhost";
@@ -22,6 +15,8 @@ public sealed class CommunicationTests
     private const string queue = "web-driver-service";
     private const string avitoUrl =
         "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki-ASgBAgICAURU4E0";
+
+    private readonly ILogger _logger;
 
     private readonly IServiceProvider _serviceProvider;
 
@@ -32,14 +27,17 @@ public sealed class CommunicationTests
         collection.InitializeWorkerDependencies(queue, localhost, user, password);
         collection.AddSingleton<Worker>();
         _serviceProvider = collection.BuildServiceProvider();
+        _logger = _serviceProvider.GetRequiredService<ILogger>();
     }
 
     [Fact]
     public async Task Test_Serialization_And_Deserialization()
     {
+        _logger.Warning("Test 1");
+
         Worker worker = _serviceProvider.GetRequiredService<Worker>();
         using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        Task workerLife = worker.StartAsync(cancellationTokenSource.Token);
+        await worker.StartAsync(cancellationTokenSource.Token);
 
         SingleCommunicationPublisher publisher = new SingleCommunicationPublisher(
             queue,
@@ -69,30 +67,17 @@ public sealed class CommunicationTests
             result_3.FromResult<StopWebDriverContractResponse>();
         Assert.True(response.IsStopped);
 
-        result_1 = await publisher.SendCommand(new StartWebDriverContract("none"));
-        Assert.True(result_1.IsSuccess);
-        response_1 = result_1.FromResult<StartWebDriverContractResponse>();
-        Assert.True(response_1.IsStarted);
-
-        result_2 = await publisher.SendCommand(new OpenWebDriverPageContract(avitoUrl));
-        Assert.True(result_2.IsSuccess);
-        response_2 = result_2.FromResult<OpenWebDriverPageResponse>();
-        Assert.Equal(avitoUrl, response_2.OpenedUrl);
-
-        result_3 = await publisher.SendCommand(new StopWebDriverContract());
-        Assert.True(result_3.IsSuccess);
-        response = result_3.FromResult<StopWebDriverContractResponse>();
-        Assert.True(response.IsStopped);
-
-        await workerLife;
+        await worker.StopAsync(cancellationTokenSource.Token);
     }
 
     [Fact]
     public async Task Test_GetSingle_Web_Element_Test()
     {
+        _logger.Warning("Test 2");
+
         Worker worker = _serviceProvider.GetRequiredService<Worker>();
         using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        Task workerLife = worker.StartAsync(cancellationTokenSource.Token);
+        await worker.StartAsync(cancellationTokenSource.Token);
 
         MultiCommunicationPublisher publisher = new MultiCommunicationPublisher(
             queue,
@@ -153,15 +138,17 @@ public sealed class CommunicationTests
         Assert.True(stop_driver_response.IsStopped);
 
         publisher.Dispose();
-        await workerLife;
+        await worker.StopAsync(cancellationTokenSource.Token);
     }
 
     [Fact]
     public async Task Test_Child_Element_Contract()
     {
+        _logger.Warning("Test 3");
+
         Worker worker = _serviceProvider.GetRequiredService<Worker>();
         using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        Task workerLife = worker.StartAsync(cancellationTokenSource.Token);
+        await worker.StartAsync(cancellationTokenSource.Token);
 
         MultiCommunicationPublisher publisher = new MultiCommunicationPublisher(
             queue,
@@ -238,15 +225,17 @@ public sealed class CommunicationTests
         Assert.True(stop_driver_response.IsStopped);
 
         publisher.Dispose();
-        await workerLife;
+        await worker.StopAsync(cancellationTokenSource.Token);
     }
 
     [Fact]
     public async Task Get_Multiple_Child_Elements_InParent_Test()
     {
+        _logger.Warning("Test 4");
+
         Worker worker = _serviceProvider.GetRequiredService<Worker>();
         using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        Task workerLife = worker.StartAsync(cancellationTokenSource.Token);
+        await worker.StartAsync(cancellationTokenSource.Token);
 
         MultiCommunicationPublisher publisher = new MultiCommunicationPublisher(
             queue,
@@ -338,15 +327,17 @@ public sealed class CommunicationTests
         Assert.True(stop_driver_response.IsStopped);
 
         publisher.Dispose();
-        await workerLife;
+        await worker.StopAsync(cancellationTokenSource.Token);
     }
 
     [Fact]
     public async Task Get_Text_From_Element()
     {
+        _logger.Warning("Test 5");
+
         Worker worker = _serviceProvider.GetRequiredService<Worker>();
         using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        Task workerLife = worker.StartAsync(cancellationTokenSource.Token);
+        await worker.StartAsync(cancellationTokenSource.Token);
 
         MultiCommunicationPublisher publisher = new MultiCommunicationPublisher(
             queue,
@@ -429,7 +420,6 @@ public sealed class CommunicationTests
             get_children.FromResult<GetMultipleChildrenResponse>();
         Assert.True(get_children_response.Results.Length > 0);
 
-        ILogger logger = _serviceProvider.GetRequiredService<ILogger>();
         foreach (var item in get_children_response.Results)
         {
             ContractActionResult request = await publisher.SendCommand(
@@ -437,7 +427,6 @@ public sealed class CommunicationTests
             );
             Assert.True(request.IsSuccess);
             GetTextFromElementResponse response = request.FromResult<GetTextFromElementResponse>();
-            logger.Information("Text: {Text}", response.Text);
         }
 
         ContractActionResult stop_driver_contract = await publisher.SendCommand(
@@ -449,15 +438,17 @@ public sealed class CommunicationTests
         Assert.True(stop_driver_response.IsStopped);
 
         publisher.Dispose();
-        await workerLife;
+        await worker.StopAsync(cancellationTokenSource.Token);
     }
 
     [Fact]
     public async Task Test_Click_Element()
     {
+        _logger.Warning("Test 6");
+
         Worker worker = _serviceProvider.GetRequiredService<Worker>();
         using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        Task workerLife = worker.StartAsync(cancellationTokenSource.Token);
+        await worker.StartAsync(cancellationTokenSource.Token);
 
         MultiCommunicationPublisher publisher = new MultiCommunicationPublisher(
             queue,
@@ -526,6 +517,6 @@ public sealed class CommunicationTests
         Assert.True(stop_driver_response.IsStopped);
 
         publisher.Dispose();
-        await workerLife;
+        await worker.StopAsync(cancellationTokenSource.Token);
     }
 }

@@ -2,36 +2,27 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using RemTechCommon.Utils.ResultPattern;
-using Serilog;
 
 namespace WebDriver.Core.Models;
 
 internal sealed class WebDriverOptionsFactory
 {
-    private readonly ILogger _logger;
     private readonly string _loadStrategy;
     private static readonly Lock _lock = new Lock();
 
-    public WebDriverOptionsFactory(ILogger logger, string loadStrategy)
-    {
-        _logger = logger;
-        _loadStrategy = loadStrategy;
-    }
+    public WebDriverOptionsFactory(string loadStrategy) => _loadStrategy = loadStrategy;
 
     public Result<ChromeOptions> Create(out string uniqueProfilePath)
     {
         uniqueProfilePath = String.Empty;
-        _logger.Information("Creating web driver instance options...");
         int strategy = ParseStrategy(_loadStrategy);
         if (!Enum.IsDefined(typeof(PageLoadStrategy), strategy))
         {
             Error error = new Error("Page load strategy is not supported");
-            _logger.Error("{Error}", error.Description);
             return error;
         }
 
         PageLoadStrategy resolved = (PageLoadStrategy)strategy;
-        _logger.Information("Resolved web driver strategy: {Strategy}", resolved.ToString());
         ChromeOptions options = new ChromeOptions();
         options.PageLoadStrategy = resolved;
         if (Directory.Exists(WebDriverConstants.ProfilePath))
@@ -71,7 +62,7 @@ internal sealed class WebDriverOptionsFactory
         return strategy;
     }
 
-    private Result<string> CreateUniqueProfileFromExisting(ChromeOptions options)
+    private static Result<string> CreateUniqueProfileFromExisting(ChromeOptions options)
     {
         Guid id = Guid.NewGuid();
 
@@ -90,15 +81,12 @@ internal sealed class WebDriverOptionsFactory
             profileOptionsBuilder.Append("user-data-dir=");
             profileOptionsBuilder.Append(uniquePath);
             options.AddArgument(profileOptionsBuilder.ToString());
-            _logger.Information(
-                "Profile has been set for web driver instance with unique path: {UniquePath}",
-                uniquePath
-            );
         }
         catch (Exception ex)
         {
-            _logger.Error(ex.Message);
-            return new Error("Failed to create unique profile or copy directory");
+            return new Error(
+                $"Failed to create unique profile or copy directory. Exception: {ex.Message}"
+            );
         }
 
         return uniquePath;

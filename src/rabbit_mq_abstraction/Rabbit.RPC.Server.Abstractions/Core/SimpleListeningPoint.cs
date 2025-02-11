@@ -120,6 +120,6 @@ internal sealed class SimpleListeningPoint : IListeningPoint
     {
         await _channel.DisposeAsync();
         await _connection.DisposeAsync();
-        _logger.Information("Service {ServiceName} stopped.");
+        _logger.Information("Service {ServiceName} stopped.", ServiceName);
     }
 }

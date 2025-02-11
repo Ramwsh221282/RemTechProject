@@ -1,29 +1,25 @@
-﻿using RemTechCommon.Utils.ResultPattern;
-using Serilog;
+﻿using OpenQA.Selenium;
+using RemTechCommon.Utils.ResultPattern;
 
 namespace WebDriver.Core.Models.InteractionStrategies.Implementations;
 
-internal sealed class StartDriverInteraction : IInteractionStrategy
+internal sealed class StartDriverInteraction
 {
-    private readonly ILogger _logger;
     private readonly WebDriverOptionsFactory _optionsFactory;
     private readonly WebDriverExecutableManager _manager;
 
-    public StartDriverInteraction(ILogger logger, string loadStrategy)
+    public StartDriverInteraction(string loadStrategy)
     {
-        _logger = logger;
-        _manager = new WebDriverExecutableManager(logger);
-        _optionsFactory = new(logger, loadStrategy);
+        _manager = new WebDriverExecutableManager();
+        _optionsFactory = new(loadStrategy);
     }
 
-    public async Task<Result> Perform(WebDriverInstance instance)
+    public Result<(IWebDriver, string)> Perform()
     {
-        WebDriverFactory factory = new WebDriverFactory(
-            _logger,
-            _optionsFactory,
-            _manager,
-            instance
-        );
-        return await Task.FromResult(factory.Instantiate());
+        WebDriverFactory factory = new WebDriverFactory(_optionsFactory, _manager);
+        Result<IWebDriver> driver = factory.Instantiate(out string profile);
+        if (driver.IsFailure)
+            return driver.Error;
+        return (driver.Value, profile);
     }
 }

@@ -32,8 +32,8 @@ internal sealed class NewSingleChildElementSearchStrategy
         try
         {
             WebElementObject child = new(_path, _type, model.FindElement(search));
-            Result registration = instance.AddInPool(child);
-            return registration.IsSuccess ? child : registration.Error;
+            instance.AddInPool(child);
+            return child;
         }
         catch
         {

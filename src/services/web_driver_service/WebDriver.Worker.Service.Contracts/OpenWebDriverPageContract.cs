@@ -1,6 +1,6 @@
 ﻿using Rabbit.RPC.Client.Abstractions;
 
-namespace WebDriver.Worker.Service.Tests.WebDriverServiceTests.TestContracts.OpenWebDriverPage;
+namespace WebDriver.Worker.Service.Contracts;
 
 public sealed record OpenWebDriverPageContract(string Url) : IContract;
 

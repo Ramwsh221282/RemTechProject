@@ -18,10 +18,9 @@ internal sealed class ScrollToBottomInteraction : IInteractionStrategy
     {
         Result<IWebDriver> request = instance.GetRunningDriver();
         if (request.IsFailure)
-            return await Task.FromResult(request.Error);
+            return request;
 
         IWebDriver driver = request.Value;
-
         try
         {
             while (!_isScrolled)
@@ -39,7 +38,6 @@ internal sealed class ScrollToBottomInteraction : IInteractionStrategy
         {
             return await Task.FromResult(new Error($"Error occured: {ex.Message}"));
         }
-
         return await Task.FromResult(Result.Success());
     }
 

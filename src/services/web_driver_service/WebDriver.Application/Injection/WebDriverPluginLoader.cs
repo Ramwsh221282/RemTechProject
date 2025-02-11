@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using Serilog.Core;
 using WebDriver.Application.Commands.ClickOnElement;
 using WebDriver.Application.Commands.OpenPage;
 using WebDriver.Application.Commands.ScrollToDown;

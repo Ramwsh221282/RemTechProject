@@ -15,11 +15,10 @@ internal sealed class ScrollToTopInteraction : IInteractionStrategy
     {
         Result<IWebDriver> request = instance.GetRunningDriver();
         if (request.IsFailure)
-            return await Task.FromResult(request.Error);
+            return request;
 
         IWebDriver driver = request.Value;
         bool isScrolled = false;
-
         while (!isScrolled)
         {
             long currentHeight = driver.ExecuteJavaScript<long>(GetScrollPositionScript);

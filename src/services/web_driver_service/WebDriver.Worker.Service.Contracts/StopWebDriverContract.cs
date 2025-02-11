@@ -1,6 +1,6 @@
 ﻿using Rabbit.RPC.Client.Abstractions;
 
-namespace WebDriver.Worker.Service.Tests.WebDriverServiceTests.TestContracts.StopWebDriver;
+namespace WebDriver.Worker.Service.Contracts;
 
 public sealed record StopWebDriverContract : IContract;
 
