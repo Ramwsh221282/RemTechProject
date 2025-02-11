@@ -33,6 +33,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDriver.Core", "src\servi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDriver.Worker.Service.Tests", "src\services\web_driver_service\WebDriver.Worker.Service.Tests\WebDriver.Worker.Service.Tests.csproj", "{3A219135-7EB9-4B68-8948-9C8789FBA0CE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDriver.Application", "src\services\web_driver_service\WebDriver.Application\WebDriver.Application.csproj", "{031B6FE1-3013-457A-B197-0E8EAD0A376D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDriver.Worker.Service.Contracts", "src\services\web_driver_service\WebDriver.Worker.Service.Contracts\WebDriver.Worker.Service.Contracts.csproj", "{40782E62-D4A6-4228-9A5E-A186FC083FA6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +56,8 @@ Global
 		{A5894561-CA87-4FF4-80DC-457ED2204F3A} = {4A4354FC-D0C3-4ED2-A508-F3E859666E9B}
 		{C7A37B02-9D0D-4009-81AA-65FF332D0F1A} = {4A4354FC-D0C3-4ED2-A508-F3E859666E9B}
 		{3A219135-7EB9-4B68-8948-9C8789FBA0CE} = {4A4354FC-D0C3-4ED2-A508-F3E859666E9B}
+		{031B6FE1-3013-457A-B197-0E8EAD0A376D} = {4A4354FC-D0C3-4ED2-A508-F3E859666E9B}
+		{40782E62-D4A6-4228-9A5E-A186FC083FA6} = {4A4354FC-D0C3-4ED2-A508-F3E859666E9B}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{19D97A14-AB77-4D4A-8C85-C01B60EFE240}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -86,5 +92,13 @@ Global
 		{3A219135-7EB9-4B68-8948-9C8789FBA0CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A219135-7EB9-4B68-8948-9C8789FBA0CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A219135-7EB9-4B68-8948-9C8789FBA0CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{031B6FE1-3013-457A-B197-0E8EAD0A376D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{031B6FE1-3013-457A-B197-0E8EAD0A376D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{031B6FE1-3013-457A-B197-0E8EAD0A376D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{031B6FE1-3013-457A-B197-0E8EAD0A376D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40782E62-D4A6-4228-9A5E-A186FC083FA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40782E62-D4A6-4228-9A5E-A186FC083FA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40782E62-D4A6-4228-9A5E-A186FC083FA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40782E62-D4A6-4228-9A5E-A186FC083FA6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

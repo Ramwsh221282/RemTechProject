@@ -35,7 +35,7 @@ public sealed class ContractsResolvingCenter
             if (!_contractHandlers.ContainsKey(requestType))
             {
                 _logger.Error("Request {Type} is not allowed.", requestType.Name);
-                return new($"Request {requestType.Name} is not allowed.");
+                return ContractActionResult.Fail($"Request {requestType.Name} is not allowed.");
             }
 
             Type handlerInterface = typeof(IContractHandler<>).MakeGenericType(requestType);
@@ -50,14 +50,16 @@ public sealed class ContractsResolvingCenter
                     "Cannot resolve request: {Type} because no handlers registered.",
                     requestType.Name
                 );
-                return new ContractActionResult(
+                return ContractActionResult.Fail(
                     $"Cannot resolve request: {requestType.Name} because no handlers registered."
                 );
             }
+
             Task<ContractActionResult> task =
                 (Task<ContractActionResult>)
                     handlerMethod.Invoke(handler, new object[] { contract })!;
             ContractActionResult response = await task;
+
             _logger.Information("Request of type: {RequestType} is handled", requestType.Name);
             return response;
         }
@@ -65,7 +67,7 @@ public sealed class ContractsResolvingCenter
         {
             string message = ex.Message;
             _logger.Error("Service exception: {Exception}", message);
-            return new ContractActionResult(message);
+            return ContractActionResult.Fail(message);
         }
     }
 }

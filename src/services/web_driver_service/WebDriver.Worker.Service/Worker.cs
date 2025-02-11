@@ -12,13 +12,17 @@ public class Worker : BackgroundService
         _point.ServiceName = "WebDriver.Worker.Service";
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken) { }
+
+    public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        while (!_point.IsInitialized)
-        {
-            await _point.InitializeListener();
-        }
-        await Task.Delay(Timeout.Infinite, stoppingToken);
+        await _point.InitializeListener();
+        await base.StartAsync(cancellationToken);
+    }
+
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
         await _point.DisposeAsync();
+        await base.StopAsync(cancellationToken);
     }
 }
