@@ -2,29 +2,21 @@
 using RemTechCommon.Utils.ResultPattern;
 using WebDriver.Application;
 using WebDriver.Application.Commands.ScrollToTop;
-using WebDriver.Worker.Service.Contracts.ScrollPageDown;
 
 namespace WebDriver.Worker.Service.Contracts.ScrollPageTop;
 
 internal sealed record ScrollPageTopContract : IContract;
 
-internal sealed record ScrollPageTopResponse(bool IsScrolled);
-
-internal sealed class ScrollPageTopContractHandler : IContractHandler<ScrollPageTopContract>
+internal sealed class ScrollPageTopContractHandler(WebDriverApi api)
+    : IContractHandler<ScrollPageTopContract>
 {
-    private readonly WebDriverApi _api;
-
-    public ScrollPageTopContractHandler(WebDriverApi api) => _api = api;
-
     public async Task<ContractActionResult> Handle(ScrollPageTopContract contract)
     {
         ScrollToTopCommand command = new ScrollToTopCommand();
-        Result scrolling = await _api.ExecuteCommand(command);
-        if (scrolling.IsFailure)
-            return new ContractActionResult(scrolling.Error.Description);
+        Result scrolling = await api.ExecuteCommand(command);
 
-        ScrollPageDownContractResponse response = new(true);
-        ContractActionResult result = new(response);
-        return result;
+        return scrolling.IsFailure
+            ? ContractActionResult.Fail(scrolling.Error.Description)
+            : ContractActionResult.Success(true);
     }
 }

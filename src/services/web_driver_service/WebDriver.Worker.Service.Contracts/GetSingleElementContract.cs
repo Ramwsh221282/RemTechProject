@@ -3,5 +3,3 @@
 namespace WebDriver.Worker.Service.Contracts;
 
 public record GetSingleElementContract(string ElementPath, string ElementPathType) : IContract;
-
-public record WebElementResponse(string ElementPath, string ElementPathType, Guid ElementId);

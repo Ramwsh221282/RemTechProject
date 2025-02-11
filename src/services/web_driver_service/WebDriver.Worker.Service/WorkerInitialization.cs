@@ -1,6 +1,7 @@
 ﻿using Rabbit.RPC.Server.Abstractions.Core;
 using WebDriver.Application.Injection;
 using WebDriver.Worker.Service.Contracts.ClickOnElement;
+using WebDriver.Worker.Service.Contracts.GetElementAttributeValue;
 using WebDriver.Worker.Service.Contracts.GetElementHtml;
 using WebDriver.Worker.Service.Contracts.GetMultipleChildren;
 using WebDriver.Worker.Service.Contracts.GetPageHtml;
@@ -10,6 +11,7 @@ using WebDriver.Worker.Service.Contracts.GetTextFromElement;
 using WebDriver.Worker.Service.Contracts.OpenWebDriverPage;
 using WebDriver.Worker.Service.Contracts.ScrollPageDown;
 using WebDriver.Worker.Service.Contracts.ScrollPageTop;
+using WebDriver.Worker.Service.Contracts.SendTextOnElement;
 using WebDriver.Worker.Service.Contracts.StartWebDriver;
 using WebDriver.Worker.Service.Contracts.StopWebDriver;
 
@@ -51,6 +53,14 @@ public static class WorkerInitialization
         registration.RegisterContract<ClickOnElementContract, ClickOnElementContractHandler>();
         registration.RegisterContract<GetPageHtmlContract, GetPageHtmlContractHandler>();
         registration.RegisterContract<GetElementHtmlContract, GetElementHtmlContractHandler>();
+        registration.RegisterContract<
+            SendTextOnElementContract,
+            SendTextOnElementContractHandler
+        >();
+        registration.RegisterContract<
+            GetElementAttributeValueContract,
+            GetElementAttributeValueContractHandler
+        >();
 
         registration.RegisterConnectionFactory(
             new SimpleConnectionFactory(hostname, username, password)

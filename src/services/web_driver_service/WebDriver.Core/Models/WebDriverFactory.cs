@@ -42,6 +42,8 @@ internal sealed class WebDriverFactory
             service.HideCommandPromptWindow = true;
             service.EnableVerboseLogging = false;
             service.EnableAppendLog = false;
+            service.SuppressInitialDiagnosticInformation = true;
+            service.DisableBuildCheck = true;
             IWebDriver instance = new ChromeDriver(
                 service,
                 _optionsFactory.Create(out string profilePath)

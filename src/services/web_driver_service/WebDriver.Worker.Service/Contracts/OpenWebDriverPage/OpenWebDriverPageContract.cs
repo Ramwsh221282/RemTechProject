@@ -8,24 +8,18 @@ namespace WebDriver.Worker.Service.Contracts.OpenWebDriverPage;
 
 internal sealed record OpenWebDriverPageContract(string Url) : IContract;
 
-internal sealed record OpenWebDriverPageResponse(string OpenedUrl);
-
-internal sealed class OpenWebDriverPageContractHandler : IContractHandler<OpenWebDriverPageContract>
+internal sealed class OpenWebDriverPageContractHandler(WebDriverApi api)
+    : IContractHandler<OpenWebDriverPageContract>
 {
-    private readonly WebDriverApi _api;
-
-    public OpenWebDriverPageContractHandler(WebDriverApi api) => _api = api;
-
     public async Task<ContractActionResult> Handle(OpenWebDriverPageContract contract)
     {
         WebPageDataDTO data = new(contract.Url);
         OpenPageCommand command = new(data);
 
-        Result opening = await _api.ExecuteCommand(command);
-        if (opening.IsFailure)
-            return new ContractActionResult(opening.Error.Description);
+        Result opening = await api.ExecuteCommand(command);
 
-        OpenWebDriverPageResponse response = new(contract.Url);
-        return new ContractActionResult(response);
+        return opening.IsFailure
+            ? ContractActionResult.Fail(opening.Error.Description)
+            : ContractActionResult.Success(true);
     }
 }

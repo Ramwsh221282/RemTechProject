@@ -8,24 +8,17 @@ namespace WebDriver.Worker.Service.Contracts.StartWebDriver;
 
 internal record StartWebDriverContract(string LoadStrategy) : IContract;
 
-internal record StartWebDriverResponse(bool IsStarted);
-
-internal sealed class StartWebDriverContractHandler : IContractHandler<StartWebDriverContract>
+internal sealed class StartWebDriverContractHandler(WebDriverApi api)
+    : IContractHandler<StartWebDriverContract>
 {
-    private readonly WebDriverApi _api;
-
-    public StartWebDriverContractHandler(WebDriverApi api) => _api = api;
-
     public async Task<ContractActionResult> Handle(StartWebDriverContract contract)
     {
         DriverStartDataDTO data = new(contract.LoadStrategy);
         StartWebDriverCommand command = new(data);
 
-        Result starting = await _api.ExecuteCommand(command);
-        if (starting.IsFailure)
-            return new ContractActionResult(starting.Error.Description);
-
-        StartWebDriverResponse response = new StartWebDriverResponse(true);
-        return new ContractActionResult(response);
+        Result starting = await api.ExecuteCommand(command);
+        return starting.IsFailure
+            ? ContractActionResult.Fail(starting.Error.Description)
+            : ContractActionResult.Success(true);
     }
 }

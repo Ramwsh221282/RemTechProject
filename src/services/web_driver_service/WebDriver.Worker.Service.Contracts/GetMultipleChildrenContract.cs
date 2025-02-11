@@ -1,4 +1,5 @@
 ﻿using Rabbit.RPC.Client.Abstractions;
+using WebDriver.Worker.Service.Contracts.Responses;
 
 namespace WebDriver.Worker.Service.Contracts;
 
@@ -8,5 +9,3 @@ public sealed record GetMultipleChildrenContract(Guid ParentId, string Path, str
     public GetMultipleChildrenContract(WebElementResponse response, string Path, string Type)
         : this(response.ElementId, Path, Type) { }
 }
-
-public sealed record GetMultipleChildrenResponse(WebElementResponse[] Results);

@@ -3,5 +3,3 @@
 namespace WebDriver.Worker.Service.Contracts;
 
 public sealed record OpenWebDriverPageContract(string Url) : IContract;
-
-public sealed record OpenWebDriverPageResponse(string OpenedUrl);

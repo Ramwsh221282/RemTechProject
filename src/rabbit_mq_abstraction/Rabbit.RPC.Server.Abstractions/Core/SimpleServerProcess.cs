@@ -19,14 +19,14 @@ public sealed class SimpleServerProcess : IServerProcess
         {
             ContractMappingResult mapping = _mapper.MapToContract(receivedJson);
             if (!mapping.IsSuccess)
-                return new(mapping.Error);
+                return ContractActionResult.Fail(mapping.Error);
 
             ContractActionResult response = await _center.ResolveContract(mapping.Contract);
             return response;
         }
         catch (Exception ex)
         {
-            return new ContractActionResult(ex.Message);
+            return ContractActionResult.Fail(ex.Message);
         }
     }
 }

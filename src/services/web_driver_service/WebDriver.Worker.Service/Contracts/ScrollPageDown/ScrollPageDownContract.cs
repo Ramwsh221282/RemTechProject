@@ -7,24 +7,16 @@ namespace WebDriver.Worker.Service.Contracts.ScrollPageDown;
 
 internal sealed record ScrollPageDownContract : IContract;
 
-internal sealed record ScrollPageDownContractResponse(bool IsScrolled);
-
-internal sealed class ScrollPageDownContractHandler : IContractHandler<ScrollPageDownContract>
+internal sealed class ScrollPageDownContractHandler(WebDriverApi api)
+    : IContractHandler<ScrollPageDownContract>
 {
-    private readonly WebDriverApi _api;
-
-    public ScrollPageDownContractHandler(WebDriverApi api) => _api = api;
-
     public async Task<ContractActionResult> Handle(ScrollPageDownContract contract)
     {
         ScrollToDownCommand command = new ScrollToDownCommand();
-        Result scrolling = await _api.ExecuteCommand(command);
+        Result scrolling = await api.ExecuteCommand(command);
 
-        if (scrolling.IsFailure)
-            return new ContractActionResult(scrolling.Error);
-
-        ScrollPageDownContractResponse response = new(true);
-        ContractActionResult result = new(response);
-        return result;
+        return scrolling.IsFailure
+            ? ContractActionResult.Fail(scrolling.Error.Description)
+            : ContractActionResult.Success(true);
     }
 }

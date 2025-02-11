@@ -4,35 +4,33 @@ using WebDriver.Application;
 using WebDriver.Application.DTO;
 using WebDriver.Application.Queries.GetElement;
 using WebDriver.Core.Models;
+using WebDriver.Worker.Service.Responses;
 
 namespace WebDriver.Worker.Service.Contracts.GetSingleElement;
 
 internal record GetSingleElementContract(string ElementPath, string ElementPathType) : IContract;
 
-internal record GetElementResponse(string ElementPath, string ElementPathType, Guid ElementId);
-
-internal sealed class GetSingleElementContractHandler : IContractHandler<GetSingleElementContract>
+internal sealed class GetSingleElementContractHandler(WebDriverApi api)
+    : IContractHandler<GetSingleElementContract>
 {
-    private readonly WebDriverApi _api;
-
-    public GetSingleElementContractHandler(WebDriverApi api) => _api = api;
-
     public async Task<ContractActionResult> Handle(GetSingleElementContract contract)
     {
         ElementPathDataDTO data = new(contract.ElementPath, contract.ElementPathType);
         GetElementQuery query = new(data);
 
-        Result<WebElementObject> element = await _api.ExecuteQuery<
+        Result<WebElementObject> element = await api.ExecuteQuery<
             GetElementQuery,
             WebElementObject
         >(query);
 
-        if (element.IsFailure)
-            return new ContractActionResult(element.Error.Description);
+        WebElementResponse response = new WebElementResponse(
+            element.Value.ElementPath,
+            element.Value.ElementPathType,
+            element.Value.ElementId
+        );
 
-        GetElementResponse response =
-            new(element.Value.ElementPath, element.Value.ElementPathType, element.Value.ElementId);
-        ContractActionResult result = new(response);
-        return result;
+        return element.IsFailure
+            ? ContractActionResult.Fail(element.Error.Description)
+            : ContractActionResult.Success(response);
     }
 }

@@ -8,25 +8,18 @@ namespace WebDriver.Worker.Service.Contracts.GetTextFromElement;
 
 internal sealed record GetTextFromElementContract(Guid ExistingId) : IContract;
 
-internal sealed record GetTextFromElementResponse(string Text);
-
-internal sealed class GetTextFromElementContractHandler
+internal sealed class GetTextFromElementContractHandler(WebDriverApi api)
     : IContractHandler<GetTextFromElementContract>
 {
-    private readonly WebDriverApi _api;
-
-    public GetTextFromElementContractHandler(WebDriverApi api) => _api = api;
-
     public async Task<ContractActionResult> Handle(GetTextFromElementContract contract)
     {
         ExistingElementDTO existing = new(contract.ExistingId);
         GetTextFromElementQuery query = new(existing);
 
-        Result<string> result = await _api.ExecuteQuery<GetTextFromElementQuery, string>(query);
-        if (result.IsFailure)
-            return new ContractActionResult(result.Error.Description);
+        Result<string> result = await api.ExecuteQuery<GetTextFromElementQuery, string>(query);
 
-        GetTextFromElementResponse response = new(result.Value);
-        return new ContractActionResult(response);
+        return result.IsFailure
+            ? ContractActionResult.Fail(result.Error.Description)
+            : ContractActionResult.Success(result.Value);
     }
 }

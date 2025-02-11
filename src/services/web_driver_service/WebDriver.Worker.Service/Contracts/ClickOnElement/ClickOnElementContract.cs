@@ -8,24 +8,17 @@ namespace WebDriver.Worker.Service.Contracts.ClickOnElement;
 
 internal sealed record ClickOnElementContract(Guid ExistingId) : IContract;
 
-internal sealed record ClickOnElementResponse(bool IsClicked);
-
-internal sealed class ClickOnElementContractHandler : IContractHandler<ClickOnElementContract>
+internal sealed class ClickOnElementContractHandler(WebDriverApi api)
+    : IContractHandler<ClickOnElementContract>
 {
-    private readonly WebDriverApi _api;
-
-    public ClickOnElementContractHandler(WebDriverApi api) => _api = api;
-
     public async Task<ContractActionResult> Handle(ClickOnElementContract contract)
     {
         ExistingElementDTO dto = new(contract.ExistingId);
         ClickOnElementCommand command = new(dto);
 
-        Result clicking = await _api.ExecuteCommand(command);
-        if (clicking.IsFailure)
-            return new ContractActionResult(clicking.Error.Description);
-
-        ClickOnElementResponse response = new(true);
-        return new ContractActionResult(response);
+        Result clicking = await api.ExecuteCommand(command);
+        return clicking.IsFailure
+            ? ContractActionResult.Fail(clicking.Error.Description)
+            : ContractActionResult.Success(true);
     }
 }

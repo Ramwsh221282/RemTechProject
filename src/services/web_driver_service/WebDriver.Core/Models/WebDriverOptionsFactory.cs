@@ -44,6 +44,18 @@ internal sealed class WebDriverOptionsFactory
         options.AddArgument("--disable-images");
         options.AddArgument("--disable-popup-blocking");
         options.AddArgument("--fast-enable");
+        options.AddArgument("--disable-logging");
+        options.AddArgument("--log-level=3");
+        options.AddUserProfilePreference("profile.default_content_settings.popups", 0);
+        options.AddUserProfilePreference("profile.default_content_settings.notifications", 2);
+        options.AddUserProfilePreference("profile.managed_default_content_settings.stylesheets", 2);
+        options.AddArgument("--headless=new");
+        options.AddArgument("--disable-background-networking");
+        options.AddArgument("--disable-sync");
+        options.AddArgument("--disable-translate");
+        options.AddArgument("--disable-default-apps");
+        options.AddArgument("--disable-hang-monitor");
+        options.AddArgument("--disable-prompt-on-repost");
         options.AcceptInsecureCertificates = true;
         options.AddAdditionalOption("useAutomationExtensions", false);
         return options;

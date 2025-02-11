@@ -1,14 +1,15 @@
-﻿using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using WebDriver.Application.Commands.ClickOnElement;
 using WebDriver.Application.Commands.OpenPage;
 using WebDriver.Application.Commands.ScrollToDown;
 using WebDriver.Application.Commands.ScrollToTop;
+using WebDriver.Application.Commands.SendTextOnElement;
 using WebDriver.Application.Commands.StartWebDriver;
 using WebDriver.Application.Commands.StopWebDriver;
 using WebDriver.Application.DTO;
 using WebDriver.Application.Handlers;
 using WebDriver.Application.Queries.GetElement;
+using WebDriver.Application.Queries.GetElementAttribute;
 using WebDriver.Application.Queries.GetElementHtml;
 using WebDriver.Application.Queries.GetElementInsideOfElement;
 using WebDriver.Application.Queries.GetElementsInsideOfElement;
@@ -51,6 +52,10 @@ public static class WebDriverPluginLoader
             IWebDriverCommandHandler<StopWebDriverCommand>,
             StopWebDriverCommandHandler
         >();
+        services.AddScoped<
+            IWebDriverCommandHandler<SendTextOnElementCommand>,
+            SendTextOnElementCommandHandler
+        >();
     }
 
     private static void RegisterQueries(this IServiceCollection services)
@@ -79,6 +84,10 @@ public static class WebDriverPluginLoader
             IWebDriverQueryHandler<GetElementHtmlQuery, string>,
             GetElementHtmlQueryHandler
         >();
+        services.AddScoped<
+            IWebDriverQueryHandler<GetElementAttributeQuery, string>,
+            GetElementAttributeValueQueryHandler
+        >();
     }
 
     private static void RegisterValidators(this IServiceCollection services)
@@ -87,6 +96,7 @@ public static class WebDriverPluginLoader
         services.AddSingleton<ElementPathDataDTOValidator>();
         services.AddSingleton<ExistingElementDTOValidator>();
         services.AddSingleton<WebPageDataDTOValidator>();
+        services.AddScoped<ElementAttributeDTOValidator>();
     }
 
     private static void RegisterWebDriverDependencies(this IServiceCollection services)
