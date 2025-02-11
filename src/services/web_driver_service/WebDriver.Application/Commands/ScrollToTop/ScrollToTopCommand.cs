@@ -1,5 +1,5 @@
-﻿using RemTechCommon.Utils.ResultPattern;
-using Serilog;
+﻿using Serilog;
+using WebDriver.Application.Extensions;
 using WebDriver.Application.Handlers;
 using WebDriver.Core.Models;
 using WebDriver.Core.Models.InteractionStrategies;
@@ -10,20 +10,16 @@ namespace WebDriver.Application.Commands.ScrollToTop;
 public sealed record ScrollToTopCommand : IWebDriverCommand;
 
 internal sealed class ScrollToTopCommandHandler(WebDriverInstance instance, ILogger logger)
-    : BaseWebDriverHandler(instance, logger),
-        IWebDriverCommandHandler<ScrollToTopCommand>
+    : IWebDriverCommandHandler<ScrollToTopCommand>
 {
     public async Task<Result> Handle(ScrollToTopCommand command)
     {
         IInteractionStrategy strategy = InteractionStrategyFactory.CreateScrollTop();
-        Result scrolling = await _instance.PerformInteraction(strategy);
+        Result scrolling = await instance.PerformInteraction(strategy);
         if (scrolling.IsFailure)
-        {
-            Error error = scrolling.Error;
-            _logger.Error("{Error}", error.Description);
-            return error;
-        }
-        _logger.Information("Web Driver has scrolled page to top");
+            return scrolling.LogAndReturn(logger);
+
+        logger.Information("Web Driver has scrolled page to top");
         return scrolling;
     }
 }

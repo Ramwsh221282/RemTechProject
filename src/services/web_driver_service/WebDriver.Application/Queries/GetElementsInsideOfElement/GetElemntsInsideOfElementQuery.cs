@@ -1,6 +1,8 @@
-﻿using RemTechCommon.Utils.ResultPattern;
+﻿using FluentValidation.Results;
+using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriver.Application.DTO;
+using WebDriver.Application.Extensions;
 using WebDriver.Application.Handlers;
 using WebDriver.Core.Models;
 using WebDriver.Core.Models.SearchStrategies;
@@ -13,15 +15,22 @@ public record GetElementsInsideOfElementQuery(ExistingElementDTO Existing, Eleme
 
 internal sealed class GetElementsInsideOfElementQueryHandler(
     WebDriverInstance instance,
-    ILogger logger
-)
-    : BaseWebDriverHandler(instance, logger),
-        IWebDriverQueryHandler<GetElementsInsideOfElementQuery, WebElementObject[]>
+    ILogger logger,
+    ExistingElementDTOValidator existingValidator,
+    ElementPathDataDTOValidator pathValidator
+) : IWebDriverQueryHandler<GetElementsInsideOfElementQuery, WebElementObject[]>
 {
     public async Task<Result<WebElementObject[]>> Execute(GetElementsInsideOfElementQuery query)
     {
         ExistingElementDTO dataExisting = query.Existing;
+        ValidationResult existingValidation = await existingValidator.ValidateAsync(dataExisting);
+        if (!existingValidation.IsValid)
+            return existingValidation.LogAndReturn(logger);
+
         ElementPathDataDTO dataPath = query.Data;
+        ValidationResult dataValidation = await pathValidator.ValidateAsync(dataPath);
+        if (!dataValidation.IsValid)
+            return dataValidation.LogAndReturn(logger);
 
         IMultipleElementSearchStrategy strategy =
             ElementSearchStrategyFactory.CreateForMultipleChilds(
@@ -29,14 +38,12 @@ internal sealed class GetElementsInsideOfElementQueryHandler(
                 dataPath.Path,
                 dataPath.Type
             );
-        Result<WebElementObject[]> elements = await _instance.FindElements(strategy);
+
+        Result<WebElementObject[]> elements = await instance.FindElements(strategy);
         if (elements.IsFailure)
-        {
-            Error error = elements.Error;
-            _logger.Error("{Error}", error.Description);
-            return error;
-        }
-        _logger.Information(
+            return elements.LogAndReturn(logger);
+
+        logger.Information(
             "Found elements({ChildPath} {ChildType}) of parent({ParentId})",
             dataPath.Path,
             dataPath.Type,

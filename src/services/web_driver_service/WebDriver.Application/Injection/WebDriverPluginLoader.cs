@@ -1,6 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Serilog;
-using Serilog.Core;
+﻿using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using WebDriver.Application.Commands.ClickOnElement;
 using WebDriver.Application.Commands.OpenPage;
 using WebDriver.Application.Commands.ScrollToDown;
@@ -10,6 +9,7 @@ using WebDriver.Application.Commands.StopWebDriver;
 using WebDriver.Application.DTO;
 using WebDriver.Application.Handlers;
 using WebDriver.Application.Queries.GetElement;
+using WebDriver.Application.Queries.GetElementHtml;
 using WebDriver.Application.Queries.GetElementInsideOfElement;
 using WebDriver.Application.Queries.GetElementsInsideOfElement;
 using WebDriver.Application.Queries.GetPageHtml;
@@ -75,14 +75,18 @@ public static class WebDriverPluginLoader
             IWebDriverQueryHandler<GetPageHtmlQuery, string>,
             GetPageHtmlQueryHandler
         >();
+        services.AddScoped<
+            IWebDriverQueryHandler<GetElementHtmlQuery, string>,
+            GetElementHtmlQueryHandler
+        >();
     }
 
     private static void RegisterValidators(this IServiceCollection services)
     {
-        services.AddScoped<DriverStartDataDTOValidator>();
-        services.AddScoped<ElementPathDataDTOValidator>();
-        services.AddScoped<ExistingElementDTOValidator>();
-        services.AddScoped<WebPageDataDTOValidator>();
+        services.AddSingleton<DriverStartDataDTOValidator>();
+        services.AddSingleton<ElementPathDataDTOValidator>();
+        services.AddSingleton<ExistingElementDTOValidator>();
+        services.AddSingleton<WebPageDataDTOValidator>();
     }
 
     private static void RegisterWebDriverDependencies(this IServiceCollection services)

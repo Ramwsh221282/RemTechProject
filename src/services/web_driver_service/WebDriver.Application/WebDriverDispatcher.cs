@@ -29,44 +29,4 @@ public sealed class WebDriverDispatcher(IServiceScopeFactory factory)
         >();
         return await handler.Execute(query);
     }
-
-    public async Task<ValidationResult> ValidateCommand<TCommand>(TCommand command)
-        where TCommand : IWebDriverCommand
-    {
-        using IServiceScope scope = factory.CreateScope();
-        IServiceProvider provider = scope.ServiceProvider;
-        AbstractValidator<TCommand> validator = provider.GetRequiredService<
-            AbstractValidator<TCommand>
-        >();
-        return await validator.ValidateAsync(command);
-    }
-
-    public async Task<ValidationResult> ValidateQuery<TQuery, TResult>(TQuery query)
-        where TQuery : IWebDriverQuery<TResult>
-    {
-        using IServiceScope scope = factory.CreateScope();
-        IServiceProvider provider = scope.ServiceProvider;
-        AbstractValidator<TQuery> validator = provider.GetRequiredService<
-            AbstractValidator<TQuery>
-        >();
-        return await validator.ValidateAsync(query);
-    }
-
-    public async Task<bool> IsCommandValidatorExists<TCommand>()
-        where TCommand : IWebDriverCommand
-    {
-        using IServiceScope scope = factory.CreateScope();
-        IServiceProvider provider = scope.ServiceProvider;
-        AbstractValidator<TCommand>? validator = provider.GetService<AbstractValidator<TCommand>>();
-        return await Task.FromResult(validator != null);
-    }
-
-    public async Task<bool> IsQueryValidatorExists<TQuery, TResult>()
-        where TQuery : IWebDriverQuery<TResult>
-    {
-        using IServiceScope scope = factory.CreateScope();
-        IServiceProvider provider = scope.ServiceProvider;
-        AbstractValidator<TQuery>? validator = provider.GetService<AbstractValidator<TQuery>>();
-        return await Task.FromResult(validator != null);
-    }
 }

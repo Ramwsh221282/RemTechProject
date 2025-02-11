@@ -63,25 +63,3 @@ public sealed class Result<T> : Result
 
     public static implicit operator Result<T>(Error error) => Failure(error);
 }
-
-public static class ResultExtensions
-{
-    public static Result LogAndReturn(this Result result, ILogger logger, string message)
-    {
-        if (result.IsFailure)
-            return result.Error.LogAndReturn(logger);
-        result.Log(logger, message);
-        return result;
-    }
-
-    public static Result<T> LogAndReturn<T>(this Result<T> result, ILogger logger, string message)
-    {
-        if (result.IsFailure)
-            return result.Error.LogAndReturn(logger);
-        result.Log(logger, message);
-        return result;
-    }
-
-    public static void Log(this Result result, ILogger logger, string message) =>
-        logger.Information(message);
-}

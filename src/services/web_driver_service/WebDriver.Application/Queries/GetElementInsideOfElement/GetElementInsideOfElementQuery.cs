@@ -1,6 +1,8 @@
-﻿using RemTechCommon.Utils.ResultPattern;
+﻿using FluentValidation.Results;
+using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriver.Application.DTO;
+using WebDriver.Application.Extensions;
 using WebDriver.Application.Handlers;
 using WebDriver.Core.Models;
 using WebDriver.Core.Models.SearchStrategies;
@@ -13,15 +15,22 @@ public record GetElementInsideOfElementQuery(ExistingElementDTO Existing, Elemen
 
 internal sealed class GetElementInsideOfElementQueryHandler(
     WebDriverInstance instance,
-    ILogger logger
-)
-    : BaseWebDriverHandler(instance, logger),
-        IWebDriverQueryHandler<GetElementInsideOfElementQuery, WebElementObject>
+    ILogger logger,
+    ExistingElementDTOValidator existingValidator,
+    ElementPathDataDTOValidator pathValidator
+) : IWebDriverQueryHandler<GetElementInsideOfElementQuery, WebElementObject>
 {
     public async Task<Result<WebElementObject>> Execute(GetElementInsideOfElementQuery query)
     {
         ExistingElementDTO existing = query.Existing;
+        ValidationResult existingValidation = await existingValidator.ValidateAsync(existing);
+        if (!existingValidation.IsValid)
+            return existingValidation.LogAndReturn(logger);
+
         ElementPathDataDTO data = query.Data;
+        ValidationResult pathValidation = await pathValidator.ValidateAsync(data);
+        if (!pathValidation.IsValid)
+            return pathValidation.LogAndReturn(logger);
 
         ISingleElementSearchStrategy strategy = ElementSearchStrategyFactory.CreateForChild(
             existing.ExistingId,
@@ -29,15 +38,11 @@ internal sealed class GetElementInsideOfElementQueryHandler(
             data.Type
         );
 
-        Result<WebElementObject> element = await _instance.FindElement(strategy);
+        Result<WebElementObject> element = await instance.FindElement(strategy);
         if (element.IsFailure)
-        {
-            Error error = element.Error;
-            _logger.Error("{Error}", error.Description);
-            return error;
-        }
+            return element.LogAndReturn(logger);
 
-        _logger.Information(
+        logger.Information(
             "Children elements (Path: {ChildPath} Type: {ChildType}) found",
             element.Value.ElementPath,
             element.Value.ElementPathType

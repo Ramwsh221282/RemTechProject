@@ -7,7 +7,7 @@ namespace WebDriver.Worker.Service.Contracts.GetPageHtml;
 
 internal sealed record GetPageHtmlContract : IContract;
 
-internal sealed record GetPageHtmlContractResponse(string Html);
+internal sealed record GetHtmlResponse(string Html);
 
 internal sealed class GetPageHtmlContractHandler(WebDriverApi api)
     : IContractHandler<GetPageHtmlContract>
@@ -20,7 +20,7 @@ internal sealed class GetPageHtmlContractHandler(WebDriverApi api)
         if (html.IsFailure)
             return new ContractActionResult(html.Error.Description);
 
-        GetPageHtmlContractResponse response = new(html.Value);
+        GetHtmlResponse response = new(html.Value);
         return new ContractActionResult(response);
     }
 }
