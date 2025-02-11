@@ -2,7 +2,7 @@
 
 namespace Rabbit.RPC.Client.Abstractions;
 
-public sealed record ContractActionResult(string Error, bool IsSuccess, JsonElement Body);
+public record ContractActionResult(string Error, bool IsSuccess, JsonElement Body);
 
 public static class ContractActionResultExtensions
 {

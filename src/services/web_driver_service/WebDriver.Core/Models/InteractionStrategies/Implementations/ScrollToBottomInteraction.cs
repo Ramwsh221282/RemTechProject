@@ -1,10 +1,11 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
 using RemTechCommon.Utils.ResultPattern;
+using WebDriver.Core.Models.SearchStrategies;
 
 namespace WebDriver.Core.Models.InteractionStrategies.Implementations;
 
-internal sealed class ScrollToBottomInteraction : IInteractionStrategy
+internal sealed class ScrollToBottomInteraction : BaseSearchElementStrategy, IInteractionStrategy
 {
     private bool _isScrolled;
 
@@ -21,23 +22,34 @@ internal sealed class ScrollToBottomInteraction : IInteractionStrategy
             return request;
 
         IWebDriver driver = request.Value;
-        try
-        {
-            while (!_isScrolled)
-            {
-                driver.ExecuteJavaScript(ScrollToBottomScript);
-                long initialHeight = driver.ExecuteJavaScript<long>(GetCurrentHeightScript);
-                long currentHeight = driver.ExecuteJavaScript<long>(GetCurrentHeightScript);
-                if (!IsEndOfPage(ref initialHeight, ref currentHeight))
-                    continue;
 
-                _isScrolled = true;
+        int attempts = 0;
+        while (ReachedMaxAttempts(ref attempts))
+        {
+            try
+            {
+                while (!_isScrolled)
+                {
+                    driver.ExecuteJavaScript(ScrollToBottomScript);
+                    long initialHeight = driver.ExecuteJavaScript<long>(GetCurrentHeightScript);
+                    long currentHeight = driver.ExecuteJavaScript<long>(GetCurrentHeightScript);
+                    if (!IsEndOfPage(ref initialHeight, ref currentHeight))
+                        continue;
+
+                    _isScrolled = true;
+                }
+                break;
+            }
+            catch
+            {
+                attempts++;
+                await Wait();
             }
         }
-        catch (Exception ex)
-        {
-            return await Task.FromResult(new Error($"Error occured: {ex.Message}"));
-        }
+
+        if (ReachedMaxAttempts(ref attempts) && !_isScrolled)
+            return new Error("Cannot scroll to bottom.");
+
         return await Task.FromResult(Result.Success());
     }
 
