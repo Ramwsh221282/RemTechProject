@@ -12,6 +12,7 @@ using WebDriver.Application.Handlers;
 using WebDriver.Application.Queries.GetElement;
 using WebDriver.Application.Queries.GetElementInsideOfElement;
 using WebDriver.Application.Queries.GetElementsInsideOfElement;
+using WebDriver.Application.Queries.GetPageHtml;
 using WebDriver.Application.Queries.GetTextFromElement;
 using WebDriver.Core.Models;
 
@@ -69,6 +70,10 @@ public static class WebDriverPluginLoader
         services.AddScoped<
             IWebDriverQueryHandler<GetTextFromElementQuery, string>,
             GetTextElementFromQueryHandler
+        >();
+        services.AddScoped<
+            IWebDriverQueryHandler<GetPageHtmlQuery, string>,
+            GetPageHtmlQueryHandler
         >();
     }
 

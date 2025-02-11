@@ -2,6 +2,7 @@
 using WebDriver.Application.Injection;
 using WebDriver.Worker.Service.Contracts.ClickOnElement;
 using WebDriver.Worker.Service.Contracts.GetMultipleChildren;
+using WebDriver.Worker.Service.Contracts.GetPageHtml;
 using WebDriver.Worker.Service.Contracts.GetSingleChildElement;
 using WebDriver.Worker.Service.Contracts.GetSingleElement;
 using WebDriver.Worker.Service.Contracts.GetTextFromElement;
@@ -47,6 +48,7 @@ public static class WorkerInitialization
             GetTextFromElementContractHandler
         >();
         registration.RegisterContract<ClickOnElementContract, ClickOnElementContractHandler>();
+        registration.RegisterContract<GetPageHtmlContract, GetPageHtmlContractHandler>();
 
         registration.RegisterConnectionFactory(
             new SimpleConnectionFactory(hostname, username, password)

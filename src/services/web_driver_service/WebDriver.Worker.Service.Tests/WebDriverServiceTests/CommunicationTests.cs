@@ -519,4 +519,63 @@ public sealed class CommunicationTests
         publisher.Dispose();
         await worker.StopAsync(cancellationTokenSource.Token);
     }
+
+    [Fact]
+    public async Task Extract_HTML_Test()
+    {
+        _logger.Warning("Test 7");
+        _logger.Warning("Test 2");
+
+        Worker worker = _serviceProvider.GetRequiredService<Worker>();
+        using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        await worker.StartAsync(cancellationTokenSource.Token);
+
+        MultiCommunicationPublisher publisher = new MultiCommunicationPublisher(
+            queue,
+            localhost,
+            user,
+            password
+        );
+
+        ContractActionResult start_contract = await publisher.SendCommand(
+            new StartWebDriverContract("none")
+        );
+        Assert.True(start_contract.IsSuccess);
+        StartWebDriverContractResponse start_response =
+            start_contract.FromResult<StartWebDriverContractResponse>();
+        Assert.True(start_response.IsStarted);
+
+        ContractActionResult open_page_contract = await publisher.SendCommand(
+            new OpenWebDriverPageContract(avitoUrl)
+        );
+        Assert.True(open_page_contract.IsSuccess);
+        OpenWebDriverPageResponse open_page_response =
+            open_page_contract.FromResult<OpenWebDriverPageResponse>();
+        Assert.Equal(avitoUrl, open_page_response.OpenedUrl);
+
+        ContractActionResult scroll_page_down_contract = await publisher.SendCommand(
+            new ScrollPageDownContract()
+        );
+        Assert.True(scroll_page_down_contract.IsSuccess);
+        ScrollPageDownContractResponse scroll_page_down_response =
+            scroll_page_down_contract.FromResult<ScrollPageDownContractResponse>();
+        Assert.True(scroll_page_down_response.IsScrolled);
+
+        ContractActionResult scroll_page_top_contract = await publisher.SendCommand(
+            new ScrollPageTopContract()
+        );
+        Assert.True(scroll_page_top_contract.IsSuccess);
+        ScrollPageTopResponse scroll_page_top_response =
+            scroll_page_top_contract.FromResult<ScrollPageTopResponse>();
+        Assert.True(scroll_page_top_response.IsScrolled);
+
+        ContractActionResult extract_html = await publisher.SendCommand(new GetPageHtmlContract());
+        Assert.True(extract_html.IsSuccess);
+        var response = extract_html.FromResult<GetPageHtmlContractResponse>();
+        Assert.NotEqual(string.Empty, response.Html);
+        _logger.Information(response.Html);
+
+        ContractActionResult stopping = await publisher.SendCommand(new StopWebDriverContract());
+        Assert.True(stopping.IsSuccess);
+    }
 }

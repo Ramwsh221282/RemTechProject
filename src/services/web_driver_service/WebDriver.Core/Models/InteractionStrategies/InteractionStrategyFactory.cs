@@ -14,6 +14,8 @@ public static class InteractionStrategyFactory
     public static IInteractionStrategy<string> ExtractText(Guid elementId) =>
         new ExtractTextInteraction(elementId);
 
+    public static IInteractionStrategy<string> ExtractHtml() => new ExtractHtmlInteraction();
+
     public static IInteractionStrategy Click(Guid elementId) =>
         new ClickOnElementStrategy(elementId);
 }
