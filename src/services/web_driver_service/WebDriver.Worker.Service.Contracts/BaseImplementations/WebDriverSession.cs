@@ -15,5 +15,9 @@ public sealed class WebDriverSession(IMessagePublisher publisher) : IDisposable
     public async Task<Result> ExecuteBehavior(
         IWebDriverBehavior behavior,
         CancellationToken ct = default
-    ) => await behavior.Execute(publisher, ct);
+    )
+    {
+        Result execution = await behavior.Execute(publisher, ct);
+        return execution;
+    }
 }
