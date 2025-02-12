@@ -534,4 +534,68 @@ public sealed class RefactoredTransportTypesFeatureTest
         await publisher.Send(new StopWebDriverContract(), ct);
         await worker.StopAsync(ct);
     }
+
+    [Fact]
+    public async Task Customers_Radio_Buttons_Test()
+    {
+        const string param = "Компании";
+
+        const string pathType = "xpath";
+
+        const string containerPath = ".//div[@data-marker='user' and @role='group']";
+        const string containerName = "customers-type";
+
+        const string radioButtonPath = ".//label";
+        const string radioButton = "radio-button";
+
+        IMessagePublisher publisher = new MultiCommunicationPublisher(queue, host, user, password);
+        WebElementPool pool = new();
+
+        CompositeBehavior pipeLine = new CompositeBehavior(_logger)
+            .AddBehavior(
+                new StartBehavior("none"),
+                new OpenPageBehavior(avitoUrl).WithWait(10),
+                new ScrollToBottomBehavior(),
+                new ScrollToTopBehavior()
+            )
+            .AddBehavior(new GetSingleElementBehavior(pool, containerPath, pathType, containerName))
+            .AddBehavior(new ScrollToBottomBehavior())
+            .AddBehavior(
+                new DoForExactParent(
+                    pool,
+                    containerName,
+                    element => new GetChildrenBehavior(
+                        element,
+                        radioButton,
+                        radioButtonPath,
+                        pathType
+                    )
+                )
+            )
+            .AddBehavior(
+                new DoForAllChildren(
+                    pool,
+                    containerName,
+                    element => new InitializeTextBehavior(element)
+                )
+            )
+            .AddBehavior(
+                new DoForSpecificChildren(
+                    pool,
+                    containerName,
+                    el => el.Text == param,
+                    el => new SetCustomerTypeBehaviour(el)
+                )
+            );
+
+        using CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationToken ct = cts.Token;
+        using Worker worker = _serviceProvider.GetRequiredService<Worker>();
+        using WebDriverSession session = new(publisher);
+        await worker.StartAsync(ct);
+        Result result = await session.ExecuteBehavior(pipeLine, ct);
+        Assert.True(result.IsSuccess);
+        await publisher.Send(new StopWebDriverContract(), ct);
+        await worker.StopAsync(ct);
+    }
 }
