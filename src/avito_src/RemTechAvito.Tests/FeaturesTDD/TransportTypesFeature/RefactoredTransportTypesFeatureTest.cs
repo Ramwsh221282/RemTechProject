@@ -598,4 +598,93 @@ public sealed class RefactoredTransportTypesFeatureTest
         await publisher.Send(new StopWebDriverContract(), ct);
         await worker.StopAsync(ct);
     }
+
+    [Fact]
+    public async Task Rating_And_Official_Dealer_Test()
+    {
+        const string param = "Официальный дилер";
+
+        const string pathType = "xpath";
+
+        const string ratingFourStarsAndMorePath =
+            ".//label[@data-marker='params[115385]/checkbox/1212562']";
+        const string ratingFourStarsAndMore = "four-stars";
+
+        const string ratingCompaniesPath = ".//label[@data-marker='params[172422]/checkbox/1']";
+        const string ratingCompanies = "companies";
+
+        IMessagePublisher publisher = new MultiCommunicationPublisher(queue, host, user, password);
+        WebElementPool pool = new();
+
+        CompositeBehavior pipeLine = new CompositeBehavior(_logger)
+            .AddBehavior(
+                new StartBehavior("none"),
+                new OpenPageBehavior(avitoUrl).WithWait(10),
+                new ScrollToBottomBehavior(),
+                new ScrollToTopBehavior()
+            )
+            .AddBehavior(
+                new GetSingleElementBehavior(
+                    pool,
+                    ratingFourStarsAndMorePath,
+                    pathType,
+                    ratingFourStarsAndMore
+                )
+            )
+            .AddBehavior(
+                new GetSingleElementBehavior(pool, ratingCompaniesPath, pathType, ratingCompanies)
+            )
+            .AddBehavior(new ScrollToBottomBehavior())
+            .AddBehavior(new DoForAllParents(pool, element => new InitializeTextBehavior(element)))
+            .AddBehavior(
+                new DoForSpecificParents(
+                    pool,
+                    el => el.Text == param,
+                    el => new SetRatingDealerFilterBehavior(el)
+                )
+            );
+
+        using CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationToken ct = cts.Token;
+        using Worker worker = _serviceProvider.GetRequiredService<Worker>();
+        using WebDriverSession session = new(publisher);
+        await worker.StartAsync(ct);
+        Result result = await session.ExecuteBehavior(pipeLine, ct);
+        Assert.True(result.IsSuccess);
+        await publisher.Send(new StopWebDriverContract(), ct);
+        await worker.StopAsync(ct);
+    }
+
+    [Fact]
+    public async Task Submit_Filters_Button_Click()
+    {
+        const string pathType = "xpath";
+        const string path =
+            ".//button[@type='button' and @data-marker='search-filters/submit-button']";
+        const string name = "submit-filter-button";
+
+        IMessagePublisher publisher = new MultiCommunicationPublisher(queue, host, user, password);
+        WebElementPool pool = new();
+
+        CompositeBehavior pipeLine = new CompositeBehavior(_logger)
+            .AddBehavior(
+                new StartBehavior("none"),
+                new OpenPageBehavior(avitoUrl).WithWait(10),
+                new ScrollToBottomBehavior(),
+                new ScrollToTopBehavior()
+            )
+            .AddBehavior(new GetSingleElementBehavior(pool, path, pathType, name))
+            .AddBehavior(new ScrollToBottomBehavior())
+            .AddBehavior(new DoForExactParent(pool, name, el => new SetFiltersBehavior(el)));
+
+        using CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationToken ct = cts.Token;
+        using Worker worker = _serviceProvider.GetRequiredService<Worker>();
+        using WebDriverSession session = new(publisher);
+        await worker.StartAsync(ct);
+        Result result = await session.ExecuteBehavior(pipeLine, ct);
+        Assert.True(result.IsSuccess);
+        await publisher.Send(new StopWebDriverContract(), ct);
+        await worker.StopAsync(ct);
+    }
 }

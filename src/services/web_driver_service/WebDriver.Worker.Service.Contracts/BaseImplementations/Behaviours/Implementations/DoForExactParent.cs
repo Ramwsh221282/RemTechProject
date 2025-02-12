@@ -87,3 +87,31 @@ public sealed class DoForSpecificParents : DoForParent
         return Result.Success();
     }
 }
+
+public sealed class DoForAllParents : DoForParent
+{
+    public DoForAllParents(
+        WebElementPool pool,
+        params Func<WebElement, IWebDriverBehavior>[] behaviorFactories
+    )
+        : base(pool, string.Empty, behaviorFactories) { }
+
+    public override async Task<Result> Execute(
+        IMessagePublisher publisher,
+        CancellationToken ct = default
+    )
+    {
+        foreach (var parent in _pool.Elements)
+        {
+            foreach (var factory in _behaviorFactories)
+            {
+                IWebDriverBehavior behavior = factory.Invoke(parent);
+                Result execution = await behavior.Execute(publisher, ct);
+                if (execution.IsFailure)
+                    return execution;
+            }
+        }
+
+        return Result.Success();
+    }
+}
