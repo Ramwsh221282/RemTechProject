@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using WebDriver.Application.Commands.ClickOnElement;
 using WebDriver.Application.Commands.OpenPage;
+using WebDriver.Application.Commands.ScrollElement;
 using WebDriver.Application.Commands.ScrollToDown;
 using WebDriver.Application.Commands.ScrollToTop;
 using WebDriver.Application.Commands.SendTextOnElement;
@@ -55,6 +56,10 @@ public static class WebDriverPluginLoader
         services.AddScoped<
             IWebDriverCommandHandler<SendTextOnElementCommand>,
             SendTextOnElementCommandHandler
+        >();
+        services.AddScoped<
+            IWebDriverCommandHandler<ScrollElementCommand>,
+            ScrollElementCommandHandler
         >();
     }
 

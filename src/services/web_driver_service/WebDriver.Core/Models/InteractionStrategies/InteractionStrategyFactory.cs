@@ -31,4 +31,7 @@ public static class InteractionStrategyFactory
 
     public static IInteractionStrategy Click(Guid elementId) =>
         new ClickOnElementStrategy(elementId);
+
+    public static IInteractionStrategy ScrollElement(Guid elementId) =>
+        new ScrollElementStrategy(elementId);
 }

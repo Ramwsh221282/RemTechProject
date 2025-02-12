@@ -243,4 +243,100 @@ public sealed class RefactoredTransportTypesFeatureTest
         await publisher.Send(new StopWebDriverContract(), ct);
         await worker.StopAsync(ct);
     }
+
+    [Fact]
+    public async Task Get_Mark_Filters()
+    {
+        const string pathType = "xpath";
+
+        const string param = "LuGong";
+
+        const string popularMarkButtonXpath =
+            ".//button[@data-marker='popular-rubricator/controls/all']";
+        const string popularMarkButton = "popular-marks-button";
+
+        const string popularMarksRubricatorContainerXPath =
+            ".//div[@class='popular-rubricator-links-o9b47']";
+        const string popularMarksRubricatorName = "popular-marks-container";
+
+        const string popularMarkRubricatorLinkXPath =
+            ".//a[@data-marker='popular-rubricator/link']";
+        const string popularMarkRubricatorName = "popular-mark-rubricator";
+
+        IMessagePublisher publisher = new MultiCommunicationPublisher(queue, host, user, password);
+        WebElementPool pool = new();
+        CompositeBehavior pipeLine = new CompositeBehavior(_logger)
+            .AddBehavior(
+                new StartBehavior("none"),
+                new OpenPageBehavior(avitoUrl),
+                new ScrollToBottomBehavior(),
+                new ScrollToTopBehavior()
+            )
+            .AddBehavior(
+                new GetSingleElementBehavior(
+                    pool,
+                    popularMarkButtonXpath,
+                    pathType,
+                    popularMarkButton
+                )
+            )
+            .AddBehavior(
+                new DoForParent(
+                    pool,
+                    popularMarkButton,
+                    element => new ClickOnElementBehavior(element)
+                )
+            )
+            .AddBehavior(
+                new GetSingleElementBehavior(
+                    pool,
+                    popularMarksRubricatorContainerXPath,
+                    pathType,
+                    popularMarksRubricatorName
+                )
+            )
+            .AddBehavior(
+                new DoForParent(
+                    pool,
+                    popularMarksRubricatorName,
+                    element => new GetChildrenBehavior(
+                        element,
+                        popularMarkRubricatorName,
+                        popularMarkRubricatorLinkXPath,
+                        pathType
+                    )
+                )
+            )
+            .AddBehavior(
+                new DoForChildren(
+                    pool,
+                    popularMarksRubricatorName,
+                    element => new InitializeTextBehavior(element)
+                )
+            )
+            .AddBehavior(
+                new DoForParent(
+                    pool,
+                    popularMarksRubricatorName,
+                    element => new ExcludeChildsBehavior(element, child => child.Text != param)
+                )
+            )
+            .AddBehavior(
+                new DoForChildren(
+                    pool,
+                    popularMarksRubricatorName,
+                    element => new ClickOnElementBehavior(element)
+                )
+            );
+
+        using CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationToken ct = cts.Token;
+        using Worker worker = _serviceProvider.GetRequiredService<Worker>();
+        using WebDriverSession session = new(publisher);
+        await worker.StartAsync(ct);
+        Result result = await session.ExecuteBehavior(pipeLine, ct);
+        Assert.True(result.IsSuccess);
+        await publisher.Send(new StopWebDriverContract(), ct);
+        await worker.StopAsync(ct);
+    }
 }

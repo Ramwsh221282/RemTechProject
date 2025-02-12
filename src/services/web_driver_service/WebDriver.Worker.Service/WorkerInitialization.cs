@@ -9,6 +9,7 @@ using WebDriver.Worker.Service.Contracts.GetSingleChildElement;
 using WebDriver.Worker.Service.Contracts.GetSingleElement;
 using WebDriver.Worker.Service.Contracts.GetTextFromElement;
 using WebDriver.Worker.Service.Contracts.OpenWebDriverPage;
+using WebDriver.Worker.Service.Contracts.ScrollElement;
 using WebDriver.Worker.Service.Contracts.ScrollPageDown;
 using WebDriver.Worker.Service.Contracts.ScrollPageTop;
 using WebDriver.Worker.Service.Contracts.SendTextOnElement;
@@ -61,6 +62,7 @@ public static class WorkerInitialization
             GetElementAttributeValueContract,
             GetElementAttributeValueContractHandler
         >();
+        registration.RegisterContract<ScrollElementContract, ScrollElementContractHandler>();
 
         registration.RegisterConnectionFactory(
             new SimpleConnectionFactory(hostname, username, password)
