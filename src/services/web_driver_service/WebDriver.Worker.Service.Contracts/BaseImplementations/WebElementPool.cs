@@ -14,4 +14,7 @@ public sealed class WebElementPool
         var element = _elements.FirstOrDefault(predicate);
         return element == null ? new Error("No element with this predicate") : element;
     }
+
+    public IEnumerable<WebElement> GetWebElements(Func<WebElement, bool> predicate) =>
+        _elements.Where(predicate);
 }

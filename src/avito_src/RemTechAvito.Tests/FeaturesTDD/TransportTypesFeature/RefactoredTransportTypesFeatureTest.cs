@@ -77,7 +77,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForParent(
+                new DoForExactParent(
                     pool,
                     "filter-input",
                     [element => new ClickOnElementBehavior(element)]
@@ -92,7 +92,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForParent(
+                new DoForExactParent(
                     pool,
                     "check-boxes",
                     [
@@ -113,7 +113,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForParent(
+                new DoForExactParent(
                     pool,
                     parentName: "check-boxes",
                     behaviorFactories:
@@ -193,7 +193,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForParent(
+                new DoForExactParent(
                     pool,
                     "filter-input",
                     [element => new ClickOnElementBehavior(element)]
@@ -208,7 +208,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForParent(
+                new DoForExactParent(
                     pool,
                     "check-boxes",
                     [
@@ -229,7 +229,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForParent(
+                new DoForExactParent(
                     pool,
                     parentName: "check-boxes",
                     behaviorFactories: element => new SetAvitoTransportTypeFiltersBehavior(
@@ -284,7 +284,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForParent(
+                new DoForExactParent(
                     pool,
                     popularMarkButton,
                     element => new ClickOnElementBehavior(element)
@@ -299,7 +299,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForParent(
+                new DoForExactParent(
                     pool,
                     popularMarksRubricatorName,
                     element => new GetChildrenBehavior(
@@ -318,7 +318,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForParent(
+                new DoForExactParent(
                     pool,
                     popularMarksRubricatorName,
                     element => new ExcludeChildsBehavior(element, child => child.Text != param)
@@ -380,7 +380,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForParent(
+                new DoForExactParent(
                     pool,
                     popularMarkButton,
                     element => new ClickOnElementBehavior(element)
@@ -395,7 +395,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForParent(
+                new DoForExactParent(
                     pool,
                     popularMarksRubricatorName,
                     element => new GetChildrenBehavior(
@@ -414,7 +414,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForParent(
+                new DoForExactParent(
                     pool,
                     popularMarksRubricatorName,
                     element => new ExcludeChildsBehavior(
@@ -428,6 +428,54 @@ public sealed class RefactoredTransportTypesFeatureTest
                     pool,
                     popularMarksRubricatorName,
                     element => new SetAvitoMarkFiltersBehavior(element)
+                )
+            );
+
+        using CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationToken ct = cts.Token;
+        using Worker worker = _serviceProvider.GetRequiredService<Worker>();
+        using WebDriverSession session = new(publisher);
+        await worker.StartAsync(ct);
+        Result result = await session.ExecuteBehavior(pipeLine, ct);
+        Assert.True(result.IsSuccess);
+        await publisher.Send(new StopWebDriverContract(), ct);
+        await worker.StopAsync(ct);
+    }
+
+    [Fact]
+    public async Task State_Filters_Parsing_Test()
+    {
+        const string pathType = "xpath";
+
+        const string stateAllXpath = ".//label[@data-marker='params[110276]/all']";
+        const string stateAll = "Все";
+
+        const string stateNewXpath = ".//label[@data-marker='params[110276]/426646']";
+        const string stateNew = "Новые";
+
+        const string stateBUXpath = ".//label[@data-marker='params[110276]/426647']";
+        const string stateBU = "Б/у";
+
+        const string param = "Новые";
+
+        IMessagePublisher publisher = new MultiCommunicationPublisher(queue, host, user, password);
+        WebElementPool pool = new();
+
+        CompositeBehavior pipeLine = new CompositeBehavior(_logger)
+            .AddBehavior(
+                new StartBehavior("none"),
+                new OpenPageBehavior(avitoUrl).WithWait(10),
+                new ScrollToBottomBehavior(),
+                new ScrollToTopBehavior()
+            )
+            .AddBehavior(new GetSingleElementBehavior(pool, stateAllXpath, pathType, stateAll))
+            .AddBehavior(new GetSingleElementBehavior(pool, stateNewXpath, pathType, stateNew))
+            .AddBehavior(new GetSingleElementBehavior(pool, stateBUXpath, pathType, stateBU))
+            .AddBehavior(
+                new DoForSpecificParents(
+                    pool,
+                    el => el.Name == param,
+                    el => new ClickOnElementBehavior(el)
                 )
             );
 
