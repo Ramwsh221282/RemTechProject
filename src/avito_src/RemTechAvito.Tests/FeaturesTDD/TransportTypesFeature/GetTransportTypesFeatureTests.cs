@@ -2,9 +2,8 @@
 using Rabbit.RPC.Client.Abstractions;
 using RemTechAvito.Tests.FeaturesTDD.TransportTypesFeature.Models;
 using Serilog;
-using WebDriver.Application.Queries.GetElementAttribute;
 using WebDriver.Worker.Service;
-using WebDriver.Worker.Service.Contracts;
+using WebDriver.Worker.Service.Contracts.BaseContracts;
 using WebDriver.Worker.Service.Contracts.Responses;
 
 namespace RemTechAvito.Tests.FeaturesTDD.TransportTypesFeature;
@@ -47,31 +46,25 @@ public sealed class GetTransportTypesFeatureTests
             password
         );
 
-        ContractActionResult startDriver = await publisher.SendCommand(
+        ContractActionResult startDriver = await publisher.Send(
             new StartWebDriverContract("none"),
             ct
         );
         Assert.True(startDriver.IsSuccess);
 
-        ContractActionResult openPage = await publisher.SendCommand(
+        ContractActionResult openPage = await publisher.Send(
             new OpenWebDriverPageContract(avitoUrl),
             ct
         );
         Assert.True(openPage.IsSuccess);
 
-        ContractActionResult scrollDown = await publisher.SendCommand(
-            new ScrollPageDownContract(),
-            ct
-        );
+        ContractActionResult scrollDown = await publisher.Send(new ScrollPageDownContract(), ct);
         Assert.True(scrollDown.IsSuccess);
 
-        ContractActionResult scrollTop = await publisher.SendCommand(
-            new ScrollPageTopContract(),
-            ct
-        );
+        ContractActionResult scrollTop = await publisher.Send(new ScrollPageTopContract(), ct);
         Assert.True(scrollTop.IsSuccess);
 
-        ContractActionResult getTransportTypesFilterContainer = await publisher.SendCommand(
+        ContractActionResult getTransportTypesFilterContainer = await publisher.Send(
             new GetSingleElementContract(
                 AvitoTransportTypesWebElement.InputElementPath,
                 AvitoTransportTypesWebElement.InputElementPathType
@@ -82,13 +75,13 @@ public sealed class GetTransportTypesFeatureTests
         WebElementResponse filterContainer =
             getTransportTypesFilterContainer.FromResult<WebElementResponse>();
 
-        ContractActionResult clickOnFiltersElement = await publisher.SendCommand(
+        ContractActionResult clickOnFiltersElement = await publisher.Send(
             new ClickOnElementContract(filterContainer),
             ct
         );
         Assert.True(clickOnFiltersElement.IsSuccess);
 
-        ContractActionResult getFilterLists = await publisher.SendCommand(
+        ContractActionResult getFilterLists = await publisher.Send(
             new GetSingleElementContract(
                 AvitoTransportTypesWebElement.ElementsListContainerPath,
                 AvitoTransportTypesWebElement.InputElementPathType
@@ -98,7 +91,7 @@ public sealed class GetTransportTypesFeatureTests
         Assert.True(getFilterLists.IsSuccess);
         WebElementResponse filterList = getFilterLists.FromResult<WebElementResponse>();
 
-        ContractActionResult getListItems = await publisher.SendCommand(
+        ContractActionResult getListItems = await publisher.Send(
             new GetMultipleChildrenContract(
                 filterList,
                 AvitoTransportTypesWebElement.ElementCheckBoxPath,
@@ -111,20 +104,20 @@ public sealed class GetTransportTypesFeatureTests
 
         foreach (var element in items)
         {
-            ContractActionResult getText = await publisher.SendCommand(
+            ContractActionResult getText = await publisher.Send(
                 new GetTextFromElementContract(element),
                 ct
             );
             Assert.True(getText.IsSuccess);
             string text = getText.FromResult<string>();
             _logger.Information("Text from checkbbox: {Text}", text);
-            ContractActionResult click = await publisher.SendCommand(
+            ContractActionResult click = await publisher.Send(
                 new ClickOnElementContract(element),
                 ct
             );
         }
 
-        ContractActionResult stop = await publisher.SendCommand(new StopWebDriverContract(), ct);
+        ContractActionResult stop = await publisher.Send(new StopWebDriverContract(), ct);
         Assert.True(stop.IsSuccess);
 
         publisher.Dispose();
@@ -146,31 +139,25 @@ public sealed class GetTransportTypesFeatureTests
             password
         );
 
-        ContractActionResult startDriver = await publisher.SendCommand(
+        ContractActionResult startDriver = await publisher.Send(
             new StartWebDriverContract("none"),
             ct
         );
         Assert.True(startDriver.IsSuccess);
 
-        ContractActionResult openPage = await publisher.SendCommand(
+        ContractActionResult openPage = await publisher.Send(
             new OpenWebDriverPageContract(avitoUrl),
             ct
         );
         Assert.True(openPage.IsSuccess);
 
-        ContractActionResult scrollDown = await publisher.SendCommand(
-            new ScrollPageDownContract(),
-            ct
-        );
+        ContractActionResult scrollDown = await publisher.Send(new ScrollPageDownContract(), ct);
         Assert.True(scrollDown.IsSuccess);
 
-        ContractActionResult scrollTop = await publisher.SendCommand(
-            new ScrollPageTopContract(),
-            ct
-        );
+        ContractActionResult scrollTop = await publisher.Send(new ScrollPageTopContract(), ct);
         Assert.True(scrollTop.IsSuccess);
 
-        ContractActionResult getTransportTypesFilterContainer = await publisher.SendCommand(
+        ContractActionResult getTransportTypesFilterContainer = await publisher.Send(
             new GetSingleElementContract(
                 AvitoTransportTypesWebElement.InputElementPath,
                 AvitoTransportTypesWebElement.InputElementPathType
@@ -181,13 +168,13 @@ public sealed class GetTransportTypesFeatureTests
         WebElementResponse filterContainer =
             getTransportTypesFilterContainer.FromResult<WebElementResponse>();
 
-        ContractActionResult clickOnFiltersElement = await publisher.SendCommand(
+        ContractActionResult clickOnFiltersElement = await publisher.Send(
             new ClickOnElementContract(filterContainer),
             ct
         );
         Assert.True(clickOnFiltersElement.IsSuccess);
 
-        ContractActionResult getFilterLists = await publisher.SendCommand(
+        ContractActionResult getFilterLists = await publisher.Send(
             new GetSingleElementContract(
                 AvitoTransportTypesWebElement.ElementsListContainerPath,
                 AvitoTransportTypesWebElement.InputElementPathType
@@ -197,7 +184,7 @@ public sealed class GetTransportTypesFeatureTests
         Assert.True(getFilterLists.IsSuccess);
         WebElementResponse filterList = getFilterLists.FromResult<WebElementResponse>();
 
-        ContractActionResult getListItems = await publisher.SendCommand(
+        ContractActionResult getListItems = await publisher.Send(
             new GetMultipleChildrenContract(
                 filterList,
                 AvitoTransportTypesWebElement.ElementCheckBoxPath,
@@ -213,7 +200,7 @@ public sealed class GetTransportTypesFeatureTests
         {
             if (filterLimit == 10)
                 break;
-            ContractActionResult getText = await publisher.SendCommand(
+            ContractActionResult getText = await publisher.Send(
                 new GetTextFromElementContract(element),
                 ct
             );
@@ -226,7 +213,7 @@ public sealed class GetTransportTypesFeatureTests
             {
                 while (true) // clicking until is success click result.
                 {
-                    ContractActionResult click = await publisher.SendCommand(
+                    ContractActionResult click = await publisher.Send(
                         new ClickOnElementContract(element),
                         ct
                     );
@@ -234,7 +221,7 @@ public sealed class GetTransportTypesFeatureTests
                         break;
                 }
 
-                ContractActionResult isCheckedAttribute = await publisher.SendCommand( // getting checkbox checked attribute
+                ContractActionResult isCheckedAttribute = await publisher.Send( // getting checkbox checked attribute
                     new GetElementAttributeValueContract(
                         element,
                         AvitoTransportTypesWebElement.CheckBoxCheckedAttribute
@@ -249,7 +236,7 @@ public sealed class GetTransportTypesFeatureTests
             }
         }
 
-        ContractActionResult stop = await publisher.SendCommand(new StopWebDriverContract(), ct);
+        ContractActionResult stop = await publisher.Send(new StopWebDriverContract(), ct);
         Assert.True(stop.IsSuccess);
 
         publisher.Dispose();
@@ -259,6 +246,7 @@ public sealed class GetTransportTypesFeatureTests
     [Fact]
     public async Task Click_On_Transport_Type_CheckBoxes_With_Parameters_Test()
     {
+        // Input parameters. Can come from request.
         string[] parameters =
         [
             "Боковой погрузчик",
@@ -279,48 +267,50 @@ public sealed class GetTransportTypesFeatureTests
             password
         );
 
-        ContractActionResult startDriver = await publisher.SendCommand(
+        // Start web driver logic
+        ContractActionResult startDriver = await publisher.Send(
             new StartWebDriverContract("none"),
             ct
         );
         Assert.True(startDriver.IsSuccess);
 
-        ContractActionResult openPage = await publisher.SendCommand(
+        // Open web page driver logic
+        ContractActionResult openPage = await publisher.Send(
             new OpenWebDriverPageContract(avitoUrl),
             ct
         );
         Assert.True(openPage.IsSuccess);
 
-        ContractActionResult scrollDown = await publisher.SendCommand(
-            new ScrollPageDownContract(),
-            ct
-        );
+        // Scroll down driver logic
+        ContractActionResult scrollDown = await publisher.Send(new ScrollPageDownContract(), ct);
         Assert.True(scrollDown.IsSuccess);
 
-        ContractActionResult scrollTop = await publisher.SendCommand(
-            new ScrollPageTopContract(),
-            ct
-        );
+        // Scroll top driver logic
+        ContractActionResult scrollTop = await publisher.Send(new ScrollPageTopContract(), ct);
         Assert.True(scrollTop.IsSuccess);
 
-        ContractActionResult getTransportTypesFilterContainer = await publisher.SendCommand(
+        // Get New Single Element logic
+        ContractActionResult getTransportTypesFilterContainer = await publisher.Send(
             new GetSingleElementContract(
                 AvitoTransportTypesWebElement.InputElementPath,
                 AvitoTransportTypesWebElement.InputElementPathType
             ),
             ct
         );
+
         Assert.True(getTransportTypesFilterContainer.IsSuccess);
         WebElementResponse filterContainer =
             getTransportTypesFilterContainer.FromResult<WebElementResponse>();
 
-        ContractActionResult clickOnFiltersElement = await publisher.SendCommand(
+        // Click on element logic
+        ContractActionResult clickOnFiltersElement = await publisher.Send(
             new ClickOnElementContract(filterContainer),
             ct
         );
         Assert.True(clickOnFiltersElement.IsSuccess);
 
-        ContractActionResult getFilterLists = await publisher.SendCommand(
+        // Get single new element logic
+        ContractActionResult getFilterLists = await publisher.Send(
             new GetSingleElementContract(
                 AvitoTransportTypesWebElement.ElementsListContainerPath,
                 AvitoTransportTypesWebElement.InputElementPathType
@@ -330,7 +320,8 @@ public sealed class GetTransportTypesFeatureTests
         Assert.True(getFilterLists.IsSuccess);
         WebElementResponse filterList = getFilterLists.FromResult<WebElementResponse>();
 
-        ContractActionResult getListItems = await publisher.SendCommand(
+        // Get childs collection
+        ContractActionResult getListItems = await publisher.Send(
             new GetMultipleChildrenContract(
                 filterList,
                 AvitoTransportTypesWebElement.ElementCheckBoxPath,
@@ -339,11 +330,13 @@ public sealed class GetTransportTypesFeatureTests
             ct
         );
         Assert.True(getListItems.IsSuccess);
+
+        // Get text from elements logic
         WebElementResponse[] items = getListItems.FromResult<WebElementResponse[]>();
         List<AvitoTransportTypesWebElement> types = [];
         foreach (var item in items)
         {
-            ContractActionResult getText = await publisher.SendCommand(
+            ContractActionResult getText = await publisher.Send(
                 new GetTextFromElementContract(item),
                 ct
             );
@@ -352,19 +345,20 @@ public sealed class GetTransportTypesFeatureTests
                 types.Add(new AvitoTransportTypesWebElement() { Name = text, Element = item });
         }
 
+        // Get Attributes
         List<AvitoTransportTypesWebElement> clickedCheckboxNames = [];
         Assert.Equal(parameters.Length, types.Count);
         for (int index = 0; index < types.Count; index++)
         {
             while (true) // clicking until is success click result.
             {
-                ContractActionResult click = await publisher.SendCommand(
+                ContractActionResult click = await publisher.Send(
                     new ClickOnElementContract(types[index].Element!),
                     ct
                 );
                 if (!click.IsSuccess)
                     continue;
-                ContractActionResult isCheckedAttribute = await publisher.SendCommand( // getting checkbox checked attribute
+                ContractActionResult isCheckedAttribute = await publisher.Send( // getting checkbox checked attribute
                     new GetElementAttributeValueContract(
                         types[index].Element!,
                         AvitoTransportTypesWebElement.CheckBoxCheckedAttribute
@@ -381,7 +375,7 @@ public sealed class GetTransportTypesFeatureTests
 
         Assert.Equal(parameters.Length, clickedCheckboxNames.Count);
 
-        ContractActionResult stop = await publisher.SendCommand(new StopWebDriverContract(), ct);
+        ContractActionResult stop = await publisher.Send(new StopWebDriverContract(), ct);
         Assert.True(stop.IsSuccess);
 
         publisher.Dispose();

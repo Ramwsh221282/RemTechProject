@@ -5,7 +5,7 @@ namespace Rabbit.RPC.Client.Abstractions;
 /// <summary>
 /// The publisher variant that sends message untill channel and connection closed. Doesnt' dispose channel and connection per message.
 /// </summary>
-public sealed class MultiCommunicationPublisher : IDisposable
+public sealed class MultiCommunicationPublisher : IMessagePublisher, IDisposable
 {
     private readonly IConnectionFactory _factory;
     private readonly string _queueName;
@@ -39,7 +39,7 @@ public sealed class MultiCommunicationPublisher : IDisposable
         _isInitialized = true;
     }
 
-    public async Task<ContractActionResult> SendCommand<TMessage>(
+    public async Task<ContractActionResult> Send<TMessage>(
         TMessage message,
         CancellationToken ct = default
     )

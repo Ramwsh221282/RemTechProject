@@ -5,7 +5,7 @@ namespace Rabbit.RPC.Client.Abstractions;
 /// <summary>
 /// Publisher version that creates connection, craetes channel, sends and waits for message then closes channels and connections.
 /// </summary>
-public sealed class SingleCommunicationPublisher
+public sealed class SingleCommunicationPublisher : IMessagePublisher
 {
     private readonly IConnectionFactory _factory;
     private readonly string _queueName;
@@ -26,7 +26,7 @@ public sealed class SingleCommunicationPublisher
         };
     }
 
-    public async Task<ContractActionResult> SendCommand<TMessage>(
+    public async Task<ContractActionResult> Send<TMessage>(
         TMessage message,
         CancellationToken ct = default
     )
