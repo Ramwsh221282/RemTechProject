@@ -46,7 +46,7 @@ public sealed record WebElement(WebElementResponse Model, string Name)
 
     public void ExcludeChilds(Predicate<WebElement> predicate) => _childs.RemoveAll(predicate);
 
-    public async Task ExecuteForChilds(
+    public async Task<Result> ExecuteForChilds(
         IMessagePublisher publisher,
         Func<WebElement, IWebDriverBehavior> factory,
         CancellationToken ct = default
@@ -60,11 +60,43 @@ public sealed record WebElement(WebElementResponse Model, string Name)
         {
             WebElement current = stack.Pop();
             IWebDriverBehavior behavior = factory(current);
-            await behavior.Execute(publisher, ct);
+            Result execution = await behavior.Execute(publisher, ct);
+
+            if (execution.IsFailure)
+                return execution;
 
             foreach (WebElement child in current.Childs.Reverse())
                 stack.Push(child);
         }
+
+        return Result.Success();
+    }
+
+    public async Task<Result> ExecuteForChilds(
+        IMessagePublisher publisher,
+        Func<WebElement, IWebDriverBehavior> factory,
+        Func<WebElement, bool> predicate,
+        CancellationToken ct = default
+    )
+    {
+        Stack<WebElement> stack = new();
+        foreach (WebElement child in this.Childs.Where(predicate).Reverse())
+            stack.Push(child);
+
+        while (stack.Count > 0)
+        {
+            WebElement current = stack.Pop();
+            IWebDriverBehavior behavior = factory(current);
+            Result execution = await behavior.Execute(publisher, ct);
+
+            if (execution.IsFailure)
+                return execution;
+
+            foreach (WebElement child in current.Childs.Where(predicate).Reverse())
+                stack.Push(child);
+        }
+
+        return Result.Success();
     }
 
     public static WebElement FromParent(WebElement parent, WebElementResponse child, string name)

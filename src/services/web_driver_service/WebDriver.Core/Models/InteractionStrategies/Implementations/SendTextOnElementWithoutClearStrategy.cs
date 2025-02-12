@@ -3,18 +3,18 @@ using RemTechCommon.Utils.ResultPattern;
 
 namespace WebDriver.Core.Models.InteractionStrategies.Implementations;
 
-internal sealed class SendTextOnElementStrategy : IInteractionStrategy<string>
+internal sealed class SendTextOnElementWithoutClearStrategy : IInteractionStrategy
 {
     private readonly Guid _id;
     private readonly string _text;
 
-    public SendTextOnElementStrategy(Guid id, string text)
+    public SendTextOnElementWithoutClearStrategy(Guid id, string text)
     {
         _id = id;
         _text = text;
     }
 
-    public async Task<Result<string>> Perform(WebDriverInstance instance)
+    public async Task<Result> Perform(WebDriverInstance instance)
     {
         Result<IWebDriver> requested = instance.GetRunningDriver();
         if (requested.IsFailure)
@@ -29,13 +29,12 @@ internal sealed class SendTextOnElementStrategy : IInteractionStrategy<string>
 
         try
         {
-            model.Clear();
             model.SendKeys(_text);
-            return await Task.FromResult(_text);
+            return await Task.FromResult(Result.Success());
         }
         catch (Exception ex)
         {
-            return new Error($"Can't write text in element: {_id}. Error: {ex.Message}");
+            return new Error($"Can't write text in element: {_id}");
         }
     }
 }

@@ -23,15 +23,18 @@ public static class InteractionStrategyFactory
     public static IInteractionStrategy<string> ExtractHtml(Guid elementId) =>
         new ExtractElementHtmlInteraction(elementId);
 
-    public static IInteractionStrategy<string> SendText(
-        Guid elementId,
-        string text,
-        ILogger logger
-    ) => new SendTextOnElementStrategy(elementId, text, logger);
+    public static IInteractionStrategy<string> SendText(Guid elementId, string text) =>
+        new SendTextOnElementStrategy(elementId, text);
 
     public static IInteractionStrategy Click(Guid elementId) =>
         new ClickOnElementStrategy(elementId);
 
     public static IInteractionStrategy ScrollElement(Guid elementId) =>
         new ScrollElementStrategy(elementId);
+
+    public static IInteractionStrategy SendTextNoClear(Guid elementId, string text) =>
+        new SendTextOnElementWithoutClearStrategy(elementId, text);
+
+    public static IInteractionStrategy ClearText(Guid elementId) =>
+        new ClearTextStrategy(elementId);
 }

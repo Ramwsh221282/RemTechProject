@@ -106,10 +106,10 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForChildren(
+                new DoForAllChildren(
                     pool,
                     parentName: "check-boxes",
-                    behaviorFactories: [element => new InitializeTextBehavior(element)]
+                    factories: [element => new InitializeTextBehavior(element)]
                 )
             )
             .AddBehavior(
@@ -126,17 +126,17 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForChildren(
+                new DoForAllChildren(
                     pool,
                     parentName: "check-boxes",
-                    behaviorFactories: [element => new ClickOnElementBehavior(element).WithWait(5)]
+                    factories: [element => new ClickOnElementBehavior(element).WithWait(5)]
                 )
             )
             .AddBehavior(
-                new DoForChildren(
+                new DoForAllChildren(
                     pool,
                     parentName: "check-boxes",
-                    behaviorFactories:
+                    factories:
                     [
                         element => new InitializeAttributeBehavior(element, checkedAttribute),
                     ]
@@ -222,17 +222,20 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForChildren(
+                new DoForAllChildren(
                     pool,
                     parentName: "check-boxes",
-                    behaviorFactories: [element => new InitializeTextBehavior(element)]
+                    factories: [element => new InitializeTextBehavior(element)]
                 )
             )
             .AddBehavior(
                 new DoForParent(
                     pool,
                     parentName: "check-boxes",
-                    behaviorFactories: element => new SetAvitoFiltersBehavior(element, parameters)
+                    behaviorFactories: element => new SetAvitoTransportTypeFiltersBehavior(
+                        element,
+                        parameters
+                    )
                 )
             );
 
@@ -308,7 +311,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForChildren(
+                new DoForAllChildren(
                     pool,
                     popularMarksRubricatorName,
                     element => new InitializeTextBehavior(element)
@@ -322,10 +325,109 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForChildren(
+                new DoForAllChildren(
                     pool,
                     popularMarksRubricatorName,
                     element => new ClickOnElementBehavior(element)
+                )
+            );
+
+        using CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationToken ct = cts.Token;
+        using Worker worker = _serviceProvider.GetRequiredService<Worker>();
+        using WebDriverSession session = new(publisher);
+        await worker.StartAsync(ct);
+        Result result = await session.ExecuteBehavior(pipeLine, ct);
+        Assert.True(result.IsSuccess);
+        await publisher.Send(new StopWebDriverContract(), ct);
+        await worker.StopAsync(ct);
+    }
+
+    [Fact]
+    public async Task Marker_Filters_Interaction_With_Parameter()
+    {
+        const string pathType = "xpath";
+
+        string[] parameters = ["LuGong", "BIZON", "Forward"];
+
+        const string popularMarkButtonXpath =
+            ".//button[@data-marker='popular-rubricator/controls/all']";
+        const string popularMarkButton = "popular-marks-button";
+
+        const string popularMarksRubricatorContainerXPath =
+            ".//div[@class='popular-rubricator-links-o9b47']";
+        const string popularMarksRubricatorName = "popular-marks-container";
+
+        const string popularMarkRubricatorLinkXPath =
+            ".//a[@data-marker='popular-rubricator/link']";
+        const string popularMarkRubricatorName = "popular-mark-rubricator";
+
+        IMessagePublisher publisher = new MultiCommunicationPublisher(queue, host, user, password);
+        WebElementPool pool = new();
+        CompositeBehavior pipeLine = new CompositeBehavior(_logger)
+            .AddBehavior(
+                new StartBehavior("none"),
+                new OpenPageBehavior(avitoUrl),
+                new ScrollToBottomBehavior(),
+                new ScrollToTopBehavior()
+            )
+            .AddBehavior(
+                new GetSingleElementBehavior(
+                    pool,
+                    popularMarkButtonXpath,
+                    pathType,
+                    popularMarkButton
+                )
+            )
+            .AddBehavior(
+                new DoForParent(
+                    pool,
+                    popularMarkButton,
+                    element => new ClickOnElementBehavior(element)
+                )
+            )
+            .AddBehavior(
+                new GetSingleElementBehavior(
+                    pool,
+                    popularMarksRubricatorContainerXPath,
+                    pathType,
+                    popularMarksRubricatorName
+                )
+            )
+            .AddBehavior(
+                new DoForParent(
+                    pool,
+                    popularMarksRubricatorName,
+                    element => new GetChildrenBehavior(
+                        element,
+                        popularMarkRubricatorName,
+                        popularMarkRubricatorLinkXPath,
+                        pathType
+                    )
+                )
+            )
+            .AddBehavior(
+                new DoForAllChildren(
+                    pool,
+                    popularMarksRubricatorName,
+                    element => new InitializeTextBehavior(element)
+                )
+            )
+            .AddBehavior(
+                new DoForParent(
+                    pool,
+                    popularMarksRubricatorName,
+                    element => new ExcludeChildsBehavior(
+                        element,
+                        child => parameters.All(param => child.Text != param)
+                    )
+                )
+            )
+            .AddBehavior(
+                new DoForAllChildren(
+                    pool,
+                    popularMarksRubricatorName,
+                    element => new SetAvitoMarkFiltersBehavior(element)
                 )
             );
 

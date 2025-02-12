@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using WebDriver.Application.Commands.ClearText;
 using WebDriver.Application.Commands.ClickOnElement;
 using WebDriver.Application.Commands.OpenPage;
 using WebDriver.Application.Commands.ScrollElement;
 using WebDriver.Application.Commands.ScrollToDown;
 using WebDriver.Application.Commands.ScrollToTop;
 using WebDriver.Application.Commands.SendTextOnElement;
+using WebDriver.Application.Commands.SendTextOnElementWithoutClear;
 using WebDriver.Application.Commands.StartWebDriver;
 using WebDriver.Application.Commands.StopWebDriver;
 using WebDriver.Application.DTO;
@@ -61,6 +63,11 @@ public static class WebDriverPluginLoader
             IWebDriverCommandHandler<ScrollElementCommand>,
             ScrollElementCommandHandler
         >();
+        services.AddScoped<
+            IWebDriverCommandHandler<SendTextOnElementWithoutClearCommand>,
+            SendTextOnElementWithoutClearCommandHandler
+        >();
+        services.AddScoped<IWebDriverCommandHandler<ClearTextCommand>, ClearTextCommandHandler>();
     }
 
     private static void RegisterQueries(this IServiceCollection services)
