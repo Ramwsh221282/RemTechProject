@@ -1,0 +1,14 @@
+﻿using Rabbit.RPC.Client.Abstractions;
+using RemTechCommon.Utils.ResultPattern;
+using WebDriver.Worker.Service.Contracts.BaseContracts;
+
+namespace WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implementations;
+
+public class StartBehavior(string startStrategy) : IWebDriverBehavior
+{
+    public async Task<Result> Execute(IMessagePublisher publisher, CancellationToken ct = default)
+    {
+        var result = await publisher.Send(new StartWebDriverContract(startStrategy), ct);
+        return result.ToResult();
+    }
+}

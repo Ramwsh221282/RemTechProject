@@ -28,8 +28,7 @@ internal sealed class SendTextOnElementCommandHandler(
 
         IInteractionStrategy<string> strategy = InteractionStrategyFactory.SendText(
             data.ExistingId,
-            text,
-            logger
+            text
         );
 
         Result<string> input = await instance.PerformInteraction(strategy);

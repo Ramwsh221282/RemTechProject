@@ -2,6 +2,7 @@
 using Rabbit.RPC.Client.Abstractions;
 using Serilog;
 using WebDriver.Worker.Service.Contracts;
+using WebDriver.Worker.Service.Contracts.BaseContracts;
 using WebDriver.Worker.Service.Contracts.Responses;
 
 namespace WebDriver.Worker.Service.Tests.WebDriverServiceTests;
@@ -47,21 +48,19 @@ public sealed class CommunicationTests
             password
         );
 
-        ContractActionResult result_1 = await publisher.SendCommand(
-            new StartWebDriverContract("none")
-        );
+        ContractActionResult result_1 = await publisher.Send(new StartWebDriverContract("none"));
         Assert.True(result_1.IsSuccess);
         bool response_1 = result_1.FromResult<bool>();
         Assert.True(response_1);
 
-        ContractActionResult result_2 = await publisher.SendCommand(
+        ContractActionResult result_2 = await publisher.Send(
             new OpenWebDriverPageContract(avitoUrl)
         );
         Assert.True(result_2.IsSuccess);
         bool response_2 = result_2.FromResult<bool>();
         Assert.True(response_2);
 
-        ContractActionResult result_3 = await publisher.SendCommand(new StopWebDriverContract());
+        ContractActionResult result_3 = await publisher.Send(new StopWebDriverContract());
         Assert.True(result_3.IsSuccess);
         bool response = result_3.FromResult<bool>();
         Assert.True(response);
@@ -85,28 +84,28 @@ public sealed class CommunicationTests
             password
         );
 
-        ContractActionResult start_contract = await publisher.SendCommand(
+        ContractActionResult start_contract = await publisher.Send(
             new StartWebDriverContract("none")
         );
         Assert.True(start_contract.IsSuccess);
         bool start_response = start_contract.FromResult<bool>();
         Assert.True(start_response);
 
-        ContractActionResult open_page_contract = await publisher.SendCommand(
+        ContractActionResult open_page_contract = await publisher.Send(
             new OpenWebDriverPageContract(avitoUrl)
         );
         Assert.True(open_page_contract.IsSuccess);
         bool open_page_response = open_page_contract.FromResult<bool>();
         Assert.True(open_page_response);
 
-        ContractActionResult scroll_page_down_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_down_contract = await publisher.Send(
             new ScrollPageDownContract()
         );
         Assert.True(scroll_page_down_contract.IsSuccess);
         bool scroll_page_down_response = scroll_page_down_contract.FromResult<bool>();
         Assert.True(scroll_page_down_response);
 
-        ContractActionResult scroll_page_top_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_top_contract = await publisher.Send(
             new ScrollPageTopContract()
         );
         Assert.True(scroll_page_top_contract.IsSuccess);
@@ -115,7 +114,7 @@ public sealed class CommunicationTests
 
         string path_element_1 = ".//div[@class='form-mainFilters-y0xZT']";
         string path_type_element_1 = "xpath";
-        ContractActionResult get_element_1 = await publisher.SendCommand(
+        ContractActionResult get_element_1 = await publisher.Send(
             new GetSingleElementContract(path_element_1, path_type_element_1)
         );
         Assert.True(get_element_1.IsSuccess);
@@ -124,7 +123,7 @@ public sealed class CommunicationTests
         Assert.Equal(path_type_element_1, get_element_1_response.ElementPathType);
         Assert.True(get_element_1_response.ElementId != Guid.Empty);
 
-        ContractActionResult stop_driver_contract = await publisher.SendCommand(
+        ContractActionResult stop_driver_contract = await publisher.Send(
             new StopWebDriverContract()
         );
         Assert.True(stop_driver_contract.IsSuccess);
@@ -151,28 +150,28 @@ public sealed class CommunicationTests
             password
         );
 
-        ContractActionResult start_contract = await publisher.SendCommand(
+        ContractActionResult start_contract = await publisher.Send(
             new StartWebDriverContract("none")
         );
         Assert.True(start_contract.IsSuccess);
         bool start_response = start_contract.FromResult<bool>();
         Assert.True(start_response);
 
-        ContractActionResult open_page_contract = await publisher.SendCommand(
+        ContractActionResult open_page_contract = await publisher.Send(
             new OpenWebDriverPageContract(avitoUrl)
         );
         Assert.True(open_page_contract.IsSuccess);
         bool open_page_response = open_page_contract.FromResult<bool>();
         Assert.True(open_page_response);
 
-        ContractActionResult scroll_page_down_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_down_contract = await publisher.Send(
             new ScrollPageDownContract()
         );
         Assert.True(scroll_page_down_contract.IsSuccess);
         bool scroll_page_down_response = scroll_page_down_contract.FromResult<bool>();
         Assert.True(scroll_page_down_response);
 
-        ContractActionResult scroll_page_top_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_top_contract = await publisher.Send(
             new ScrollPageTopContract()
         );
         Assert.True(scroll_page_top_contract.IsSuccess);
@@ -181,7 +180,7 @@ public sealed class CommunicationTests
 
         string path_element_1 = ".//div[@class='form-mainFilters-y0xZT']";
         string path_type_element_1 = "xpath";
-        ContractActionResult get_element_1 = await publisher.SendCommand(
+        ContractActionResult get_element_1 = await publisher.Send(
             new GetSingleElementContract(path_element_1, path_type_element_1)
         );
         Assert.True(get_element_1.IsSuccess);
@@ -192,7 +191,7 @@ public sealed class CommunicationTests
 
         string path_element_2 = "form";
         string type_element_2 = "tag";
-        ContractActionResult get_child_element_1 = await publisher.SendCommand(
+        ContractActionResult get_child_element_1 = await publisher.Send(
             new GetSingleChildElementContract(
                 get_element_1_response,
                 path_element_2,
@@ -206,7 +205,7 @@ public sealed class CommunicationTests
         Assert.Equal(type_element_2, get_child_element_1_response.ElementPathType);
         Assert.True(get_child_element_1_response.ElementId != Guid.Empty);
 
-        ContractActionResult stop_driver_contract = await publisher.SendCommand(
+        ContractActionResult stop_driver_contract = await publisher.Send(
             new StopWebDriverContract()
         );
         Assert.True(stop_driver_contract.IsSuccess);
@@ -233,28 +232,28 @@ public sealed class CommunicationTests
             password
         );
 
-        ContractActionResult start_contract = await publisher.SendCommand(
+        ContractActionResult start_contract = await publisher.Send(
             new StartWebDriverContract("none")
         );
         Assert.True(start_contract.IsSuccess);
         bool start_response = start_contract.FromResult<bool>();
         Assert.True(start_response);
 
-        ContractActionResult open_page_contract = await publisher.SendCommand(
+        ContractActionResult open_page_contract = await publisher.Send(
             new OpenWebDriverPageContract(avitoUrl)
         );
         Assert.True(open_page_contract.IsSuccess);
         bool open_page_response = open_page_contract.FromResult<bool>();
         Assert.True(open_page_response);
 
-        ContractActionResult scroll_page_down_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_down_contract = await publisher.Send(
             new ScrollPageDownContract()
         );
         Assert.True(scroll_page_down_contract.IsSuccess);
         bool scroll_page_down_response = scroll_page_down_contract.FromResult<bool>();
         Assert.True(scroll_page_down_response);
 
-        ContractActionResult scroll_page_top_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_top_contract = await publisher.Send(
             new ScrollPageTopContract()
         );
         Assert.True(scroll_page_top_contract.IsSuccess);
@@ -263,7 +262,7 @@ public sealed class CommunicationTests
 
         string path_element_1 = ".//div[@class='form-mainFilters-y0xZT']";
         string path_type_element_1 = "xpath";
-        ContractActionResult get_element_1 = await publisher.SendCommand(
+        ContractActionResult get_element_1 = await publisher.Send(
             new GetSingleElementContract(path_element_1, path_type_element_1)
         );
         Assert.True(get_element_1.IsSuccess);
@@ -274,7 +273,7 @@ public sealed class CommunicationTests
 
         string path_element_2 = "form";
         string type_element_2 = "tag";
-        ContractActionResult get_child_element_1 = await publisher.SendCommand(
+        ContractActionResult get_child_element_1 = await publisher.Send(
             new GetSingleChildElementContract(
                 get_element_1_response,
                 path_element_2,
@@ -291,7 +290,7 @@ public sealed class CommunicationTests
         string path_children =
             ".//div[@class='styles-module-root-G07MD styles-module-root_dense-kUp8z styles-module-root_compensate_bottom-WEqOQ']";
         string type_children = "xpath";
-        ContractActionResult get_children = await publisher.SendCommand(
+        ContractActionResult get_children = await publisher.Send(
             new GetMultipleChildrenContract(
                 get_child_element_1_response,
                 path_children,
@@ -303,7 +302,7 @@ public sealed class CommunicationTests
             get_children.FromResult<WebElementResponse[]>();
         Assert.True(get_children_response.Length > 0);
 
-        ContractActionResult stop_driver_contract = await publisher.SendCommand(
+        ContractActionResult stop_driver_contract = await publisher.Send(
             new StopWebDriverContract()
         );
         Assert.True(stop_driver_contract.IsSuccess);
@@ -330,28 +329,28 @@ public sealed class CommunicationTests
             password
         );
 
-        ContractActionResult start_contract = await publisher.SendCommand(
+        ContractActionResult start_contract = await publisher.Send(
             new StartWebDriverContract("none")
         );
         Assert.True(start_contract.IsSuccess);
         bool start_response = start_contract.FromResult<bool>();
         Assert.True(start_response);
 
-        ContractActionResult open_page_contract = await publisher.SendCommand(
+        ContractActionResult open_page_contract = await publisher.Send(
             new OpenWebDriverPageContract(avitoUrl)
         );
         Assert.True(open_page_contract.IsSuccess);
         bool open_page_response = open_page_contract.FromResult<bool>();
         Assert.True(open_page_response);
 
-        ContractActionResult scroll_page_down_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_down_contract = await publisher.Send(
             new ScrollPageDownContract()
         );
         Assert.True(scroll_page_down_contract.IsSuccess);
         bool scroll_page_down_response = scroll_page_down_contract.FromResult<bool>();
         Assert.True(scroll_page_down_response);
 
-        ContractActionResult scroll_page_top_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_top_contract = await publisher.Send(
             new ScrollPageTopContract()
         );
         Assert.True(scroll_page_top_contract.IsSuccess);
@@ -360,7 +359,7 @@ public sealed class CommunicationTests
 
         string path_element_1 = ".//div[@class='form-mainFilters-y0xZT']";
         string path_type_element_1 = "xpath";
-        ContractActionResult get_element_1 = await publisher.SendCommand(
+        ContractActionResult get_element_1 = await publisher.Send(
             new GetSingleElementContract(path_element_1, path_type_element_1)
         );
         Assert.True(get_element_1.IsSuccess);
@@ -371,7 +370,7 @@ public sealed class CommunicationTests
 
         string path_element_2 = "form";
         string type_element_2 = "tag";
-        ContractActionResult get_child_element_1 = await publisher.SendCommand(
+        ContractActionResult get_child_element_1 = await publisher.Send(
             new GetSingleChildElementContract(
                 get_element_1_response,
                 path_element_2,
@@ -388,7 +387,7 @@ public sealed class CommunicationTests
         string path_children =
             ".//div[@class='styles-module-root-G07MD styles-module-root_dense-kUp8z styles-module-root_compensate_bottom-WEqOQ']";
         string type_children = "xpath";
-        ContractActionResult get_children = await publisher.SendCommand(
+        ContractActionResult get_children = await publisher.Send(
             new GetMultipleChildrenContract(
                 get_child_element_1_response,
                 path_children,
@@ -402,14 +401,14 @@ public sealed class CommunicationTests
 
         foreach (var item in get_children_response)
         {
-            ContractActionResult request = await publisher.SendCommand(
+            ContractActionResult request = await publisher.Send(
                 new GetTextFromElementContract(item)
             );
             Assert.True(request.IsSuccess);
             request.FromResult<string>();
         }
 
-        ContractActionResult stop_driver_contract = await publisher.SendCommand(
+        ContractActionResult stop_driver_contract = await publisher.Send(
             new StopWebDriverContract()
         );
         Assert.True(stop_driver_contract.IsSuccess);
@@ -436,28 +435,28 @@ public sealed class CommunicationTests
             password
         );
 
-        ContractActionResult start_contract = await publisher.SendCommand(
+        ContractActionResult start_contract = await publisher.Send(
             new StartWebDriverContract("none")
         );
         Assert.True(start_contract.IsSuccess);
         bool start_response = start_contract.FromResult<bool>();
         Assert.True(start_response);
 
-        ContractActionResult open_page_contract = await publisher.SendCommand(
+        ContractActionResult open_page_contract = await publisher.Send(
             new OpenWebDriverPageContract(avitoUrl)
         );
         Assert.True(open_page_contract.IsSuccess);
         bool open_page_response = open_page_contract.FromResult<bool>();
         Assert.True(open_page_response);
 
-        ContractActionResult scroll_page_down_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_down_contract = await publisher.Send(
             new ScrollPageDownContract()
         );
         Assert.True(scroll_page_down_contract.IsSuccess);
         bool scroll_page_down_response = scroll_page_down_contract.FromResult<bool>();
         Assert.True(scroll_page_down_response);
 
-        ContractActionResult scroll_page_top_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_top_contract = await publisher.Send(
             new ScrollPageTopContract()
         );
         Assert.True(scroll_page_top_contract.IsSuccess);
@@ -470,7 +469,7 @@ public sealed class CommunicationTests
             getElementPath,
             getElementPathtype
         );
-        ContractActionResult getElementResult = await publisher.SendCommand(getElement);
+        ContractActionResult getElementResult = await publisher.Send(getElement);
         Assert.True(getElementResult.IsSuccess);
         WebElementResponse getElementResponse = getElementResult.FromResult<WebElementResponse>();
         Assert.Equal(getElementPath, getElementResponse.ElementPath);
@@ -478,12 +477,12 @@ public sealed class CommunicationTests
         Assert.True(getElementResponse.ElementId != Guid.Empty);
 
         ClickOnElementContract clickOnElement = new ClickOnElementContract(getElementResponse);
-        ContractActionResult clickResult = await publisher.SendCommand(clickOnElement);
+        ContractActionResult clickResult = await publisher.Send(clickOnElement);
         Assert.True(clickResult.IsSuccess);
         bool response = clickResult.FromResult<bool>();
         Assert.True(response);
 
-        ContractActionResult stop_driver_contract = await publisher.SendCommand(
+        ContractActionResult stop_driver_contract = await publisher.Send(
             new StopWebDriverContract()
         );
         Assert.True(stop_driver_contract.IsSuccess);
@@ -510,40 +509,40 @@ public sealed class CommunicationTests
             password
         );
 
-        ContractActionResult start_contract = await publisher.SendCommand(
+        ContractActionResult start_contract = await publisher.Send(
             new StartWebDriverContract("none")
         );
         Assert.True(start_contract.IsSuccess);
         bool start_response = start_contract.FromResult<bool>();
         Assert.True(start_response);
 
-        ContractActionResult open_page_contract = await publisher.SendCommand(
+        ContractActionResult open_page_contract = await publisher.Send(
             new OpenWebDriverPageContract(avitoUrl)
         );
         Assert.True(open_page_contract.IsSuccess);
         bool open_page_response = open_page_contract.FromResult<bool>();
         Assert.True(open_page_response);
 
-        ContractActionResult scroll_page_down_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_down_contract = await publisher.Send(
             new ScrollPageDownContract()
         );
         Assert.True(scroll_page_down_contract.IsSuccess);
         bool scroll_page_down_response = scroll_page_down_contract.FromResult<bool>();
         Assert.True(scroll_page_down_response);
 
-        ContractActionResult scroll_page_top_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_top_contract = await publisher.Send(
             new ScrollPageTopContract()
         );
         Assert.True(scroll_page_top_contract.IsSuccess);
         bool scroll_page_top_response = scroll_page_top_contract.FromResult<bool>();
         Assert.True(scroll_page_top_response);
 
-        ContractActionResult extract_html = await publisher.SendCommand(new GetPageHtmlContract());
+        ContractActionResult extract_html = await publisher.Send(new GetPageHtmlContract());
         Assert.True(extract_html.IsSuccess);
         string response = extract_html.FromResult<string>();
         Assert.NotEqual(string.Empty, response);
         _logger.Information(response);
-        ContractActionResult stopping = await publisher.SendCommand(new StopWebDriverContract());
+        ContractActionResult stopping = await publisher.Send(new StopWebDriverContract());
         Assert.True(stopping.IsSuccess);
 
         publisher.Dispose();
@@ -566,28 +565,28 @@ public sealed class CommunicationTests
             password
         );
 
-        ContractActionResult start_contract = await publisher.SendCommand(
+        ContractActionResult start_contract = await publisher.Send(
             new StartWebDriverContract("none")
         );
         Assert.True(start_contract.IsSuccess);
         bool start_response = start_contract.FromResult<bool>();
         Assert.True(start_response);
 
-        ContractActionResult open_page_contract = await publisher.SendCommand(
+        ContractActionResult open_page_contract = await publisher.Send(
             new OpenWebDriverPageContract(avitoUrl)
         );
         Assert.True(open_page_contract.IsSuccess);
         bool open_page_response = open_page_contract.FromResult<bool>();
         Assert.True(open_page_response);
 
-        ContractActionResult scroll_page_down_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_down_contract = await publisher.Send(
             new ScrollPageDownContract()
         );
         Assert.True(scroll_page_down_contract.IsSuccess);
         bool scroll_page_down_response = scroll_page_down_contract.FromResult<bool>();
         Assert.True(scroll_page_down_response);
 
-        ContractActionResult scroll_page_top_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_top_contract = await publisher.Send(
             new ScrollPageTopContract()
         );
         Assert.True(scroll_page_top_contract.IsSuccess);
@@ -600,14 +599,14 @@ public sealed class CommunicationTests
             getElementPath,
             getElementPathtype
         );
-        ContractActionResult getElementResult = await publisher.SendCommand(getElement);
+        ContractActionResult getElementResult = await publisher.Send(getElement);
         Assert.True(getElementResult.IsSuccess);
         WebElementResponse getElementResponse = getElementResult.FromResult<WebElementResponse>();
         Assert.Equal(getElementPath, getElementResponse.ElementPath);
         Assert.Equal(getElementPathtype, getElementResponse.ElementPathType);
         Assert.True(getElementResponse.ElementId != Guid.Empty);
 
-        ContractActionResult getElementHtml = await publisher.SendCommand(
+        ContractActionResult getElementHtml = await publisher.Send(
             new GetElementHtmlContract(getElementResponse)
         );
         Assert.True(getElementHtml.IsSuccess);
@@ -615,7 +614,7 @@ public sealed class CommunicationTests
         Assert.NotEqual(string.Empty, html);
         _logger.Information("{Html}", html);
 
-        ContractActionResult stopping = await publisher.SendCommand(new StopWebDriverContract());
+        ContractActionResult stopping = await publisher.Send(new StopWebDriverContract());
         Assert.True(stopping.IsSuccess);
 
         publisher.Dispose();
@@ -638,28 +637,28 @@ public sealed class CommunicationTests
             password
         );
 
-        ContractActionResult start_contract = await publisher.SendCommand(
+        ContractActionResult start_contract = await publisher.Send(
             new StartWebDriverContract("none")
         );
         Assert.True(start_contract.IsSuccess);
         bool start_response = start_contract.FromResult<bool>();
         Assert.True(start_response);
 
-        ContractActionResult open_page_contract = await publisher.SendCommand(
+        ContractActionResult open_page_contract = await publisher.Send(
             new OpenWebDriverPageContract(avitoUrl)
         );
         Assert.True(open_page_contract.IsSuccess);
         bool open_page_response = open_page_contract.FromResult<bool>();
         Assert.True(open_page_response);
 
-        ContractActionResult scroll_page_down_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_down_contract = await publisher.Send(
             new ScrollPageDownContract()
         );
         Assert.True(scroll_page_down_contract.IsSuccess);
         bool scroll_page_down_response = scroll_page_down_contract.FromResult<bool>();
         Assert.True(scroll_page_down_response);
 
-        ContractActionResult scroll_page_top_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_top_contract = await publisher.Send(
             new ScrollPageTopContract()
         );
         Assert.True(scroll_page_top_contract.IsSuccess);
@@ -672,7 +671,7 @@ public sealed class CommunicationTests
             getElementPath,
             getElementPathtype
         );
-        ContractActionResult getElementResult = await publisher.SendCommand(getElement);
+        ContractActionResult getElementResult = await publisher.Send(getElement);
         Assert.True(getElementResult.IsSuccess);
         WebElementResponse getElementResponse = getElementResult.FromResult<WebElementResponse>();
         Assert.Equal(getElementPath, getElementResponse.ElementPath);
@@ -680,14 +679,14 @@ public sealed class CommunicationTests
         Assert.True(getElementResponse.ElementId != Guid.Empty);
 
         string text = "Люгонг";
-        ContractActionResult sendText = await publisher.SendCommand(
+        ContractActionResult sendText = await publisher.Send(
             new SendTextOnElementContract(getElementResponse, text)
         );
         Assert.True(sendText.IsSuccess);
         bool isSendedText = sendText.FromResult<bool>();
         Assert.True(isSendedText);
 
-        ContractActionResult stopping = await publisher.SendCommand(new StopWebDriverContract());
+        ContractActionResult stopping = await publisher.Send(new StopWebDriverContract());
         Assert.True(stopping.IsSuccess);
 
         publisher.Dispose();
@@ -710,28 +709,28 @@ public sealed class CommunicationTests
             password
         );
 
-        ContractActionResult start_contract = await publisher.SendCommand(
+        ContractActionResult start_contract = await publisher.Send(
             new StartWebDriverContract("none")
         );
         Assert.True(start_contract.IsSuccess);
         bool start_response = start_contract.FromResult<bool>();
         Assert.True(start_response);
 
-        ContractActionResult open_page_contract = await publisher.SendCommand(
+        ContractActionResult open_page_contract = await publisher.Send(
             new OpenWebDriverPageContract(avitoUrl)
         );
         Assert.True(open_page_contract.IsSuccess);
         bool open_page_response = open_page_contract.FromResult<bool>();
         Assert.True(open_page_response);
 
-        ContractActionResult scroll_page_down_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_down_contract = await publisher.Send(
             new ScrollPageDownContract()
         );
         Assert.True(scroll_page_down_contract.IsSuccess);
         bool scroll_page_down_response = scroll_page_down_contract.FromResult<bool>();
         Assert.True(scroll_page_down_response);
 
-        ContractActionResult scroll_page_top_contract = await publisher.SendCommand(
+        ContractActionResult scroll_page_top_contract = await publisher.Send(
             new ScrollPageTopContract()
         );
         Assert.True(scroll_page_top_contract.IsSuccess);
@@ -744,7 +743,7 @@ public sealed class CommunicationTests
             getElementPath,
             getElementPathtype
         );
-        ContractActionResult getElementResult = await publisher.SendCommand(getElement);
+        ContractActionResult getElementResult = await publisher.Send(getElement);
         Assert.True(getElementResult.IsSuccess);
         WebElementResponse getElementResponse = getElementResult.FromResult<WebElementResponse>();
         Assert.Equal(getElementPath, getElementResponse.ElementPath);
@@ -752,7 +751,7 @@ public sealed class CommunicationTests
         Assert.True(getElementResponse.ElementId != Guid.Empty);
 
         string text = "Люгонг";
-        ContractActionResult sendText = await publisher.SendCommand(
+        ContractActionResult sendText = await publisher.Send(
             new SendTextOnElementContract(getElementResponse, text)
         );
         Assert.True(sendText.IsSuccess);
@@ -760,14 +759,14 @@ public sealed class CommunicationTests
         Assert.True(isSendedText);
 
         string attribute = "value";
-        ContractActionResult getAttribute = await publisher.SendCommand(
+        ContractActionResult getAttribute = await publisher.Send(
             new GetElementAttributeValueContract(getElementResponse, attribute)
         );
         string attributeValue = getAttribute.FromResult<string>();
         _logger.Information("Attribute value: {Value}", attributeValue);
         Assert.Equal(text, attributeValue);
 
-        ContractActionResult stopping = await publisher.SendCommand(new StopWebDriverContract());
+        ContractActionResult stopping = await publisher.Send(new StopWebDriverContract());
         Assert.True(stopping.IsSuccess);
 
         publisher.Dispose();

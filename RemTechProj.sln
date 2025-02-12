@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDriver.Application", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDriver.Worker.Service.Contracts", "src\services\web_driver_service\WebDriver.Worker.Service.Contracts\WebDriver.Worker.Service.Contracts.csproj", "{40782E62-D4A6-4228-9A5E-A186FC083FA6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTechAvito.Tests", "src\avito_src\RemTechAvito.Tests\RemTechAvito.Tests.csproj", "{2E2A63C5-67BF-4965-A924-22B340F6B9A8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,7 @@ Global
 		{3A219135-7EB9-4B68-8948-9C8789FBA0CE} = {4A4354FC-D0C3-4ED2-A508-F3E859666E9B}
 		{031B6FE1-3013-457A-B197-0E8EAD0A376D} = {4A4354FC-D0C3-4ED2-A508-F3E859666E9B}
 		{40782E62-D4A6-4228-9A5E-A186FC083FA6} = {4A4354FC-D0C3-4ED2-A508-F3E859666E9B}
+		{2E2A63C5-67BF-4965-A924-22B340F6B9A8} = {2FD50146-D397-4CE0-A4AA-27EE5993589D}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{19D97A14-AB77-4D4A-8C85-C01B60EFE240}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -100,5 +103,9 @@ Global
 		{40782E62-D4A6-4228-9A5E-A186FC083FA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40782E62-D4A6-4228-9A5E-A186FC083FA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40782E62-D4A6-4228-9A5E-A186FC083FA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E2A63C5-67BF-4965-A924-22B340F6B9A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E2A63C5-67BF-4965-A924-22B340F6B9A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E2A63C5-67BF-4965-A924-22B340F6B9A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E2A63C5-67BF-4965-A924-22B340F6B9A8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
