@@ -1,5 +1,6 @@
 ﻿using Rabbit.RPC.Server.Abstractions.Core;
 using WebDriver.Application.Injection;
+using WebDriver.Worker.Service.Contracts.ClearPool;
 using WebDriver.Worker.Service.Contracts.ClearText;
 using WebDriver.Worker.Service.Contracts.ClickOnElement;
 using WebDriver.Worker.Service.Contracts.GetElementAttributeValue;
@@ -70,6 +71,7 @@ public static class WorkerInitialization
             SendTextOnElementNoClearContractHandler
         >();
         registration.RegisterContract<ClearTextContract, ClearTextContractHandler>();
+        registration.RegisterContract<ClearPoolContract, ClearPoolContractHandler>();
 
         registration.RegisterConnectionFactory(
             new SimpleConnectionFactory(hostname, username, password)

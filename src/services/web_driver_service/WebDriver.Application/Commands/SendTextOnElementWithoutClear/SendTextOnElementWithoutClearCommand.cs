@@ -28,8 +28,9 @@ internal sealed class SendTextOnElementWithoutClearCommandHandler(
 
         IInteractionStrategy strategy = InteractionStrategyFactory.SendTextNoClear(
             data.ExistingId,
-            text
+            text.AsMemory()
         );
+
         Result interaction = await instance.PerformInteraction(strategy);
 
         if (interaction.IsFailure)
