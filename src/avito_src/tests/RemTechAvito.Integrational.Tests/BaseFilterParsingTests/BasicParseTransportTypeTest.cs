@@ -8,7 +8,7 @@ using RemTechAvito.Infrastructure.Repository;
 using RemTechCommon.Utils.ResultPattern;
 using WebDriver.Worker.Service;
 
-namespace RemTechAvito.Integrational.Tests.ParseTransportTypesTests;
+namespace RemTechAvito.Integrational.Tests.BaseFilterParsingTests;
 
 public sealed class BasicParseTransportTypeTest : BasicParserTests
 {

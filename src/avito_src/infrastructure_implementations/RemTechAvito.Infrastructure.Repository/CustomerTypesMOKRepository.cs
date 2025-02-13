@@ -5,7 +5,7 @@ using Serilog;
 
 namespace RemTechAvito.Infrastructure.Repository;
 
-public sealed class CustomerTypesRepository(ILogger logger) : ICustomerTypesRepository
+public sealed class CustomerTypesMOKRepository(ILogger logger) : ICustomerTypesRepository
 {
     private readonly List<CustomerTypesCollection> _data = [];
 
