@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Folder Include="FiltersManagement\CustomerTypes\Queries\" />
       <Folder Include="FiltersManagement\TransportStates\Queries\" />
       <Folder Include="FiltersManagement\TransportTypes\Queries\" />
     </ItemGroup>

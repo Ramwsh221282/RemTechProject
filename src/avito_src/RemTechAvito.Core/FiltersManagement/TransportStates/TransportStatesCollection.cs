@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using RemTechCommon.Utils.Extensions;
 using RemTechCommon.Utils.ResultPattern;
 
 namespace RemTechAvito.Core.FiltersManagement.TransportStates;
@@ -25,13 +26,5 @@ public sealed class TransportStatesCollection : IReadOnlyCollection<TransportSta
 
     public int Count => _states.Count;
 
-    public Result<TransportState> this[int index]
-    {
-        get
-        {
-            if (index < 0 || index > _states.Count - 1)
-                return new Error("Index out of range");
-            return _states[index];
-        }
-    }
+    public Result<TransportState> this[int index] => _states.GetByIndex(index);
 }
