@@ -2,16 +2,15 @@
 using RemTechAvito.Core.FiltersManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Contracts.Parser;
 using RemTechCommon.Utils.ResultPattern;
+using Serilog;
 using WebDriver.Worker.Service.Contracts.BaseImplementations;
 using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours;
 using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implementations;
 
 namespace RemTechAvito.Infrastructure.Parser;
 
-public sealed class TransportTypesParser(IMessagePublisher publisher) : ITransportTypesParser
+public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
 {
-    private const string Url =
-        "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki-ASgBAgICAURU4E0";
     private const string pathType = "xpath";
 
     const string popularMarkButtonXpath =
@@ -25,10 +24,13 @@ public sealed class TransportTypesParser(IMessagePublisher publisher) : ITranspo
     const string popularMarkRubricatorLinkXPath = ".//a[@data-marker='popular-rubricator/link']";
     const string popularMarkRubricatorName = "popular-mark-rubricator";
 
+    public TransportTypesParser(IMessagePublisher publisher, ILogger logger)
+        : base(publisher, logger) { }
+
     public async Task<Result<TransportTypesCollection>> Parse(CancellationToken ct = default)
     {
         WebElementPool pool = new();
-        CompositeBehavior behavior = new CompositeBehavior()
+        CompositeBehavior behavior = new CompositeBehavior(_logger)
             .AddBehavior(
                 new CompositeBehavior()
                     .AddBehavior(new StartBehavior("none"))
@@ -80,7 +82,7 @@ public sealed class TransportTypesParser(IMessagePublisher publisher) : ITranspo
             )
             .AddBehavior(new StopBehavior());
 
-        using WebDriverSession session = new(publisher);
+        using WebDriverSession session = new(_publisher);
 
         Result execution = await session.ExecuteBehavior(behavior, ct);
         if (execution.IsFailure)
@@ -105,6 +107,13 @@ public sealed class TransportTypesParser(IMessagePublisher publisher) : ITranspo
         }
 
         pool.Clear();
+
+        _logger.Information(
+            "{Parser} parsed Transport Types {Count}",
+            nameof(TransportTypesParser),
+            collection.Count
+        );
+
         return collection;
     }
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rabbit.RPC.Client.Abstractions;
-using RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.ParseTransportTypes;
+using RemTechAvito.Application.FiltersManagement.TransportStates.Commands.ParseTransportStates;
 using RemTechAvito.Infrastructure.Contracts.Parser;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechAvito.Infrastructure.Parser;
@@ -10,20 +10,18 @@ using WebDriver.Worker.Service;
 
 namespace RemTechAvito.Integrational.Tests.ParseTransportTypesTests;
 
-public sealed class BasicParseTransportTypeTest : BasicParserTests
+public sealed class BasicParseTransportStatesTest : BasicParserTests
 {
     [Fact]
-    public async Task Invoke_Basic()
+    public async Task Invoke_Basic_Transport_States_Test()
     {
         using CancellationTokenSource cts = new CancellationTokenSource();
         CancellationToken ct = cts.Token;
-
         IMessagePublisher publisher = new MultiCommunicationPublisher(queue, host, user, password);
-        ITransportTypesParser parser = new TransportTypesParser(publisher, _logger);
-        ITransportTypesRepository repository = new TransportTypesMOKRepository(_logger);
-        ParseTransportTypesCommand command = new();
-        ParseTransportTypesCommandHandler handler = new(parser, repository, _logger);
-
+        ITransportStatesParser parser = new TransportStatesParser(publisher, _logger);
+        ITransportStatesRepository repository = new TransportStatesMOKRepository(_logger);
+        ParseTransportStatesCommand command = new();
+        ParseTransportStatesCommandHandler handler = new(parser, repository, _logger);
         Worker worker = _serviceProvider.GetRequiredService<Worker>();
         await worker.StartAsync(ct);
 
