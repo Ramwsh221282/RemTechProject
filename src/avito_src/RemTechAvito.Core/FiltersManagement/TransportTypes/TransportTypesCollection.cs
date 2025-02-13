@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using RemTechCommon.Utils.Extensions;
 using RemTechCommon.Utils.ResultPattern;
 
 namespace RemTechAvito.Core.FiltersManagement.TransportTypes;
@@ -11,7 +12,7 @@ public sealed class TransportTypesCollection : IReadOnlyCollection<TransportType
 
     public DateOnly CreatedOn { get; } = DateOnly.FromDateTime(DateTime.Now);
 
-    public Guid Id { get; } = new Guid();
+    public Guid Id { get; } = Guid.NewGuid();
 
     public Result Add(TransportType type)
     {
@@ -28,13 +29,5 @@ public sealed class TransportTypesCollection : IReadOnlyCollection<TransportType
 
     public int Count => _types.Count;
 
-    public Result<TransportType> this[int index]
-    {
-        get
-        {
-            if (index < 0 || index > _types.Count - 1)
-                return new Error("Index is out of range");
-            return _types[index];
-        }
-    }
+    public Result<TransportType> this[int index] => _types.GetByIndex(index);
 }
