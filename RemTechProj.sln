@@ -37,7 +37,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDriver.Application", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDriver.Worker.Service.Contracts", "src\services\web_driver_service\WebDriver.Worker.Service.Contracts\WebDriver.Worker.Service.Contracts.csproj", "{40782E62-D4A6-4228-9A5E-A186FC083FA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTechAvito.Tests", "src\avito_src\RemTechAvito.Tests\RemTechAvito.Tests.csproj", "{2E2A63C5-67BF-4965-A924-22B340F6B9A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTechAvito.Tests", "src\avito_src\tests\RemTechAvito.Tests\RemTechAvito.Tests.csproj", "{2E2A63C5-67BF-4965-A924-22B340F6B9A8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infrastructure_contracts", "infrastructure_contracts", "{5FC8005D-27B8-4798-9A86-0F9483D09220}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infrastructure_implementations", "infrastructure_implementations", "{E23DB444-868C-4D3B-BB73-3100B041E18C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTechAvito.Infrastructure.Contracts.Parser", "src\avito_src\infrastructure_contracts\RemTechAvito.Infrastructure.Contracts.Parser\RemTechAvito.Infrastructure.Contracts.Parser.csproj", "{0953B77E-093B-4EAE-9C43-30867A5E7BC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTechAvito.Infrastructure.Parser", "src\avito_src\infrastructure_implementations\RemTechAvito.Infrastructure.Parser\RemTechAvito.Infrastructure.Parser.csproj", "{BB7B46EA-D8BC-44EA-8269-8B9078373300}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTechAvito.Infrastructure.Contracts.Repository", "src\avito_src\infrastructure_contracts\RemTechAvito.Infrastructure.Contracts.Repository\RemTechAvito.Infrastructure.Contracts.Repository.csproj", "{59EA935C-9DEE-4C83-A8EE-BDD87F38685A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTechAvito.Infrastructure.Repository", "src\avito_src\infrastructure_implementations\RemTechAvito.Infrastructure.Repository\RemTechAvito.Infrastructure.Repository.csproj", "{0934A077-D477-42DF-9260-8C4E1E87A55D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F45CFE55-F81F-4D5C-941B-C2C4CF186581}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTechAvito.Integrational.Tests", "src\avito_src\tests\RemTechAvito.Integrational.Tests\RemTechAvito.Integrational.Tests.csproj", "{57E26BCC-05C2-42A9-BCB9-A14902C6E9A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,7 +76,15 @@ Global
 		{3A219135-7EB9-4B68-8948-9C8789FBA0CE} = {4A4354FC-D0C3-4ED2-A508-F3E859666E9B}
 		{031B6FE1-3013-457A-B197-0E8EAD0A376D} = {4A4354FC-D0C3-4ED2-A508-F3E859666E9B}
 		{40782E62-D4A6-4228-9A5E-A186FC083FA6} = {4A4354FC-D0C3-4ED2-A508-F3E859666E9B}
-		{2E2A63C5-67BF-4965-A924-22B340F6B9A8} = {2FD50146-D397-4CE0-A4AA-27EE5993589D}
+		{5FC8005D-27B8-4798-9A86-0F9483D09220} = {2FD50146-D397-4CE0-A4AA-27EE5993589D}
+		{E23DB444-868C-4D3B-BB73-3100B041E18C} = {2FD50146-D397-4CE0-A4AA-27EE5993589D}
+		{0953B77E-093B-4EAE-9C43-30867A5E7BC9} = {5FC8005D-27B8-4798-9A86-0F9483D09220}
+		{BB7B46EA-D8BC-44EA-8269-8B9078373300} = {E23DB444-868C-4D3B-BB73-3100B041E18C}
+		{59EA935C-9DEE-4C83-A8EE-BDD87F38685A} = {5FC8005D-27B8-4798-9A86-0F9483D09220}
+		{0934A077-D477-42DF-9260-8C4E1E87A55D} = {E23DB444-868C-4D3B-BB73-3100B041E18C}
+		{F45CFE55-F81F-4D5C-941B-C2C4CF186581} = {2FD50146-D397-4CE0-A4AA-27EE5993589D}
+		{2E2A63C5-67BF-4965-A924-22B340F6B9A8} = {F45CFE55-F81F-4D5C-941B-C2C4CF186581}
+		{57E26BCC-05C2-42A9-BCB9-A14902C6E9A1} = {F45CFE55-F81F-4D5C-941B-C2C4CF186581}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{19D97A14-AB77-4D4A-8C85-C01B60EFE240}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -107,5 +131,25 @@ Global
 		{2E2A63C5-67BF-4965-A924-22B340F6B9A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E2A63C5-67BF-4965-A924-22B340F6B9A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E2A63C5-67BF-4965-A924-22B340F6B9A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0953B77E-093B-4EAE-9C43-30867A5E7BC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0953B77E-093B-4EAE-9C43-30867A5E7BC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0953B77E-093B-4EAE-9C43-30867A5E7BC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0953B77E-093B-4EAE-9C43-30867A5E7BC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB7B46EA-D8BC-44EA-8269-8B9078373300}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB7B46EA-D8BC-44EA-8269-8B9078373300}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB7B46EA-D8BC-44EA-8269-8B9078373300}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB7B46EA-D8BC-44EA-8269-8B9078373300}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59EA935C-9DEE-4C83-A8EE-BDD87F38685A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59EA935C-9DEE-4C83-A8EE-BDD87F38685A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59EA935C-9DEE-4C83-A8EE-BDD87F38685A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59EA935C-9DEE-4C83-A8EE-BDD87F38685A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0934A077-D477-42DF-9260-8C4E1E87A55D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0934A077-D477-42DF-9260-8C4E1E87A55D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0934A077-D477-42DF-9260-8C4E1E87A55D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0934A077-D477-42DF-9260-8C4E1E87A55D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57E26BCC-05C2-42A9-BCB9-A14902C6E9A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57E26BCC-05C2-42A9-BCB9-A14902C6E9A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57E26BCC-05C2-42A9-BCB9-A14902C6E9A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57E26BCC-05C2-42A9-BCB9-A14902C6E9A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

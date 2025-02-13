@@ -8,7 +8,8 @@ namespace WebDriver.Worker.Service.Contracts.BaseImplementations;
 public sealed record WebElement(WebElementResponse Model, string Name)
 {
     private readonly Dictionary<string, string> _attributes = [];
-    private readonly List<WebElement> _childs = [];
+
+    private List<WebElement> _childs = [];
     public WebElement? Parent { get; private set; }
     public IReadOnlyDictionary<string, string> Attributes => _attributes;
     public IReadOnlyCollection<WebElement> Childs => _childs;
@@ -44,7 +45,19 @@ public sealed record WebElement(WebElementResponse Model, string Name)
         return pool;
     }
 
-    public void ExcludeChilds(Predicate<WebElement> predicate) => _childs.RemoveAll(predicate);
+    //public void ExcludeChilds(Predicate<WebElement> predicate) => _childs.RemoveAll(predicate);
+
+    public void ExcludeChilds(Predicate<WebElement> predicate)
+    {
+        List<WebElement> newCollection = [];
+        for (int index = 0; index < _childs.Count; index++)
+        {
+            if (predicate(_childs[index]))
+                newCollection.Add(_childs[index]);
+        }
+
+        _childs = newCollection;
+    }
 
     public async Task<Result> ExecuteForChilds(
         IMessagePublisher publisher,
@@ -53,8 +66,11 @@ public sealed record WebElement(WebElementResponse Model, string Name)
     )
     {
         Stack<WebElement> stack = new();
-        foreach (WebElement child in this.Childs.Reverse())
-            stack.Push(child);
+        // foreach (WebElement child in this.Childs.Reverse())
+        //     stack.Push(child);
+
+        for (int index = _childs.Count - 1; index >= 0; index--)
+            stack.Push(_childs[index]);
 
         while (stack.Count > 0)
         {
@@ -65,8 +81,11 @@ public sealed record WebElement(WebElementResponse Model, string Name)
             if (execution.IsFailure)
                 return execution;
 
-            foreach (WebElement child in current.Childs.Reverse())
-                stack.Push(child);
+            for (int index = current._childs.Count - 1; index >= 0; index--)
+                stack.Push(current._childs[index]);
+
+            // foreach (WebElement child in current.Childs.Reverse())
+            //     stack.Push(child);
         }
 
         return Result.Success();
@@ -80,8 +99,14 @@ public sealed record WebElement(WebElementResponse Model, string Name)
     )
     {
         Stack<WebElement> stack = new();
-        foreach (WebElement child in this.Childs.Where(predicate).Reverse())
-            stack.Push(child);
+        // foreach (WebElement child in this.Childs.Where(predicate).Reverse())
+        //     stack.Push(child);
+
+        for (int index = _childs.Count - 1; index >= 0; index--)
+        {
+            if (predicate(_childs[index]))
+                stack.Push(_childs[index]);
+        }
 
         while (stack.Count > 0)
         {
@@ -92,8 +117,14 @@ public sealed record WebElement(WebElementResponse Model, string Name)
             if (execution.IsFailure)
                 return execution;
 
-            foreach (WebElement child in current.Childs.Where(predicate).Reverse())
-                stack.Push(child);
+            for (int index = current._childs.Count - 1; index >= 0; index--)
+            {
+                if (predicate(current._childs[index]))
+                    stack.Push(current._childs[index]);
+            }
+
+            // foreach (WebElement child in current.Childs.Where(predicate).Reverse())
+            //     stack.Push(child);
         }
 
         return Result.Success();
@@ -103,7 +134,6 @@ public sealed record WebElement(WebElementResponse Model, string Name)
     {
         WebElement element = new WebElement(child, name) { Parent = parent };
         parent._childs.Add(element);
-
         return element;
     }
 
@@ -115,9 +145,10 @@ public sealed record WebElement(WebElementResponse Model, string Name)
     {
         List<WebElement> elements = [];
         elements.AddRange(childs.Select(child => parent.FromParent(child, name)));
-
         return elements;
     }
+
+    public void ClearChilds() => _childs.Clear();
 }
 
 public static class AvitoWebElementExtensions

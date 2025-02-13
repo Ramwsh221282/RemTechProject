@@ -6,9 +6,9 @@ namespace WebDriver.Core.Models.InteractionStrategies.Implementations;
 internal sealed class SendTextOnElementWithoutClearStrategy : IInteractionStrategy
 {
     private readonly Guid _id;
-    private readonly string _text;
+    private readonly ReadOnlyMemory<char> _text;
 
-    public SendTextOnElementWithoutClearStrategy(Guid id, string text)
+    public SendTextOnElementWithoutClearStrategy(Guid id, ReadOnlyMemory<char> text)
     {
         _id = id;
         _text = text;
@@ -24,17 +24,17 @@ internal sealed class SendTextOnElementWithoutClearStrategy : IInteractionStrate
         if (element.IsFailure)
             return element.Error;
 
-        IWebDriver driver = requested.Value;
         IWebElement model = element.Value.Model;
 
         try
         {
-            model.SendKeys(_text);
+            for (int index = 0; index < _text.Span.Length; index++)
+                model.SendKeys(new string(_text.Span[index], 1));
             return await Task.FromResult(Result.Success());
         }
         catch (Exception ex)
         {
-            return new Error($"Can't write text in element: {_id}");
+            return new Error($"Can't write text in element: {_id}. Error: {ex.Message}");
         }
     }
 }

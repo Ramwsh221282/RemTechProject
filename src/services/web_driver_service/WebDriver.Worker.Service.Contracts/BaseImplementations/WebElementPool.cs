@@ -17,4 +17,6 @@ public sealed class WebElementPool
 
     public IEnumerable<WebElement> GetWebElements(Func<WebElement, bool> predicate) =>
         _elements.Where(predicate);
+
+    public void Clear() => _elements.Clear();
 }

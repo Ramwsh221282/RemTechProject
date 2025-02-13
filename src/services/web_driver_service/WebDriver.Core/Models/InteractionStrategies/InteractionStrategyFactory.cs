@@ -32,7 +32,7 @@ public static class InteractionStrategyFactory
     public static IInteractionStrategy ScrollElement(Guid elementId) =>
         new ScrollElementStrategy(elementId);
 
-    public static IInteractionStrategy SendTextNoClear(Guid elementId, string text) =>
+    public static IInteractionStrategy SendTextNoClear(Guid elementId, ReadOnlyMemory<char> text) =>
         new SendTextOnElementWithoutClearStrategy(elementId, text);
 
     public static IInteractionStrategy ClearText(Guid elementId) =>

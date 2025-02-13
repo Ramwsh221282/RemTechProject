@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Text;
 using System.Text.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -89,10 +88,9 @@ internal sealed class CommunicationContext : IDisposable
         CancellationToken ct = default
     )
     {
-        string json = JsonSerializer.Serialize(message);
-        byte[] body = Encoding.UTF8.GetBytes(json);
-
-        _logger.Information("Client send message: {Json}", json);
+        using MemoryStream memory = new MemoryStream();
+        await JsonSerializer.SerializeAsync(memory, message, cancellationToken: ct);
+        ReadOnlyMemory<byte> body = memory.GetBuffer().AsMemory(0, (int)memory.Length);
 
         await _channel.BasicPublishAsync(
             exchange: string.Empty,
@@ -102,6 +100,8 @@ internal sealed class CommunicationContext : IDisposable
             body: body,
             cancellationToken: ct
         );
+
+        _logger.Information("Client send message: {Type}", typeof(TMessage));
     }
 
     private Task CreateCallbackListener(object model, BasicDeliverEventArgs ea)
@@ -113,9 +113,10 @@ internal sealed class CommunicationContext : IDisposable
         if (!_callbacks.TryRemove(corellationId, out var taskCompletionSource))
             return Task.CompletedTask;
 
-        byte[] body = ea.Body.ToArray();
-        string json = Encoding.UTF8.GetString(body);
-        ContractActionResult result = JsonSerializer.Deserialize<ContractActionResult>(json)!;
+        ContractActionResult result = JsonSerializer.Deserialize<ContractActionResult>(
+            ea.Body.Span
+        )!;
+
         taskCompletionSource.SetResult(result);
         if (result.IsSuccess)
             _logger.Information(

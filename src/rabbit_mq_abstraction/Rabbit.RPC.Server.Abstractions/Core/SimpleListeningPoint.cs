@@ -84,28 +84,30 @@ internal sealed class SimpleListeningPoint : IListeningPoint
     {
         byte[] data = ea.Body.ToArray();
         string receivedJson = Encoding.UTF8.GetString(data);
-        _logger.Information(
-            "{ServiceName} Received request: {Response}",
-            ServiceName,
-            receivedJson
-        );
+
+        _logger.Information("{ServiceName} Received request", ServiceName);
+
         ContractActionResult response = await _process.HandleMessage(receivedJson);
-        string responseJson = JsonSerializer.Serialize(response);
+
+        using MemoryStream memory = new MemoryStream();
+        await JsonSerializer.SerializeAsync(memory, response);
+
+        ReadOnlyMemory<byte> responseJson = memory.GetBuffer().AsMemory(0, (int)memory.Length);
+
         await SendResponse(responseJson, ea);
     }
 
-    private async Task SendResponse(string responseJson, BasicDeliverEventArgs ea)
+    private async Task SendResponse(ReadOnlyMemory<byte> responseJson, BasicDeliverEventArgs ea)
     {
         IChannel channel = _consumer.Channel;
         var replyProps = new BasicProperties { CorrelationId = ea.BasicProperties.CorrelationId };
-        byte[] responseBytes = Encoding.UTF8.GetBytes(responseJson);
 
         await channel.BasicPublishAsync(
             exchange: string.Empty,
             routingKey: ea.BasicProperties.ReplyTo!,
             mandatory: true,
             basicProperties: replyProps,
-            body: responseBytes
+            body: responseJson
         );
 
         await channel.BasicAckAsync(ea.DeliveryTag, multiple: false);

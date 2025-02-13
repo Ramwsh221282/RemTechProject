@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using WebDriver.Application.Commands.ClearPool;
 using WebDriver.Application.Commands.ClearText;
 using WebDriver.Application.Commands.ClickOnElement;
 using WebDriver.Application.Commands.OpenPage;
@@ -68,6 +69,7 @@ public static class WebDriverPluginLoader
             SendTextOnElementWithoutClearCommandHandler
         >();
         services.AddScoped<IWebDriverCommandHandler<ClearTextCommand>, ClearTextCommandHandler>();
+        services.AddScoped<IWebDriverCommandHandler<ClearPoolCommand>, ClearPoolCommandHandler>();
     }
 
     private static void RegisterQueries(this IServiceCollection services)

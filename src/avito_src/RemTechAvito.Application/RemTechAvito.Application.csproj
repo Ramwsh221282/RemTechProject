@@ -6,4 +6,14 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="FiltersManagement\TransportTypes\Queries\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\infrastructure_contracts\RemTechAvito.Infrastructure.Contracts.Parser\RemTechAvito.Infrastructure.Contracts.Parser.csproj" />
+      <ProjectReference Include="..\infrastructure_contracts\RemTechAvito.Infrastructure.Contracts.Repository\RemTechAvito.Infrastructure.Contracts.Repository.csproj" />
+      <ProjectReference Include="..\RemTechAvito.Core\RemTechAvito.Core.csproj" />
+    </ItemGroup>
+
 </Project>
