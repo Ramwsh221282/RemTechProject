@@ -3,6 +3,7 @@ using RemTechAvito.Core.FiltersManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Contracts.Parser;
 using RemTechCommon.Utils.ResultPattern;
 using WebDriver.Worker.Service.Contracts.BaseImplementations;
+using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours;
 using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implementations;
 
 namespace RemTechAvito.Infrastructure.Parser;
@@ -13,52 +14,68 @@ public sealed class TransportTypesParser(IMessagePublisher publisher) : ITranspo
         "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki-ASgBAgICAURU4E0";
     private const string pathType = "xpath";
 
-    private const string filterInputPath =
-        ".//input[@data-marker='params[111024]/multiselect-outline-input/input']";
-    private const string filterInput = "filter-input";
+    const string popularMarkButtonXpath =
+        ".//button[@data-marker='popular-rubricator/controls/all']";
+    const string popularMarkButton = "popular-marks-button";
 
-    private const string checkBoxContainerPath = ".//div[@data-marker='params[111024]/list']";
-    private const string checkBoxesContainer = "check-boxes-container";
+    const string popularMarksRubricatorContainerXPath =
+        ".//div[@class='popular-rubricator-links-o9b47']";
+    const string popularMarksRubricatorName = "popular-marks-container";
 
-    private const string checkBoxPath = ".//label[@role='checkbox']";
-    private const string checkBox = "check-box";
+    const string popularMarkRubricatorLinkXPath = ".//a[@data-marker='popular-rubricator/link']";
+    const string popularMarkRubricatorName = "popular-mark-rubricator";
 
     public async Task<Result<TransportTypesCollection>> Parse(CancellationToken ct = default)
     {
         WebElementPool pool = new();
         CompositeBehavior behavior = new CompositeBehavior()
-            .AddBehavior(new StartBehavior("none"))
-            .AddBehavior(new OpenPageBehavior(Url).WithWait(5))
-            .AddBehavior(new ScrollToBottomBehavior())
-            .AddBehavior(new ScrollToTopBehavior())
-            .AddBehavior(new GetSingleElementBehavior(pool, filterInputPath, pathType, filterInput))
+            .AddBehavior(
+                new CompositeBehavior()
+                    .AddBehavior(new StartBehavior("none"))
+                    .AddBehavior(new OpenPageBehavior(Url))
+                    .AddBehavior(new ScrollToBottomBehavior())
+                    .AddBehavior(new ScrollToTopBehavior())
+            )
+            .AddBehavior(
+                new GetSingleElementBehavior(
+                    pool,
+                    popularMarkButtonXpath,
+                    pathType,
+                    popularMarkButton
+                )
+            )
             .AddBehavior(
                 new DoForExactParent(
                     pool,
-                    filterInput,
-                    element => new ClickOnElementInstant(element)
+                    popularMarkButton,
+                    element => new ClickOnElementRetriable(element, 50)
                 )
             )
             .AddBehavior(
                 new GetSingleElementBehavior(
                     pool,
-                    checkBoxContainerPath,
+                    popularMarksRubricatorContainerXPath,
                     pathType,
-                    checkBoxesContainer
+                    popularMarksRubricatorName
                 )
             )
             .AddBehavior(
                 new DoForExactParent(
                     pool,
-                    checkBoxesContainer,
-                    [element => new GetChildrenBehavior(element, checkBox, checkBoxPath, pathType)]
+                    popularMarksRubricatorName,
+                    element => new GetChildrenBehavior(
+                        element,
+                        popularMarkRubricatorName,
+                        popularMarkRubricatorLinkXPath,
+                        pathType
+                    )
                 )
             )
             .AddBehavior(
-                new DoForAllChildren(
+                new DoForExactParent(
                     pool,
-                    parentName: checkBoxesContainer,
-                    factories: element => new InitializeTextBehavior(element)
+                    popularMarksRubricatorName,
+                    element => new ParallerlTextInstantiation(element)
                 )
             )
             .AddBehavior(new StopBehavior());
@@ -69,7 +86,9 @@ public sealed class TransportTypesParser(IMessagePublisher publisher) : ITranspo
         if (execution.IsFailure)
             return execution.Error;
 
-        Result<WebElement> element = pool.GetWebElement(el => el.Name == checkBoxesContainer);
+        Result<WebElement> element = pool.GetWebElement(el =>
+            el.Name == popularMarksRubricatorName
+        );
         if (element.IsFailure)
             return element.Error;
 
@@ -87,5 +106,24 @@ public sealed class TransportTypesParser(IMessagePublisher publisher) : ITranspo
 
         pool.Clear();
         return collection;
+    }
+
+    private sealed class ParallerlTextInstantiation(WebElement element) : IWebDriverBehavior
+    {
+        public async Task<Result> Execute(
+            IMessagePublisher publisher,
+            CancellationToken ct = default
+        )
+        {
+            List<Task<Result>> tasksCollection = [];
+            tasksCollection.AddRange(
+                element
+                    .Childs.Select(child => new InitializeTextBehavior(child))
+                    .Select(textInstantiation => textInstantiation.Execute(publisher, ct))
+            );
+
+            await Task.WhenAll(tasksCollection);
+            return Result.Success();
+        }
     }
 }

@@ -32,7 +32,6 @@ public sealed class BasicParseTransportTypeTest
         _logger = _serviceProvider.GetRequiredService<ILogger>();
     }
 
-    // TODO Нужно добавить скроллинг элементов типа транспорта в пайплайн парсера.
     [Fact]
     public async Task Invoke_Basic()
     {
@@ -49,6 +48,7 @@ public sealed class BasicParseTransportTypeTest
         await worker.StartAsync(ct);
 
         Result execution = await handler.Handle(command, ct);
+
         Assert.True(execution.IsSuccess);
 
         await worker.StopAsync(ct);
