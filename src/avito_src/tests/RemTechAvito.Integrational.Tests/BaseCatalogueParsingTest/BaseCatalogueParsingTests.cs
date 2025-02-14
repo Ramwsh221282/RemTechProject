@@ -30,7 +30,7 @@ public sealed class BaseCatalogueParsingTests : BasicParserTests
         await parser.Parse(url, ct);
 
         sw.Stop();
-        _logger.Information("Time elapsed: {TIme}", sw.Elapsed.Minutes);
+        _logger.Information("Time elapsed: {Time}", sw.Elapsed.Minutes);
 
         await worker.StopAsync(ct);
     }

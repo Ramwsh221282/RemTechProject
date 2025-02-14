@@ -26,7 +26,9 @@ internal sealed class GetSingleElementContractHandler(WebDriverApi api)
         WebElementResponse response = new WebElementResponse(
             element.Value.ElementPath,
             element.Value.ElementPathType,
-            element.Value.ElementId
+            element.Value.ElementId,
+            element.Value.ElementOuterHTML,
+            element.Value.ElementInnerText
         );
 
         return element.IsFailure

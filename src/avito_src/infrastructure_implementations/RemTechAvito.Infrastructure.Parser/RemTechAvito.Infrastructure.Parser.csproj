@@ -12,4 +12,8 @@
       <ProjectReference Include="..\..\infrastructure_contracts\RemTechAvito.Infrastructure.Contracts.Parser\RemTechAvito.Infrastructure.Contracts.Parser.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
+    </ItemGroup>
+
 </Project>

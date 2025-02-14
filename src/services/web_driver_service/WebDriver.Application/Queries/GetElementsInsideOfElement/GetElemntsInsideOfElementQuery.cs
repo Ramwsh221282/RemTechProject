@@ -5,6 +5,7 @@ using WebDriver.Application.DTO;
 using WebDriver.Application.Extensions;
 using WebDriver.Application.Handlers;
 using WebDriver.Core.Models;
+using WebDriver.Core.Models.InteractionStrategies;
 using WebDriver.Core.Models.SearchStrategies;
 using WebDriver.Core.Models.SearchStrategies.Implementations;
 
@@ -42,6 +43,19 @@ internal sealed class GetElementsInsideOfElementQueryHandler(
         Result<WebElementObject[]> elements = await instance.FindElements(strategy);
         if (elements.IsFailure)
             return elements.LogAndReturn(logger);
+
+        foreach (var element in elements.Value)
+        {
+            IInteractionStrategy<string> initializeHTML = InteractionStrategyFactory.ExtractHtml(
+                element.ElementId
+            );
+            await instance.PerformInteraction(initializeHTML);
+
+            IInteractionStrategy<string> initializeText = InteractionStrategyFactory.ExtractText(
+                element.ElementId
+            );
+            await instance.PerformInteraction(initializeText);
+        }
 
         logger.Information(
             "Found elements({ChildPath} {ChildType}) of parent({ParentId})",

@@ -154,5 +154,7 @@ public sealed class CatalogueParsersTests
 
         await session.ExecuteBehavior(new StopBehavior());
         await worker.StopAsync(ct);
+
+        int bpoint = 0;
     }
 }
