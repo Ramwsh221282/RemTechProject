@@ -49,7 +49,7 @@ internal sealed class WebDriverOptionsFactory
         options.AddUserProfilePreference("profile.default_content_settings.popups", 0);
         options.AddUserProfilePreference("profile.default_content_settings.notifications", 2);
         options.AddUserProfilePreference("profile.managed_default_content_settings.stylesheets", 2);
-        //options.AddArgument("--headless=new"); TEMPORARY
+        options.AddArgument("--headless=new");
         options.AddArgument("--disable-background-networking");
         options.AddArgument("--disable-sync");
         options.AddArgument("--disable-translate");

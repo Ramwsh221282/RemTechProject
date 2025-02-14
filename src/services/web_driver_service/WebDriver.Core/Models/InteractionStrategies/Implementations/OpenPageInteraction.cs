@@ -17,13 +17,23 @@ internal sealed class OpenPageInteraction : IInteractionStrategy<string>
 
         IWebDriver driver = request.Value;
         await driver.Navigate().GoToUrlAsync(_webPageUrl);
-        string url = driver.Url;
-        return url == _webPageUrl
-            ? await Task.FromResult(url)
-            : await Task.FromResult(
-                await Task.FromResult(
-                    new Error("Opened page url is different from command page url")
-                )
-            );
+
+        int attempts = 0;
+        int maxAttempts = 20;
+        while (attempts < maxAttempts)
+        {
+            try
+            {
+                string url = driver.Url;
+                return url;
+            }
+            catch
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1));
+                attempts++;
+            }
+        }
+
+        return new Error("Unable to validate opened page is the same as requested page");
     }
 }

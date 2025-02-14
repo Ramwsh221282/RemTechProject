@@ -13,16 +13,18 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
 {
     private const string pathType = "xpath";
 
-    const string popularMarkButtonXpath =
+    private const string popularMarkButtonXpath =
         ".//button[@data-marker='popular-rubricator/controls/all']";
-    const string popularMarkButton = "popular-marks-button";
+    private const string popularMarkButton = "popular-marks-button";
 
-    const string popularMarksRubricatorContainerXPath =
+    private const string popularMarksRubricatorContainerXPath =
         ".//div[@class='popular-rubricator-links-o9b47']";
-    const string popularMarksRubricatorName = "popular-marks-container";
+    private const string popularMarksRubricatorName = "popular-marks-container";
 
-    const string popularMarkRubricatorLinkXPath = ".//a[@data-marker='popular-rubricator/link']";
-    const string popularMarkRubricatorName = "popular-mark-rubricator";
+    private const string popularMarkRubricatorLinkXPath =
+        ".//a[@data-marker='popular-rubricator/link']";
+    private const string popularMarkRubricatorName = "popular-mark-rubricator";
+    private const string popularMarkRubricatorAttribute = "href";
 
     public TransportTypesParser(IMessagePublisher publisher, ILogger logger)
         : base(publisher, logger) { }
@@ -75,6 +77,17 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
                     element => new ParallerlTextInstantiation(element)
                 )
             )
+            .AddBehavior(
+                new DoForAllChildren(
+                    pool,
+                    popularMarksRubricatorName,
+                    element => new InitializeAttributeRepeatable(
+                        element,
+                        popularMarkRubricatorAttribute,
+                        10
+                    )
+                )
+            )
             .AddBehavior(new StopBehavior());
 
         using WebDriverSession session = new(_publisher);
@@ -92,13 +105,17 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
         TransportTypesCollection collection = [];
         foreach (var child in element.Value.Childs)
         {
-            Result<TransportType> type = TransportType.Create(child.Text);
-            if (type.IsFailure)
-                return type.Error;
+            if (!child.Attributes.ContainsKey(popularMarkRubricatorAttribute))
+                continue;
 
-            Result adding = collection.Add(type);
-            if (adding.IsFailure)
-                return adding.Error;
+            string name = child.Text;
+            string href = PostProcessLink(child.Attributes[popularMarkRubricatorAttribute]);
+
+            Result<TransportType> type = TransportType.Create(name, href);
+            if (type.IsFailure)
+                continue;
+
+            collection.Add(type);
         }
 
         pool.Clear();
@@ -110,6 +127,13 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
         );
 
         return collection;
+    }
+
+    public string PostProcessLink(ReadOnlySpan<char> href)
+    {
+        int index = href.IndexOf('?');
+        ReadOnlySpan<char> processed = href.Slice(0, index);
+        return new string(processed);
     }
 
     private sealed class ParallerlTextInstantiation(WebElement element) : IWebDriverBehavior

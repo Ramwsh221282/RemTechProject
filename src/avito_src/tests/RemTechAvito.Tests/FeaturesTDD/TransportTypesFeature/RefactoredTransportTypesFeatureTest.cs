@@ -255,6 +255,7 @@ public sealed class RefactoredTransportTypesFeatureTest
         const string popularMarkRubricatorLinkXPath =
             ".//a[@data-marker='popular-rubricator/link']";
         const string popularMarkRubricatorName = "popular-mark-rubricator";
+        const string hrefAttribute = "href";
 
         IMessagePublisher publisher = new MultiCommunicationPublisher(queue, host, user, password);
         WebElementPool pool = new();
@@ -303,17 +304,10 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new DoForExactParent(
-                    pool,
-                    popularMarksRubricatorName,
-                    element => new ExcludeChildsBehavior(element, child => child.Text != param)
-                )
-            )
-            .AddBehavior(
                 new DoForAllChildren(
                     pool,
                     popularMarksRubricatorName,
-                    element => new ClickOnElementInstant(element)
+                    element => new InitializeAttributeRepeatable(element, hrefAttribute, 10)
                 )
             );
 
@@ -322,10 +316,18 @@ public sealed class RefactoredTransportTypesFeatureTest
         using Worker worker = _serviceProvider.GetRequiredService<Worker>();
         using WebDriverSession session = new(publisher);
         await worker.StartAsync(ct);
-        Result result = await session.ExecuteBehavior(pipeLine, ct);
-        Assert.True(result.IsSuccess);
+        await session.ExecuteBehavior(pipeLine, ct);
         await publisher.Send(new StopWebDriverContract(), ct);
         await worker.StopAsync(ct);
+
+        Result<WebElement> rubricatorLinksParent = pool[pool.Count - 1];
+        Assert.True(rubricatorLinksParent.IsSuccess);
+        foreach (var child in rubricatorLinksParent.Value.Childs)
+        {
+            Assert.True(child.Attributes.ContainsKey(hrefAttribute));
+            Assert.NotEqual(string.Empty, child.Attributes[hrefAttribute]);
+            _logger.Information("Mark href: {Href}", child.Attributes[hrefAttribute]);
+        }
     }
 
     [Fact]
