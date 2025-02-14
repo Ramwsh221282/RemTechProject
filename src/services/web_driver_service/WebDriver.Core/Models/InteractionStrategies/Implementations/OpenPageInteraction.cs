@@ -21,7 +21,9 @@ internal sealed class OpenPageInteraction : IInteractionStrategy<string>
         return url == _webPageUrl
             ? await Task.FromResult(url)
             : await Task.FromResult(
-                new Error("Opened page url is different from command page url")
+                await Task.FromResult(
+                    new Error("Opened page url is different from command page url")
+                )
             );
     }
 }

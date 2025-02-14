@@ -33,7 +33,7 @@ internal sealed class NewSingleElementSearchStrategy
             {
                 WebElementObject element = new(_path, _type, driver.Value.FindElement(search));
                 instance.AddInPool(element);
-                return element;
+                return await Task.FromResult(element);
             }
             catch
             {

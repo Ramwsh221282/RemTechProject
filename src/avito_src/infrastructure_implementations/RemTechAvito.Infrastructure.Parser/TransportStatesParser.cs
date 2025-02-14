@@ -33,9 +33,9 @@ public sealed class TransportStatesParser(IMessagePublisher publisher, ILogger l
                 new ScrollToBottomBehavior(),
                 new ScrollToTopBehavior()
             )
-            .AddBehavior(new GetSingleElementBehavior(pool, stateAllXpath, pathType, stateAll))
-            .AddBehavior(new GetSingleElementBehavior(pool, stateNewXpath, pathType, stateNew))
-            .AddBehavior(new GetSingleElementBehavior(pool, stateBUXpath, pathType, stateBU))
+            .AddBehavior(new GetNewElementInstant(pool, stateAllXpath, pathType, stateAll))
+            .AddBehavior(new GetNewElementInstant(pool, stateNewXpath, pathType, stateNew))
+            .AddBehavior(new GetNewElementInstant(pool, stateBUXpath, pathType, stateBU))
             .AddBehavior(new DoForAllParents(pool, element => new InitializeTextBehavior(element)))
             .AddBehavior(new StopBehavior());
 

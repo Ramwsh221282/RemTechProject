@@ -30,7 +30,7 @@ public sealed class CustomerTypesParser(IMessagePublisher publisher, ILogger log
                 new ScrollToBottomBehavior(),
                 new ScrollToTopBehavior()
             )
-            .AddBehavior(new GetSingleElementBehavior(pool, containerPath, pathType, containerName))
+            .AddBehavior(new GetNewElementInstant(pool, containerPath, pathType, containerName))
             .AddBehavior(new ScrollToBottomBehavior())
             .AddBehavior(
                 new DoForExactParent(

@@ -39,12 +39,7 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
                     .AddBehavior(new ScrollToTopBehavior())
             )
             .AddBehavior(
-                new GetSingleElementBehavior(
-                    pool,
-                    popularMarkButtonXpath,
-                    pathType,
-                    popularMarkButton
-                )
+                new GetNewElementInstant(pool, popularMarkButtonXpath, pathType, popularMarkButton)
             )
             .AddBehavior(
                 new DoForExactParent(
@@ -54,7 +49,7 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
                 )
             )
             .AddBehavior(
-                new GetSingleElementBehavior(
+                new GetNewElementInstant(
                     pool,
                     popularMarksRubricatorContainerXPath,
                     pathType,

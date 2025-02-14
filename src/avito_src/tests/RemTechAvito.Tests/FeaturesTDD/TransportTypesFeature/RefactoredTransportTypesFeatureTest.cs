@@ -69,12 +69,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 new ScrollToTopBehavior()
             )
             .AddBehavior(
-                new GetSingleElementBehavior(
-                    pool,
-                    filterInputPath,
-                    filterInputPathType,
-                    "filter-input"
-                )
+                new GetNewElementInstant(pool, filterInputPath, filterInputPathType, "filter-input")
             )
             .AddBehavior(
                 new DoForExactParent(
@@ -84,7 +79,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new GetSingleElementBehavior(
+                new GetNewElementInstant(
                     pool,
                     checkBoxContainerPath,
                     filterInputPathType,
@@ -185,12 +180,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 new ScrollToTopBehavior()
             )
             .AddBehavior(
-                new GetSingleElementBehavior(
-                    pool,
-                    filterInputPath,
-                    filterInputPathType,
-                    "filter-input"
-                )
+                new GetNewElementInstant(pool, filterInputPath, filterInputPathType, "filter-input")
             )
             .AddBehavior(
                 new DoForExactParent(
@@ -200,7 +190,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new GetSingleElementBehavior(
+                new GetNewElementInstant(
                     pool,
                     checkBoxContainerPath,
                     filterInputPathType,
@@ -276,12 +266,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 new ScrollToTopBehavior()
             )
             .AddBehavior(
-                new GetSingleElementBehavior(
-                    pool,
-                    popularMarkButtonXpath,
-                    pathType,
-                    popularMarkButton
-                )
+                new GetNewElementInstant(pool, popularMarkButtonXpath, pathType, popularMarkButton)
             )
             .AddBehavior(
                 new DoForExactParent(
@@ -291,7 +276,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new GetSingleElementBehavior(
+                new GetNewElementInstant(
                     pool,
                     popularMarksRubricatorContainerXPath,
                     pathType,
@@ -373,12 +358,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                     .AddBehavior(new ScrollToTopBehavior())
             )
             .AddBehavior(
-                new GetSingleElementBehavior(
-                    pool,
-                    popularMarkButtonXpath,
-                    pathType,
-                    popularMarkButton
-                )
+                new GetNewElementInstant(pool, popularMarkButtonXpath, pathType, popularMarkButton)
             )
             .AddBehavior(
                 new DoForExactParent(
@@ -388,7 +368,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new GetSingleElementBehavior(
+                new GetNewElementInstant(
                     pool,
                     popularMarksRubricatorContainerXPath,
                     pathType,
@@ -465,9 +445,9 @@ public sealed class RefactoredTransportTypesFeatureTest
                 new ScrollToBottomBehavior(),
                 new ScrollToTopBehavior()
             )
-            .AddBehavior(new GetSingleElementBehavior(pool, stateAllXpath, pathType, stateAll))
-            .AddBehavior(new GetSingleElementBehavior(pool, stateNewXpath, pathType, stateNew))
-            .AddBehavior(new GetSingleElementBehavior(pool, stateBUXpath, pathType, stateBU))
+            .AddBehavior(new GetNewElementInstant(pool, stateAllXpath, pathType, stateAll))
+            .AddBehavior(new GetNewElementInstant(pool, stateNewXpath, pathType, stateNew))
+            .AddBehavior(new GetNewElementInstant(pool, stateBUXpath, pathType, stateBU))
             .AddBehavior(
                 new DoForSpecificParents(
                     pool,
@@ -510,8 +490,8 @@ public sealed class RefactoredTransportTypesFeatureTest
                 new ScrollToBottomBehavior(),
                 new ScrollToTopBehavior()
             )
-            .AddBehavior(new GetSingleElementBehavior(pool, ndsXpath, pathType, nds))
-            .AddBehavior(new GetSingleElementBehavior(pool, lizingXpath, pathType, lizing))
+            .AddBehavior(new GetNewElementInstant(pool, ndsXpath, pathType, nds))
+            .AddBehavior(new GetNewElementInstant(pool, lizingXpath, pathType, lizing))
             .AddBehavior(new ScrollToBottomBehavior())
             .AddBehavior(
                 new DoForSpecificParents(
@@ -555,7 +535,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 new ScrollToBottomBehavior(),
                 new ScrollToTopBehavior()
             )
-            .AddBehavior(new GetSingleElementBehavior(pool, containerPath, pathType, containerName))
+            .AddBehavior(new GetNewElementInstant(pool, containerPath, pathType, containerName))
             .AddBehavior(new ScrollToBottomBehavior())
             .AddBehavior(
                 new DoForExactParent(
@@ -621,7 +601,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 new ScrollToTopBehavior()
             )
             .AddBehavior(
-                new GetSingleElementBehavior(
+                new GetNewElementInstant(
                     pool,
                     ratingFourStarsAndMorePath,
                     pathType,
@@ -629,7 +609,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 )
             )
             .AddBehavior(
-                new GetSingleElementBehavior(pool, ratingCompaniesPath, pathType, ratingCompanies)
+                new GetNewElementInstant(pool, ratingCompaniesPath, pathType, ratingCompanies)
             )
             .AddBehavior(new ScrollToBottomBehavior())
             .AddBehavior(new DoForAllParents(pool, element => new InitializeTextBehavior(element)))
@@ -670,7 +650,7 @@ public sealed class RefactoredTransportTypesFeatureTest
                 new ScrollToBottomBehavior(),
                 new ScrollToTopBehavior()
             )
-            .AddBehavior(new GetSingleElementBehavior(pool, path, pathType, name))
+            .AddBehavior(new GetNewElementInstant(pool, path, pathType, name))
             .AddBehavior(new ScrollToBottomBehavior())
             .AddBehavior(new DoForExactParent(pool, name, el => new SetFiltersBehavior(el)));
 

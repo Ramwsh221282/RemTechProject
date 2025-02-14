@@ -54,6 +54,7 @@ public sealed class InitializeAttributeRepeatable(
             if (execution.IsSuccess)
                 return execution;
 
+            await Task.Delay(TimeSpan.FromSeconds(1));
             current++;
         }
         return new Error($"Cannot initialize attribute. Attempts tried: {MaxAttempts}");

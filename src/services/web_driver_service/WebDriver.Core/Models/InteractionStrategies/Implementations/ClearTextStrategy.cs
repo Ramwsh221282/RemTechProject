@@ -16,11 +16,11 @@ internal sealed class ClearTextStrategy : IInteractionStrategy
     {
         Result<IWebDriver> request = instance.GetRunningDriver();
         if (request.IsFailure)
-            return request;
+            return await Task.FromResult(request);
 
         Result<WebElementObject> element = instance.GetFromPool(_id);
         if (element.IsFailure)
-            return element;
+            return await Task.FromResult(element);
 
         IWebElement model = element.Value.Model;
 
@@ -31,7 +31,9 @@ internal sealed class ClearTextStrategy : IInteractionStrategy
         }
         catch (Exception ex)
         {
-            return new Error($"Error occured during text clearing: {ex.Message}");
+            return await Task.FromResult(
+                new Error($"Error occured during text clearing: {ex.Message}")
+            );
         }
     }
 }

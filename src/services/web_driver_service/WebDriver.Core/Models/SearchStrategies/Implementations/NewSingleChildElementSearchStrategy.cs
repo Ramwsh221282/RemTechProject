@@ -22,18 +22,18 @@ internal sealed class NewSingleChildElementSearchStrategy
     {
         Result<WebElementObject> existingElement = instance.GetFromPool(_existingId);
         if (existingElement.IsFailure)
-            return existingElement.Error;
+            return await Task.FromResult(existingElement.Error);
 
         Result<By> search = Convert(_type, _path);
         if (search.IsFailure)
-            return search.Error;
+            return await Task.FromResult(search.Error);
 
         IWebElement model = existingElement.Value.Model;
         try
         {
             WebElementObject child = new(_path, _type, model.FindElement(search));
             instance.AddInPool(child);
-            return child;
+            return await Task.FromResult(child);
         }
         catch
         {

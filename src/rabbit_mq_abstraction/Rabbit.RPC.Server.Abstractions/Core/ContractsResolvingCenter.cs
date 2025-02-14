@@ -30,12 +30,13 @@ public sealed class ContractsResolvingCenter
         try
         {
             Type requestType = contract.GetType();
-            _logger.Information("Received request: {RequestType}", requestType.Name);
+            ReadOnlyMemory<char> requestTypeName = requestType.Name.AsMemory();
+            _logger.Information("Received request: {RequestType}", requestTypeName);
 
             if (!_contractHandlers.ContainsKey(requestType))
             {
-                _logger.Error("Request {Type} is not allowed.", requestType.Name);
-                return ContractActionResult.Fail($"Request {requestType.Name} is not allowed.");
+                _logger.Error("Request {Type} is not allowed.", requestTypeName);
+                return ContractActionResult.Fail($"Request {requestTypeName} is not allowed.");
             }
 
             Type handlerInterface = typeof(IContractHandler<>).MakeGenericType(requestType);
@@ -48,10 +49,10 @@ public sealed class ContractsResolvingCenter
             {
                 _logger.Error(
                     "Cannot resolve request: {Type} because no handlers registered.",
-                    requestType.Name
+                    requestTypeName
                 );
                 return ContractActionResult.Fail(
-                    $"Cannot resolve request: {requestType.Name} because no handlers registered."
+                    $"Cannot resolve request: {requestTypeName} because no handlers registered."
                 );
             }
 
@@ -60,13 +61,13 @@ public sealed class ContractsResolvingCenter
                     handlerMethod.Invoke(handler, new object[] { contract })!;
             ContractActionResult response = await task;
 
-            _logger.Information("Request of type: {RequestType} is handled", requestType.Name);
+            _logger.Information("Request of type: {RequestType} is handled", requestTypeName);
             return response;
         }
         catch (Exception ex)
         {
             string message = ex.Message;
-            _logger.Error("Service exception: {Exception}", message);
+            _logger.Error("Service exception: {Exception}", message.AsMemory());
             return ContractActionResult.Fail(message);
         }
     }
