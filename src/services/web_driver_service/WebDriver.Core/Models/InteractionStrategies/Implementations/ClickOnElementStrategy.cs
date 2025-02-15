@@ -26,9 +26,7 @@ internal sealed class ClickOnElementStrategy : IInteractionStrategy
         }
         catch
         {
-            Error error = new Error(
-                $"Element with path: {element.Value.ElementPath} type: {element.Value.ElementPathType} id: {element.Value.ElementId} is not clickable"
-            );
+            Error error = new Error($"Element({element.Value.ElementId}) is not clickable");
             return await Task.FromResult(error);
         }
     }

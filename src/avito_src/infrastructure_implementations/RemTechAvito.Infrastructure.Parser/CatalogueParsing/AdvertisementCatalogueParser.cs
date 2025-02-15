@@ -3,6 +3,7 @@ using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
 using RemTechAvito.Infrastructure.Contracts.Parser;
 using RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models;
 using RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models.CustomBehaviors;
+using RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models.CustomBehaviors.CatalogueParsing;
 using Serilog;
 using WebDriver.Worker.Service.Contracts.BaseImplementations;
 using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implementations;
@@ -21,12 +22,13 @@ public sealed class AdvertisementCatalogueParser : BaseParser, IAdvertisementCat
     {
         CataloguePageModel model = new CataloguePageModel(catalogueUrl);
         using WebDriverSession session = new WebDriverSession(_publisher);
-        await session.ExecuteBehavior(new StartBehavior("none"));
+        await session.ExecuteBehavior(new StartBehavior("none"), ct);
         await session.ExecuteBehavior(
-            new InitializePaginationBehavior(model, _logger, catalogueUrl)
+            new InitializePaginationBehavior(model, _logger, catalogueUrl),
+            ct
         );
-        await session.ExecuteBehavior(new ParseAvitoPages(model, _logger));
-        await session.ExecuteBehavior(new ParseAdvertisements(model));
+        await session.ExecuteBehavior(new ParseAvitoPages(model, _logger), ct);
+        await session.ExecuteBehavior(new ParseAdvertisements(model, _logger), ct);
         await session.ExecuteBehavior(new StopBehavior(), ct);
         return [];
     }

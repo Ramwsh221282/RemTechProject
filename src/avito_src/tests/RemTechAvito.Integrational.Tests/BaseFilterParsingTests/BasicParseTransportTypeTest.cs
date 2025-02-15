@@ -24,13 +24,10 @@ public sealed class BasicParseTransportTypeTest : BasicParserTests
         ParseTransportTypesCommand command = new();
         ParseTransportTypesCommandHandler handler = new(parser, repository, _logger);
 
-        Worker worker = _serviceProvider.GetRequiredService<Worker>();
+        using Worker worker = _serviceProvider.GetRequiredService<Worker>();
         await worker.StartAsync(ct);
-
         Result execution = await handler.Handle(command, ct);
-
         Assert.True(execution.IsSuccess);
-
         await worker.StopAsync(ct);
     }
 }

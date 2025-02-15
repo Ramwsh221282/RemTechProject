@@ -31,7 +31,7 @@ internal sealed class NewSingleChildElementSearchStrategy
         IWebElement model = existingElement.Value.Model;
         try
         {
-            WebElementObject child = new(_path, _type, model.FindElement(search));
+            WebElementObject child = new(model.FindElement(search));
             instance.AddInPool(child);
             return await Task.FromResult(child);
         }

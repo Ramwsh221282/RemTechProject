@@ -1,10 +1,10 @@
-﻿using Rabbit.RPC.Client.Abstractions;
+﻿using HtmlAgilityPack;
+using Rabbit.RPC.Client.Abstractions;
 using RemTechAvito.Core.FiltersManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Contracts.Parser;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriver.Worker.Service.Contracts.BaseImplementations;
-using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours;
 using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implementations;
 
 namespace RemTechAvito.Infrastructure.Parser;
@@ -70,25 +70,8 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
                     )
                 )
             )
-            .AddBehavior(
-                new DoForExactParent(
-                    pool,
-                    popularMarksRubricatorName,
-                    element => new ParallerlTextInstantiation(element)
-                )
-            )
-            .AddBehavior(
-                new DoForAllChildren(
-                    pool,
-                    popularMarksRubricatorName,
-                    element => new InitializeAttributeRepeatable(
-                        element,
-                        popularMarkRubricatorAttribute,
-                        10
-                    )
-                )
-            )
-            .AddBehavior(new StopBehavior());
+            .AddBehavior(new StopBehavior())
+            .AddBehavior(new ClearPoolBehavior());
 
         using WebDriverSession session = new(_publisher);
 
@@ -105,11 +88,14 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
         TransportTypesCollection collection = [];
         foreach (var child in element.Value.Childs)
         {
-            if (!child.Attributes.ContainsKey(popularMarkRubricatorAttribute))
+            string outerHTML = child.Model.ElementOuterHTML;
+            HtmlNode node = HtmlNode.CreateNode(outerHTML);
+            HtmlAttribute? hrefAttribute = node.Attributes[popularMarkRubricatorAttribute];
+            if (hrefAttribute == null)
                 continue;
 
-            string name = child.Text;
-            string href = PostProcessLink(child.Attributes[popularMarkRubricatorAttribute]);
+            string name = child.Model.ElementInnerText;
+            string href = PostProcessLink(hrefAttribute.Value);
 
             Result<TransportType> type = TransportType.Create(name, href);
             if (type.IsFailure)
@@ -129,29 +115,14 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
         return collection;
     }
 
-    public string PostProcessLink(ReadOnlySpan<char> href)
+    public static ReadOnlySpan<char> GetDomainUrlPart() =>
+        ['h', 't', 't', 'p', 's', ':', '/', '/', 'a', 'v', 'i', 't', 'o', '.', 'r', 'u'];
+
+    private static string PostProcessLink(ReadOnlySpan<char> href)
     {
         int index = href.IndexOf('?');
+        ReadOnlySpan<char> domain = GetDomainUrlPart();
         ReadOnlySpan<char> processed = href.Slice(0, index);
-        return new string(processed);
-    }
-
-    private sealed class ParallerlTextInstantiation(WebElement element) : IWebDriverBehavior
-    {
-        public async Task<Result> Execute(
-            IMessagePublisher publisher,
-            CancellationToken ct = default
-        )
-        {
-            List<Task<Result>> tasksCollection = [];
-            tasksCollection.AddRange(
-                element
-                    .Childs.Select(child => new InitializeTextBehavior(child))
-                    .Select(textInstantiation => textInstantiation.Execute(publisher, ct))
-            );
-
-            await Task.WhenAll(tasksCollection);
-            return Result.Success();
-        }
+        return $"{domain}{processed}";
     }
 }

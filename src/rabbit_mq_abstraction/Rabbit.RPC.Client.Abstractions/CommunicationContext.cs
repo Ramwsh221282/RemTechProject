@@ -120,9 +120,8 @@ internal sealed class CommunicationContext : IDisposable
         taskCompletionSource!.SetResult(result);
         if (result.IsSuccess)
             _logger.Information(
-                "Client received response: IsSuccess: {IsSuccess} Body: {Body}",
-                result.IsSuccess,
-                result.Body
+                "Client received response: IsSuccess: {IsSuccess}",
+                result.IsSuccess
             );
         else
             _logger.Error(

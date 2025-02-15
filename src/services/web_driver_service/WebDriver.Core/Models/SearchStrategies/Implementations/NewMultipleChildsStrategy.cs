@@ -33,9 +33,7 @@ internal sealed class NewMultipleChildsStrategy
         try
         {
             items = model.FindElements(search);
-            WebElementObject[] result = items
-                .Select(m => new WebElementObject(_path, _type, m))
-                .ToArray();
+            WebElementObject[] result = items.Select(m => new WebElementObject(m)).ToArray();
 
             if (items.Count == 0)
                 return await Task.FromResult(

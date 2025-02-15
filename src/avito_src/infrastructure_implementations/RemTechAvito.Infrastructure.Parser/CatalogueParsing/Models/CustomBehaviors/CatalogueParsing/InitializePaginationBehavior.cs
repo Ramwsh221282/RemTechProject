@@ -1,11 +1,12 @@
-﻿using Rabbit.RPC.Client.Abstractions;
+﻿using HtmlAgilityPack;
+using Rabbit.RPC.Client.Abstractions;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriver.Worker.Service.Contracts.BaseImplementations;
 using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours;
 using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implementations;
 
-namespace RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models.CustomBehaviors;
+namespace RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models.CustomBehaviors.CatalogueParsing;
 
 internal sealed class InitializePaginationBehavior : IWebDriverBehavior
 {
@@ -31,30 +32,42 @@ internal sealed class InitializePaginationBehavior : IWebDriverBehavior
             .AddBehavior(new ScrollToBottomRetriable(10))
             .AddBehavior(new ScrollToTopRetriable(10))
             .AddBehavior(new GetNewElementRetriable(pool, paginationPath, pathType, pagination, 10))
-            .AddBehavior(new DoForLastParent(pool, element => new InitializeTextBehavior(element)));
+            .AddBehavior(new ClearPoolBehavior());
 
         Result execution = await behavior.Execute(publisher, ct);
         if (execution.IsFailure)
             return execution.Error;
 
-        Result<WebElement> element = pool[pool.Count - 1];
-        if (element.IsFailure)
+        Result<WebElement> paginationContainer = pool[^1];
+        if (paginationContainer.IsFailure)
+        {
+            InitializeOnePageOnly();
             return Result.Success();
+        }
 
-        SetMaxPageNumber(element);
-
-        _logger.Information("Initialized Max Page Numbers: {Count}", _model.MaxPage);
-
+        HtmlNode paginationNode = HtmlNode.CreateNode(
+            paginationContainer.Value.Model.ElementOuterHTML
+        );
+        HtmlNodeCollection? pages = paginationNode.SelectNodes(".//li");
+        if (pages == null)
+        {
+            InitializeOnePageOnly();
+            return Result.Success();
+        }
+        IEnumerable<HtmlNode> reversed = pages.Reverse();
+        foreach (var node in reversed)
+        {
+            if (!int.TryParse(node.InnerText, out int page))
+                continue;
+            _model.InitializePagination(page);
+            _logger.Information("Initialized Max Page Numbers: {Count}", _model.MaxPage);
+        }
         return Result.Success();
     }
 
-    private void SetMaxPageNumber(WebElement element)
+    private void InitializeOnePageOnly()
     {
-        ReadOnlySpan<char> text = element.Text;
-        int lastNewLineSeparator = text.LastIndexOf('\n');
-
-        ReadOnlySpan<char> lastNumber = text.Slice(lastNewLineSeparator + 1);
-        if (int.TryParse(lastNumber, out int pageNumber))
-            _model.InitializePagination(pageNumber);
+        _model.InitializePagination(1);
+        _logger.Information("Pool empty. Initialized Max Page Numbers: {Count}", _model.MaxPage);
     }
 }

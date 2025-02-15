@@ -53,11 +53,7 @@ internal sealed class GetElementInsideOfElementQueryHandler(
         );
         await instance.PerformInteraction(initializeText);
 
-        logger.Information(
-            "Children elements (Path: {ChildPath} Type: {ChildType}) found",
-            element.Value.ElementPath,
-            element.Value.ElementPathType
-        );
+        logger.Information("Children elements of parent ({Id}) found", existing.ExistingId);
         return element;
     }
 }

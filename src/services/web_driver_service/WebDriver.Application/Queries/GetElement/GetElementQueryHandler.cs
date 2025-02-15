@@ -38,12 +38,12 @@ internal sealed class GetElementQueryHandler(
         IInteractionStrategy<string> initializeHTML = InteractionStrategyFactory.ExtractHtml(
             element.Value.ElementId
         );
-        Result initialization = await instance.PerformInteraction(initializeHTML);
+        await instance.PerformInteraction(initializeHTML);
 
         IInteractionStrategy<string> initializeText = InteractionStrategyFactory.ExtractText(
             element.Value.ElementId
         );
-        initialization = await instance.PerformInteraction(initializeText);
+        await instance.PerformInteraction(initializeText);
 
         logger.Information("Got element with path: {Path} and type {Type}", data.Path, data.Type);
         return await Task.FromResult(element);

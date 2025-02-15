@@ -36,8 +36,8 @@ public sealed class TransportStatesParser(IMessagePublisher publisher, ILogger l
             .AddBehavior(new GetNewElementInstant(pool, stateAllXpath, pathType, stateAll))
             .AddBehavior(new GetNewElementInstant(pool, stateNewXpath, pathType, stateNew))
             .AddBehavior(new GetNewElementInstant(pool, stateBUXpath, pathType, stateBU))
-            .AddBehavior(new DoForAllParents(pool, element => new InitializeTextBehavior(element)))
-            .AddBehavior(new StopBehavior());
+            .AddBehavior(new StopBehavior())
+            .AddBehavior(new ClearPoolBehavior());
 
         using WebDriverSession session = new WebDriverSession(_publisher);
         Result result = await session.ExecuteBehavior(behavior, ct);
@@ -48,7 +48,7 @@ public sealed class TransportStatesParser(IMessagePublisher publisher, ILogger l
         TransportStatesCollection collection = [];
         foreach (var element in pool.Elements)
         {
-            Result<TransportState> state = TransportState.Create(element.Text);
+            Result<TransportState> state = TransportState.Create(element.Model.ElementInnerText);
             if (state.IsFailure)
                 return state.Error;
 

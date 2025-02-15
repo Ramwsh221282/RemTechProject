@@ -23,8 +23,7 @@ internal sealed class ExtractTextInteraction : IInteractionStrategy<string>
 
         IWebDriver driver = request.Value;
         string text = driver.ExecuteJavaScript<string>(Script, element.Value.Model)!;
-        element.Value.ElementInnerText = text;
-
+        element.Value.SetInnerText(text);
         return await Task.FromResult(text);
     }
 }

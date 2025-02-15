@@ -28,6 +28,8 @@ public sealed class BasicParseCustomerStatesTest : BasicParserTests
 
         Result execution = await handler.Handle(command, ct);
 
+        int bpoint = 0;
+
         Assert.True(execution.IsSuccess);
 
         await worker.StopAsync(ct);
