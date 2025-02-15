@@ -28,9 +28,6 @@ public abstract class DoForChildren : IWebDriverBehavior
 
 public sealed class DoForAllChildren : DoForChildren
 {
-    private int _limit;
-    private int _tries;
-
     public DoForAllChildren(
         WebElementPool pool,
         string parentName,
@@ -49,31 +46,16 @@ public sealed class DoForAllChildren : DoForChildren
 
         foreach (var factory in _factories)
         {
-            if (_tries == _limit - 1)
-                break;
-
-            Result execution = await root.Value.ExecuteForChilds(publisher, factory, ct);
-            if (execution.IsFailure)
-                return execution;
-
-            _tries++;
+            await root.Value.ExecuteForChilds(publisher, factory, ct);
         }
 
         return Result.Success();
-    }
-
-    public DoForAllChildren WithLimit(int limit)
-    {
-        _limit = limit;
-        return this;
     }
 }
 
 public sealed class DoForSpecificChildren : DoForChildren
 {
     private readonly Func<WebElement, bool> _predicate;
-    private int _limit;
-    private int _tries;
 
     public DoForSpecificChildren(
         WebElementPool pool,
@@ -97,27 +79,9 @@ public sealed class DoForSpecificChildren : DoForChildren
 
         foreach (var factory in _factories)
         {
-            if (_tries == _limit - 1)
-                break;
-
-            Result execution = await root.Value.ExecuteForChilds(
-                publisher,
-                factory,
-                _predicate,
-                ct
-            );
-            if (execution.IsFailure)
-                return execution;
-
-            _tries++;
+            await root.Value.ExecuteForChilds(publisher, factory, _predicate, ct);
         }
 
         return Result.Success();
-    }
-
-    public DoForSpecificChildren WithLimit(int limit)
-    {
-        _limit = limit;
-        return this;
     }
 }

@@ -59,7 +59,7 @@ internal sealed class SimpleListeningPoint : IListeningPoint
             _logger.Error(
                 "Cannot initialize service {ServiceName}. Exception: {Message}",
                 ServiceName,
-                ex.Message
+                ex.Message.AsMemory()
             );
         }
     }
@@ -111,11 +111,7 @@ internal sealed class SimpleListeningPoint : IListeningPoint
         );
 
         await channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
-        _logger.Information(
-            "{ServiceName} sent response: {responseJson}",
-            ServiceName,
-            responseJson
-        );
+        _logger.Information("{ServiceName} sent response.", ServiceName);
     }
 
     public async ValueTask DisposeAsync()

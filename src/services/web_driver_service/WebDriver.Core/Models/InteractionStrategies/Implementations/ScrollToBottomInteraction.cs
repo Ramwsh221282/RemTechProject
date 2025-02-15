@@ -19,7 +19,7 @@ internal sealed class ScrollToBottomInteraction : BaseSearchElementStrategy, IIn
     {
         Result<IWebDriver> request = instance.GetRunningDriver();
         if (request.IsFailure)
-            return request;
+            return await Task.FromResult(request);
 
         IWebDriver driver = request.Value;
 
@@ -48,7 +48,7 @@ internal sealed class ScrollToBottomInteraction : BaseSearchElementStrategy, IIn
         }
 
         if (ReachedMaxAttempts(ref attempts) && !_isScrolled)
-            return new Error("Cannot scroll to bottom.");
+            return await Task.FromResult(new Error("Cannot scroll to bottom."));
 
         return await Task.FromResult(Result.Success());
     }

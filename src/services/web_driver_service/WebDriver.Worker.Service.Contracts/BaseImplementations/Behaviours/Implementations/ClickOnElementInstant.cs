@@ -35,6 +35,7 @@ public sealed class ClickOnElementRetriable(WebElement element, byte maxAttempts
             if (execution.IsSuccess)
                 return execution;
 
+            await Task.Delay(TimeSpan.FromSeconds(1));
             current++;
         }
 

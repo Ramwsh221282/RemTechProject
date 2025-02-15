@@ -54,7 +54,7 @@ public sealed class IncomingRequestMapper
         catch (Exception ex)
         {
             string message = ex.Message;
-            _logger.Error("Service exception: {Message}", message);
+            _logger.Error("Service exception: {Message}", message.AsMemory());
             return new ContractMappingResult(message);
         }
     }

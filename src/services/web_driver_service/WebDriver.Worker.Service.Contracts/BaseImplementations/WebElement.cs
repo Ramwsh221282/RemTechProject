@@ -15,6 +15,8 @@ public sealed record WebElement(WebElementResponse Model, string Name)
     public IReadOnlyCollection<WebElement> Childs => _childs;
     public string Text { get; private set; } = String.Empty;
 
+    public string OuterHTML { get; private set; } = String.Empty;
+
     public Result SetAttribute(string attributeName, string attributeValue)
     {
         bool containsKey = _attributes.ContainsKey(attributeName);
@@ -45,8 +47,6 @@ public sealed record WebElement(WebElementResponse Model, string Name)
         return pool;
     }
 
-    //public void ExcludeChilds(Predicate<WebElement> predicate) => _childs.RemoveAll(predicate);
-
     public void ExcludeChilds(Predicate<WebElement> predicate)
     {
         List<WebElement> newCollection = [];
@@ -66,8 +66,6 @@ public sealed record WebElement(WebElementResponse Model, string Name)
     )
     {
         Stack<WebElement> stack = new();
-        // foreach (WebElement child in this.Childs.Reverse())
-        //     stack.Push(child);
 
         for (int index = _childs.Count - 1; index >= 0; index--)
             stack.Push(_childs[index]);
@@ -83,9 +81,6 @@ public sealed record WebElement(WebElementResponse Model, string Name)
 
             for (int index = current._childs.Count - 1; index >= 0; index--)
                 stack.Push(current._childs[index]);
-
-            // foreach (WebElement child in current.Childs.Reverse())
-            //     stack.Push(child);
         }
 
         return Result.Success();
@@ -99,8 +94,6 @@ public sealed record WebElement(WebElementResponse Model, string Name)
     )
     {
         Stack<WebElement> stack = new();
-        // foreach (WebElement child in this.Childs.Where(predicate).Reverse())
-        //     stack.Push(child);
 
         for (int index = _childs.Count - 1; index >= 0; index--)
         {
@@ -122,9 +115,6 @@ public sealed record WebElement(WebElementResponse Model, string Name)
                 if (predicate(current._childs[index]))
                     stack.Push(current._childs[index]);
             }
-
-            // foreach (WebElement child in current.Childs.Where(predicate).Reverse())
-            //     stack.Push(child);
         }
 
         return Result.Success();

@@ -18,7 +18,7 @@ internal sealed class ScrollToTopInteraction : BaseSearchElementStrategy, IInter
     {
         Result<IWebDriver> request = instance.GetRunningDriver();
         if (request.IsFailure)
-            return request;
+            return await Task.FromResult(request);
 
         IWebDriver driver = request.Value;
         int attempts = 0;
@@ -45,7 +45,7 @@ internal sealed class ScrollToTopInteraction : BaseSearchElementStrategy, IInter
         }
 
         if (ReachedMaxAttempts(ref attempts) && !_isScrolled)
-            return new Error("Cannot scroll to top.");
+            return await Task.FromResult(new Error("Cannot scroll to top."));
 
         return await Task.FromResult(Result.Success());
     }

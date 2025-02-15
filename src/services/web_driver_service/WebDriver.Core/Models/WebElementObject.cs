@@ -7,6 +7,9 @@ public record WebElementObject
     public string ElementPath { get; }
     public string ElementPathType { get; }
     public Guid ElementId { get; }
+    public string ElementOuterHTML { get; set; } = String.Empty;
+    public string ElementInnerText { get; set; } = String.Empty;
+
     public IWebElement Model { get; }
 
     internal WebElementObject(string path, string type, IWebElement model)

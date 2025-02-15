@@ -26,7 +26,13 @@ internal sealed class GetSingleChildElementContractHandler(WebDriverApi api)
         >(query);
 
         WebElementResponse response =
-            new(element.Value.ElementPath, element.Value.ElementPathType, element.Value.ElementId);
+            new(
+                element.Value.ElementPath,
+                element.Value.ElementPathType,
+                element.Value.ElementId,
+                element.Value.ElementOuterHTML,
+                element.Value.ElementInnerText
+            );
 
         return element.IsFailure
             ? ContractActionResult.Fail(element.Error.Description)

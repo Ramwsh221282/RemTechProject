@@ -14,11 +14,11 @@ internal sealed class ScrollElementStrategy : IInteractionStrategy
     {
         Result<IWebDriver> request = instance.GetRunningDriver();
         if (request.IsFailure)
-            return request.Error;
+            return await Task.FromResult(request.Error);
 
         Result<WebElementObject> element = instance.GetFromPool(_elementId);
         if (element.IsFailure)
-            return element.Error;
+            return await Task.FromResult(element.Error);
 
         IWebDriver driver = request.Value;
         IWebElement model = element.Value.Model;
@@ -45,6 +45,6 @@ internal sealed class ScrollElementStrategy : IInteractionStrategy
             currentHeight = newHeight;
         }
 
-        return Result.Success();
+        return await Task.FromResult(Result.Success());
     }
 }

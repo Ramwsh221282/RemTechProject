@@ -18,11 +18,11 @@ internal sealed class GetElementAttributeInteraction : IInteractionStrategy<stri
     {
         Result<IWebDriver> driver = instance.GetRunningDriver();
         if (driver.IsFailure)
-            return driver.Error;
+            return await Task.FromResult(driver.Error);
 
         Result<WebElementObject> element = instance.GetFromPool(_id);
         if (element.IsFailure)
-            return element.Error;
+            return await Task.FromResult(element.Error);
 
         IWebElement model = element.Value.Model;
         try
@@ -32,8 +32,10 @@ internal sealed class GetElementAttributeInteraction : IInteractionStrategy<stri
         }
         catch (Exception ex)
         {
-            return new Error(
-                $"Cannot get attribute: {_attribute} of element with id: {_id}. Error:{ex.Message}"
+            return await Task.FromResult(
+                new Error(
+                    $"Cannot get attribute: {_attribute} of element with id: {_id}. Error:{ex.Message}"
+                )
             );
         }
     }

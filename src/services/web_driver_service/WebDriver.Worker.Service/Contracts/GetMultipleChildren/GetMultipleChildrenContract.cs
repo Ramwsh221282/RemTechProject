@@ -32,7 +32,9 @@ internal sealed class GetMultipleChildrenContractHandler(WebDriverApi api)
             .Value.Select(i => new WebElementResponse(
                 i.ElementPath,
                 i.ElementPathType,
-                i.ElementId
+                i.ElementId,
+                i.ElementOuterHTML,
+                i.ElementInnerText
             ))
             .ToArray();
 
