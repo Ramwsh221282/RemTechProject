@@ -12,17 +12,38 @@ public class Worker : BackgroundService
         _point.ServiceName = "WebDriver.Worker.Service";
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken) { }
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        try { }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Logger error: {ex.Message}");
+        }
+    }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        await _point.InitializeListener();
-        await base.StartAsync(cancellationToken);
+        try
+        {
+            await _point.InitializeListener();
+            await base.StartAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Logger error. {ex.Message}");
+        }
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        await _point.DisposeAsync();
-        await base.StopAsync(cancellationToken);
+        try
+        {
+            await _point.DisposeAsync();
+            await base.StopAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Logger error. {ex.Message}");
+        }
     }
 }

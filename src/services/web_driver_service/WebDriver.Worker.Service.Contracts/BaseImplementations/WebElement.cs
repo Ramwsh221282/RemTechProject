@@ -7,45 +7,11 @@ namespace WebDriver.Worker.Service.Contracts.BaseImplementations;
 
 public sealed record WebElement(WebElementResponse Model, string Name)
 {
-    private readonly Dictionary<string, string> _attributes = [];
+    public WebElementResponse Model { get; private set; } = Model;
 
     private List<WebElement> _childs = [];
     public WebElement? Parent { get; private set; }
-    public IReadOnlyDictionary<string, string> Attributes => _attributes;
     public IReadOnlyCollection<WebElement> Childs => _childs;
-    public string Text { get; private set; } = String.Empty;
-
-    public Result SetAttribute(string attributeName, string attributeValue)
-    {
-        bool containsKey = _attributes.ContainsKey(attributeName);
-        if (containsKey)
-            return new Error("Element contains this key");
-
-        _attributes.Add(attributeName, attributeValue);
-        return Result.Success();
-    }
-
-    public void SetText(string text) => Text = text;
-
-    public WebElementPool AsPool(Func<WebElement, bool> predicate)
-    {
-        IEnumerable<WebElement> filtered = _childs.Where(predicate);
-        WebElementPool pool = new();
-        foreach (WebElement element in filtered)
-            pool.AddElement(element);
-
-        return pool;
-    }
-
-    public WebElementPool AsPool()
-    {
-        WebElementPool pool = new();
-        _childs.ForEach(c => pool.AddElement(c));
-
-        return pool;
-    }
-
-    //public void ExcludeChilds(Predicate<WebElement> predicate) => _childs.RemoveAll(predicate);
 
     public void ExcludeChilds(Predicate<WebElement> predicate)
     {
@@ -66,8 +32,6 @@ public sealed record WebElement(WebElementResponse Model, string Name)
     )
     {
         Stack<WebElement> stack = new();
-        // foreach (WebElement child in this.Childs.Reverse())
-        //     stack.Push(child);
 
         for (int index = _childs.Count - 1; index >= 0; index--)
             stack.Push(_childs[index]);
@@ -83,9 +47,6 @@ public sealed record WebElement(WebElementResponse Model, string Name)
 
             for (int index = current._childs.Count - 1; index >= 0; index--)
                 stack.Push(current._childs[index]);
-
-            // foreach (WebElement child in current.Childs.Reverse())
-            //     stack.Push(child);
         }
 
         return Result.Success();
@@ -99,8 +60,6 @@ public sealed record WebElement(WebElementResponse Model, string Name)
     )
     {
         Stack<WebElement> stack = new();
-        // foreach (WebElement child in this.Childs.Where(predicate).Reverse())
-        //     stack.Push(child);
 
         for (int index = _childs.Count - 1; index >= 0; index--)
         {
@@ -122,9 +81,6 @@ public sealed record WebElement(WebElementResponse Model, string Name)
                 if (predicate(current._childs[index]))
                     stack.Push(current._childs[index]);
             }
-
-            // foreach (WebElement child in current.Childs.Where(predicate).Reverse())
-            //     stack.Push(child);
         }
 
         return Result.Success();

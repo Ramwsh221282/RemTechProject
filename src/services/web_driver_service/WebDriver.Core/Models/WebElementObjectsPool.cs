@@ -9,7 +9,12 @@ internal sealed class WebElementObjectsPool
     public void RegisterObject(WebElementObject element) =>
         _objects.Add(element.ElementId, element);
 
-    public void Refresh() => _objects.Clear();
+    public void Refresh()
+    {
+        foreach (var element in _objects)
+            element.Value.Dispose();
+        _objects.Clear();
+    }
 
     public Result<WebElementObject> this[Guid id]
     {

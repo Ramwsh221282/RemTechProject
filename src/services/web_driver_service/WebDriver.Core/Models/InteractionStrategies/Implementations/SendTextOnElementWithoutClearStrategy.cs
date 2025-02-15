@@ -18,11 +18,11 @@ internal sealed class SendTextOnElementWithoutClearStrategy : IInteractionStrate
     {
         Result<IWebDriver> requested = instance.GetRunningDriver();
         if (requested.IsFailure)
-            return requested.Error;
+            return await Task.FromResult(requested.Error);
 
         Result<WebElementObject> element = instance.GetFromPool(_id);
         if (element.IsFailure)
-            return element.Error;
+            return await Task.FromResult(element.Error);
 
         IWebElement model = element.Value.Model;
 
@@ -34,7 +34,9 @@ internal sealed class SendTextOnElementWithoutClearStrategy : IInteractionStrate
         }
         catch (Exception ex)
         {
-            return new Error($"Can't write text in element: {_id}. Error: {ex.Message}");
+            return await Task.FromResult(
+                new Error($"Can't write text in element: {_id}. Error: {ex.Message}")
+            );
         }
     }
 }

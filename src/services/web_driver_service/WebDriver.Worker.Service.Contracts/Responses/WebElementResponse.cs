@@ -1,3 +1,20 @@
-﻿namespace WebDriver.Worker.Service.Contracts.Responses;
+﻿using System.Text;
 
-public record WebElementResponse(string ElementPath, string ElementPathType, Guid ElementId);
+namespace WebDriver.Worker.Service.Contracts.Responses;
+
+public record WebElementResponse(
+    Guid ElementId,
+    ReadOnlyMemory<byte> ElementOuterHTMLBytes,
+    ReadOnlyMemory<byte> ElementInnterTextBytes
+)
+{
+    public string ElementOuterHTML =>
+        ElementOuterHTMLBytes.IsEmpty
+            ? string.Empty
+            : Encoding.UTF8.GetString(ElementOuterHTMLBytes.Span);
+
+    public string ElementInnerText =>
+        ElementInnterTextBytes.IsEmpty
+            ? string.Empty
+            : Encoding.UTF8.GetString(ElementInnterTextBytes.Span);
+}

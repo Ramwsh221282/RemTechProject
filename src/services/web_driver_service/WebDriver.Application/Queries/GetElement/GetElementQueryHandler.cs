@@ -1,11 +1,11 @@
-﻿using FluentValidation;
-using FluentValidation.Results;
+﻿using FluentValidation.Results;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriver.Application.DTO;
 using WebDriver.Application.Extensions;
 using WebDriver.Application.Handlers;
 using WebDriver.Core.Models;
+using WebDriver.Core.Models.InteractionStrategies;
 using WebDriver.Core.Models.SearchStrategies;
 using WebDriver.Core.Models.SearchStrategies.Implementations;
 
@@ -34,6 +34,16 @@ internal sealed class GetElementQueryHandler(
         Result<WebElementObject> element = await instance.FindElement(strategy);
         if (element.IsFailure)
             return element.LogAndReturn(logger);
+
+        IInteractionStrategy<string> initializeHTML = InteractionStrategyFactory.ExtractHtml(
+            element.Value.ElementId
+        );
+        await instance.PerformInteraction(initializeHTML);
+
+        IInteractionStrategy<string> initializeText = InteractionStrategyFactory.ExtractText(
+            element.Value.ElementId
+        );
+        await instance.PerformInteraction(initializeText);
 
         logger.Information("Got element with path: {Path} and type {Type}", data.Path, data.Type);
         return await Task.FromResult(element);

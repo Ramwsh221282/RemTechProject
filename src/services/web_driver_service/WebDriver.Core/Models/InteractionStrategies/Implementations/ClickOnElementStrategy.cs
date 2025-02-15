@@ -13,11 +13,11 @@ internal sealed class ClickOnElementStrategy : IInteractionStrategy
     {
         Result<WebElementObject> element = instance.GetFromPool(_elementId);
         if (element.IsFailure)
-            return element;
+            return await Task.FromResult(element);
 
         Result<IWebDriver> request = instance.GetRunningDriver();
         if (request.IsFailure)
-            return request;
+            return await Task.FromResult(request);
 
         try
         {
@@ -26,9 +26,7 @@ internal sealed class ClickOnElementStrategy : IInteractionStrategy
         }
         catch
         {
-            Error error = new Error(
-                $"Element with path: {element.Value.ElementPath} type: {element.Value.ElementPathType} id: {element.Value.ElementId} is not clickable"
-            );
+            Error error = new Error($"Element({element.Value.ElementId}) is not clickable");
             return await Task.FromResult(error);
         }
     }

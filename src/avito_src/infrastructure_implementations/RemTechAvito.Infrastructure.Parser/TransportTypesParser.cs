@@ -1,10 +1,10 @@
-﻿using Rabbit.RPC.Client.Abstractions;
+﻿using HtmlAgilityPack;
+using Rabbit.RPC.Client.Abstractions;
 using RemTechAvito.Core.FiltersManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Contracts.Parser;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriver.Worker.Service.Contracts.BaseImplementations;
-using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours;
 using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implementations;
 
 namespace RemTechAvito.Infrastructure.Parser;
@@ -13,16 +13,18 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
 {
     private const string pathType = "xpath";
 
-    const string popularMarkButtonXpath =
+    private const string popularMarkButtonXpath =
         ".//button[@data-marker='popular-rubricator/controls/all']";
-    const string popularMarkButton = "popular-marks-button";
+    private const string popularMarkButton = "popular-marks-button";
 
-    const string popularMarksRubricatorContainerXPath =
+    private const string popularMarksRubricatorContainerXPath =
         ".//div[@class='popular-rubricator-links-o9b47']";
-    const string popularMarksRubricatorName = "popular-marks-container";
+    private const string popularMarksRubricatorName = "popular-marks-container";
 
-    const string popularMarkRubricatorLinkXPath = ".//a[@data-marker='popular-rubricator/link']";
-    const string popularMarkRubricatorName = "popular-mark-rubricator";
+    private const string popularMarkRubricatorLinkXPath =
+        ".//a[@data-marker='popular-rubricator/link']";
+    private const string popularMarkRubricatorName = "popular-mark-rubricator";
+    private const string popularMarkRubricatorAttribute = "href";
 
     public TransportTypesParser(IMessagePublisher publisher, ILogger logger)
         : base(publisher, logger) { }
@@ -39,12 +41,7 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
                     .AddBehavior(new ScrollToTopBehavior())
             )
             .AddBehavior(
-                new GetSingleElementBehavior(
-                    pool,
-                    popularMarkButtonXpath,
-                    pathType,
-                    popularMarkButton
-                )
+                new GetNewElementInstant(pool, popularMarkButtonXpath, pathType, popularMarkButton)
             )
             .AddBehavior(
                 new DoForExactParent(
@@ -54,7 +51,7 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
                 )
             )
             .AddBehavior(
-                new GetSingleElementBehavior(
+                new GetNewElementInstant(
                     pool,
                     popularMarksRubricatorContainerXPath,
                     pathType,
@@ -73,14 +70,8 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
                     )
                 )
             )
-            .AddBehavior(
-                new DoForExactParent(
-                    pool,
-                    popularMarksRubricatorName,
-                    element => new ParallerlTextInstantiation(element)
-                )
-            )
-            .AddBehavior(new StopBehavior());
+            .AddBehavior(new StopBehavior())
+            .AddBehavior(new ClearPoolBehavior());
 
         using WebDriverSession session = new(_publisher);
 
@@ -97,13 +88,20 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
         TransportTypesCollection collection = [];
         foreach (var child in element.Value.Childs)
         {
-            Result<TransportType> type = TransportType.Create(child.Text);
-            if (type.IsFailure)
-                return type.Error;
+            string outerHTML = child.Model.ElementOuterHTML;
+            HtmlNode node = HtmlNode.CreateNode(outerHTML);
+            HtmlAttribute? hrefAttribute = node.Attributes[popularMarkRubricatorAttribute];
+            if (hrefAttribute == null)
+                continue;
 
-            Result adding = collection.Add(type);
-            if (adding.IsFailure)
-                return adding.Error;
+            string name = child.Model.ElementInnerText;
+            string href = PostProcessLink(hrefAttribute.Value);
+
+            Result<TransportType> type = TransportType.Create(name, href);
+            if (type.IsFailure)
+                continue;
+
+            collection.Add(type);
         }
 
         pool.Clear();
@@ -117,22 +115,14 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
         return collection;
     }
 
-    private sealed class ParallerlTextInstantiation(WebElement element) : IWebDriverBehavior
-    {
-        public async Task<Result> Execute(
-            IMessagePublisher publisher,
-            CancellationToken ct = default
-        )
-        {
-            List<Task<Result>> tasksCollection = [];
-            tasksCollection.AddRange(
-                element
-                    .Childs.Select(child => new InitializeTextBehavior(child))
-                    .Select(textInstantiation => textInstantiation.Execute(publisher, ct))
-            );
+    public static ReadOnlySpan<char> GetDomainUrlPart() =>
+        ['h', 't', 't', 'p', 's', ':', '/', '/', 'a', 'v', 'i', 't', 'o', '.', 'r', 'u'];
 
-            await Task.WhenAll(tasksCollection);
-            return Result.Success();
-        }
+    private static string PostProcessLink(ReadOnlySpan<char> href)
+    {
+        int index = href.IndexOf('?');
+        ReadOnlySpan<char> domain = GetDomainUrlPart();
+        ReadOnlySpan<char> processed = href.Slice(0, index);
+        return $"{domain}{processed}";
     }
 }

@@ -31,9 +31,9 @@ internal sealed class NewSingleElementSearchStrategy
         {
             try
             {
-                WebElementObject element = new(_path, _type, driver.Value.FindElement(search));
+                WebElementObject element = new(driver.Value.FindElement(search));
                 instance.AddInPool(element);
-                return element;
+                return await Task.FromResult(element);
             }
             catch
             {

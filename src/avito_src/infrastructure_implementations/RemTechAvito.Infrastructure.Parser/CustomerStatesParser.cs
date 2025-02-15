@@ -33,7 +33,7 @@ public sealed class CustomerStatesParser : BaseParser, ICustomerStatesParser
                 new ScrollToTopBehavior()
             )
             .AddBehavior(
-                new GetSingleElementBehavior(
+                new GetNewElementInstant(
                     pool,
                     ratingFourStarsAndMorePath,
                     pathType,
@@ -41,10 +41,10 @@ public sealed class CustomerStatesParser : BaseParser, ICustomerStatesParser
                 )
             )
             .AddBehavior(
-                new GetSingleElementBehavior(pool, ratingCompaniesPath, pathType, ratingCompanies)
+                new GetNewElementInstant(pool, ratingCompaniesPath, pathType, ratingCompanies)
             )
-            .AddBehavior(new DoForAllParents(pool, element => new InitializeTextBehavior(element)))
-            .AddBehavior(new StopBehavior());
+            .AddBehavior(new StopBehavior())
+            .AddBehavior(new ClearPoolBehavior());
 
         using WebDriverSession session = new(_publisher);
         Result execution = await session.ExecuteBehavior(pipeline, ct);
@@ -55,7 +55,7 @@ public sealed class CustomerStatesParser : BaseParser, ICustomerStatesParser
         CustomerStatesCollection collection = [];
         foreach (var element in pool.Elements)
         {
-            Result<CustomerState> state = CustomerState.Create(element.Text);
+            Result<CustomerState> state = CustomerState.Create(element.Model.ElementInnerText);
             if (state.IsFailure)
                 return state.Error;
 

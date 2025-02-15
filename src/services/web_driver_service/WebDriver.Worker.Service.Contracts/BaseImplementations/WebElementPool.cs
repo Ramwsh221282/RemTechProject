@@ -1,8 +1,10 @@
-﻿using RemTechCommon.Utils.ResultPattern;
+﻿using System.Collections;
+using RemTechCommon.Utils.Extensions;
+using RemTechCommon.Utils.ResultPattern;
 
 namespace WebDriver.Worker.Service.Contracts.BaseImplementations;
 
-public sealed class WebElementPool
+public sealed class WebElementPool : IReadOnlyCollection<WebElement>
 {
     private readonly List<WebElement> _elements = [];
     public IReadOnlyCollection<WebElement> Elements => _elements;
@@ -19,4 +21,12 @@ public sealed class WebElementPool
         _elements.Where(predicate);
 
     public void Clear() => _elements.Clear();
+
+    public IEnumerator<WebElement> GetEnumerator() => _elements.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public int Count => _elements.Count;
+
+    public Result<WebElement> this[int index] => _elements.GetByIndex(index);
 }

@@ -30,7 +30,7 @@ public sealed class CustomerTypesParser(IMessagePublisher publisher, ILogger log
                 new ScrollToBottomBehavior(),
                 new ScrollToTopBehavior()
             )
-            .AddBehavior(new GetSingleElementBehavior(pool, containerPath, pathType, containerName))
+            .AddBehavior(new GetNewElementInstant(pool, containerPath, pathType, containerName))
             .AddBehavior(new ScrollToBottomBehavior())
             .AddBehavior(
                 new DoForExactParent(
@@ -44,14 +44,8 @@ public sealed class CustomerTypesParser(IMessagePublisher publisher, ILogger log
                     )
                 )
             )
-            .AddBehavior(
-                new DoForAllChildren(
-                    pool,
-                    containerName,
-                    element => new InitializeTextBehavior(element)
-                )
-            )
-            .AddBehavior(new StopBehavior());
+            .AddBehavior(new StopBehavior())
+            .AddBehavior(new ClearPoolBehavior());
 
         using WebDriverSession session = new(_publisher);
         Result execution = await session.ExecuteBehavior(pipeline, ct);
@@ -65,7 +59,7 @@ public sealed class CustomerTypesParser(IMessagePublisher publisher, ILogger log
         CustomerTypesCollection collection = [];
         foreach (var child in container.Value.Childs)
         {
-            Result<CustomerType> type = CustomerType.Create(child.Text);
+            Result<CustomerType> type = CustomerType.Create(child.Model.ElementInnerText);
             if (type.IsFailure)
                 return type.Error;
             collection.Add(type);

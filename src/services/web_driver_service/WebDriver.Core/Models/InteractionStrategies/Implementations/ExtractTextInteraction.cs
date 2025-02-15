@@ -15,7 +15,7 @@ internal sealed class ExtractTextInteraction : IInteractionStrategy<string>
     {
         Result<WebElementObject> element = instance.GetFromPool(_elementId);
         if (element.IsFailure)
-            return element.Error;
+            return await Task.FromResult(element.Error);
 
         Result<IWebDriver> request = instance.GetRunningDriver();
         if (request.IsFailure)
@@ -23,6 +23,7 @@ internal sealed class ExtractTextInteraction : IInteractionStrategy<string>
 
         IWebDriver driver = request.Value;
         string text = driver.ExecuteJavaScript<string>(Script, element.Value.Model)!;
-        return text;
+        element.Value.SetInnerText(text);
+        return await Task.FromResult(text);
     }
 }

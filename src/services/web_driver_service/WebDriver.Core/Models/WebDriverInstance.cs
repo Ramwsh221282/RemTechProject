@@ -10,6 +10,49 @@ namespace WebDriver.Core.Models;
 
 public sealed class WebDriverInstance
 {
+    private static readonly string script =
+        @"
+                // 1. Overwrite the webdriver property
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => false,
+                    configurable: true // Make it configurable so it can be redefined later if needed
+                });
+
+                // 2. Redefine plugins and mimeTypes to return empty arrays
+                Object.defineProperty(navigator, 'plugins', {
+                    get: () => ({
+                        length: 0,
+                        item: () => null,
+                        namedItem: () => null
+                    }),
+                    configurable: true
+                });
+
+                Object.defineProperty(navigator, 'mimeTypes', {
+                    get: () => ({
+                        length: 0,
+                        item: () => null,
+                        namedItem: () => null
+                    }),
+                    configurable: true
+                });
+
+                // 3. Modify userAgent, making it configurable is important if other scripts might interact with it
+                const originalUserAgent = navigator.userAgent;
+                Object.defineProperty(navigator, 'userAgent', {
+                    get: () => originalUserAgent.replace('HeadlessChrome', 'Chrome'),
+                    configurable: true
+                });
+
+                // 4. Delete potential Headless Chrome indicators
+                delete window.__cdc_function_toString;
+                // Be cautious with deleting browser built-ins like attachShadow. It might break functionality.
+                // If you must, check if it exists first.
+                if (Element.prototype.hasOwnProperty('attachShadow')) {
+                    delete Element.prototype.attachShadow;
+                }
+            ";
+
     private readonly WebElementObjectsPool _pool = new WebElementObjectsPool();
     private IWebDriverState _state = new NotInitializedState();
     private IWebDriver _instance = null!;
@@ -41,6 +84,20 @@ public sealed class WebDriverInstance
 
         _instance = instantiation.Value.Item1;
         ProfilePath = instantiation.Value.Item2;
+
+        while (true)
+        {
+            try
+            {
+                ((IJavaScriptExecutor)_instance).ExecuteScript(script);
+                break;
+            }
+            catch
+            {
+                continue;
+            }
+        }
+
         _state = new SleepingState();
         return Result.Success();
     }
