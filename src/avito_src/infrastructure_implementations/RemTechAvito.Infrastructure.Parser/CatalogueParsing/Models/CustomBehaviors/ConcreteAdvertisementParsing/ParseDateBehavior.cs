@@ -56,7 +56,7 @@ internal sealed class ParseDateBehavior : IWebDriverBehavior
         }
         catch (Exception ex)
         {
-            _logger.Fatal("{Action} {Exception}", nameof(ParseTitleBehavior), ex.Message);
+            _logger.Fatal("{Action} {Exception}", nameof(ParseDateBehavior), ex.Message);
         }
     }
 }

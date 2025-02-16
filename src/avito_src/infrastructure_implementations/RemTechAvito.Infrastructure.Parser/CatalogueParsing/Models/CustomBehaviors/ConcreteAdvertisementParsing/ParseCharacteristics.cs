@@ -8,23 +8,12 @@ using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implemen
 
 namespace RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models.CustomBehaviors.ConcreteAdvertisementParsing;
 
-internal sealed class ParseCharacteristics : IWebDriverBehavior
+internal sealed class ParseCharacteristics(CatalogueItem item, ILogger logger) : IWebDriverBehavior
 {
     private const string pathType = "xpath";
     private const string containerPath = ".//ul[@class='params-paramsList-_awNW']";
     private const string container = "characteristics-container";
-
     private const string characteristicPath = ".//li[@class='params-paramsList__item-_2Y2O']";
-    private const string characteristic = "characteristic";
-
-    private readonly CatalogueItem _item;
-    private readonly ILogger _logger;
-
-    public ParseCharacteristics(CatalogueItem item, ILogger logger)
-    {
-        _item = item;
-        _logger = logger;
-    }
 
     public async Task<Result> Execute(IMessagePublisher publisher, CancellationToken ct = default)
     {
@@ -51,58 +40,54 @@ internal sealed class ParseCharacteristics : IWebDriverBehavior
             Result<WebElement> element = pool[^1];
             if (element.IsFailure)
             {
-                _logger.Error(
+                logger.Error(
                     "{Action} cannot get characteristics container.",
                     nameof(ParseCharacteristics)
                 );
                 return;
             }
 
-            HtmlNode node = HtmlNode.CreateNode(element.Value.Model.ElementOuterHTML);
-            HtmlNodeCollection? nodes = node.SelectNodes(characteristicPath);
-            if (nodes is null)
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(element.Value.Model.ElementOuterHTML);
+            HtmlNodeCollection? characteristicsNode = doc.DocumentNode.SelectNodes(
+                characteristicPath
+            );
+            if (characteristicsNode == null)
             {
-                _logger.Error(
+                logger.Error(
                     "{Action} cannot get characteristics collection nodes.",
                     nameof(ParseCharacteristics)
                 );
                 return;
             }
 
-            if (nodes.Count == 0)
+            if (characteristicsNode.Count == 0)
             {
-                _logger.Error(
-                    "{Action} collection nodes count is 0.",
+                logger.Error(
+                    "{Action} characteristics node count is 0.",
                     nameof(ParseCharacteristics)
                 );
                 return;
             }
 
-            List<string> characteristics = [];
-            foreach (var item in nodes)
+            item.Characteristics = new string[characteristicsNode.Count];
+            int lastInitializationIndex = 0;
+            foreach (var node in characteristicsNode)
             {
-                if (item == null)
+                if (node == null)
                 {
-                    _logger.Error(
-                        "{Action} characteristics node is null",
-                        nameof(ParseCharacteristics)
-                    );
+                    item.Characteristics[lastInitializationIndex] = String.Empty;
+                    lastInitializationIndex++;
                     continue;
                 }
 
-                characteristics.Add(item.InnerText);
-                _logger.Information(
-                    "{Action} characteristics: {Text}",
-                    nameof(ParseCharacteristics),
-                    item.InnerText
-                );
+                item.Characteristics[lastInitializationIndex] = node.InnerText;
+                lastInitializationIndex++;
             }
-
-            _item.Characteristics = characteristics.ToArray();
         }
         catch (Exception ex)
         {
-            _logger.Fatal("{Action} {Exception}", nameof(ParseTitleBehavior), ex.Message);
+            logger.Fatal("{Action} {Exception}", nameof(ParseCharacteristics), ex.Message);
         }
     }
 }

@@ -10,9 +10,9 @@ namespace RemTechAvito.Integrational.Tests.BaseCatalogueParsingTest.ConcreteProp
 
 public sealed class Parse_Photos_Tests : BasicParserTests
 {
-    public sealed record PhotoClicking(bool ShouldSkip);
+    private sealed record PhotoClicking(bool ShouldSkip);
 
-    public sealed record PhotoClickingQueue
+    private sealed record PhotoClickingQueue
     {
         private readonly Queue<PhotoClicking> _queue = new Queue<PhotoClicking>();
         public int Count => _queue.Count;

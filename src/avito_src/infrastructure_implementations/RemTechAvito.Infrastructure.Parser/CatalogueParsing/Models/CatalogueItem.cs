@@ -10,6 +10,7 @@ internal sealed class CatalogueItem
     public string Address { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string Date { get; set; } = string.Empty;
+    public string[] PhotoLinks { get; set; } = Array.Empty<string>();
     public CatalogueItemPriceInfo Price { get; } = new CatalogueItemPriceInfo();
 }
 

@@ -71,7 +71,7 @@ internal sealed class ParseAddressBehavior : IWebDriverBehavior
         }
         catch (Exception ex)
         {
-            _logger.Fatal("{Action} {Exception}", nameof(ParseTitleBehavior), ex.Message);
+            _logger.Fatal("{Action} {Exception}", nameof(ParseAddressBehavior), ex.Message);
         }
     }
 }

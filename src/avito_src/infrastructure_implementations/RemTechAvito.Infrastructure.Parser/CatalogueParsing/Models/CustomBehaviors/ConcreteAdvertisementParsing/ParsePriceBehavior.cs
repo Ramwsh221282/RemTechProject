@@ -120,7 +120,7 @@ internal sealed class ParsePriceBehavior : IWebDriverBehavior
         }
         catch (Exception ex)
         {
-            _logger.Fatal("{Action} {Exception}", nameof(ParseTitleBehavior), ex.Message);
+            _logger.Fatal("{Action} {Exception}", nameof(ParsePriceBehavior), ex.Message);
         }
     }
 }
