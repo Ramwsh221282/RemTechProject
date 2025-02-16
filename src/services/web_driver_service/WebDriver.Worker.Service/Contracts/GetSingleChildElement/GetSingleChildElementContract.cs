@@ -20,20 +20,14 @@ internal sealed class GetSingleChildElementContractHandler(WebDriverApi api)
         ElementPathDataDTO data = new(contract.Path, contract.Type);
         GetElementInsideOfElementQuery query = new(existing, data);
 
-        Result<WebElementObject> element = await api.ExecuteQuery<
+        Result<WebElementResponseObject> element = await api.ExecuteQuery<
             GetElementInsideOfElementQuery,
-            WebElementObject
+            WebElementResponseObject
         >(query);
+        if (element.IsFailure)
+            return ContractActionResult.Fail(element.Error.Description);
 
-        WebElementResponse response =
-            new(
-                element.Value.ElementId,
-                element.Value.ElementOuterHTMLBytes,
-                element.Value.ElementInnerTextBytes
-            );
-
-        return element.IsFailure
-            ? ContractActionResult.Fail(element.Error.Description)
-            : ContractActionResult.Success(response);
+        WebElementResponse response = element.Value;
+        return ContractActionResult.Success(response);
     }
 }

@@ -59,7 +59,7 @@ public sealed class CustomerTypesParser(IMessagePublisher publisher, ILogger log
         CustomerTypesCollection collection = [];
         foreach (var child in container.Value.Childs)
         {
-            Result<CustomerType> type = CustomerType.Create(child.Model.ElementInnerText);
+            Result<CustomerType> type = CustomerType.Create(child.InnerText);
             if (type.IsFailure)
                 return type.Error;
             collection.Add(type);

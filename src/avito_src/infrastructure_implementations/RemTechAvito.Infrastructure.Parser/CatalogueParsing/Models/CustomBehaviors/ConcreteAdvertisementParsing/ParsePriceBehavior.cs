@@ -58,9 +58,9 @@ internal sealed class ParsePriceBehavior : IWebDriverBehavior
                 _logger.Error("Cannot get price attribute of advertisement");
                 return;
             }
-            HtmlNode parent = HtmlNode.CreateNode(element.Value.Model.ElementOuterHTML);
 
             // extracting price value
+            HtmlNode parent = HtmlNode.CreateNode(element.Value.OuterHTML);
             HtmlNode? priceValueNode = parent.SelectSingleNode(priceValueNodePath);
             if (priceValueNode == null)
             {

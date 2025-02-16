@@ -12,7 +12,7 @@ public abstract class ClickOnElementBehavior(WebElement element) : IWebDriverBeh
         CancellationToken ct = default
     )
     {
-        var clicking = await publisher.Send(new ClickOnElementContract(element.Model), ct);
+        var clicking = await publisher.Send(new ClickOnElementContract(element), ct);
         return clicking.ToResult();
     }
 }

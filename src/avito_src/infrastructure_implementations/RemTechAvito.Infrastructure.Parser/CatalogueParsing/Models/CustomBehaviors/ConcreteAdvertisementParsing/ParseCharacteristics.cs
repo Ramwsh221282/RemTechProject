@@ -48,7 +48,7 @@ internal sealed class ParseCharacteristics(CatalogueItem item, ILogger logger) :
             }
 
             HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(element.Value.Model.ElementOuterHTML);
+            doc.LoadHtml(element.Value.OuterHTML);
             HtmlNodeCollection? characteristicsNode = doc.DocumentNode.SelectNodes(
                 characteristicPath
             );

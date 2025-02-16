@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using System.Runtime.CompilerServices;
+using HtmlAgilityPack;
 using Rabbit.RPC.Client.Abstractions;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
@@ -56,7 +57,7 @@ internal sealed class PhotoClickingBehavior : IWebDriverBehavior
 
         _item.PhotoLinks = new string[queue.PhotosCount];
         int lastNotInitializedImageIndex = 0;
-        await foreach (var photo in ExtractPhotoLinks(queue, scroller, publisher, ct))
+        await foreach (var photo in ExtractPhotoLinks(queue, publisher, ct))
         {
             _item.PhotoLinks[lastNotInitializedImageIndex] = photo;
             lastNotInitializedImageIndex++;
@@ -106,15 +107,14 @@ internal sealed class PhotoClickingBehavior : IWebDriverBehavior
             return new Error("Cannot find image wrapper.");
 
         HtmlDocument doc = new HtmlDocument();
-        doc.LoadHtml(wrapper.Value.Model.ElementOuterHTML);
+        doc.LoadHtml(wrapper.Value.OuterHTML);
         return doc;
     }
 
     private async IAsyncEnumerable<string> ExtractPhotoLinks(
         PhotoClickingQueue queue,
-        WebElement scroller,
         IMessagePublisher publisher,
-        CancellationToken ct = default
+        [EnumeratorCancellation] CancellationToken ct = default
     )
     {
         while (queue.QueueCount != 0)
@@ -145,7 +145,7 @@ internal sealed class PhotoClickingBehavior : IWebDriverBehavior
                 }
 
                 HtmlDocument imageDocument = new HtmlDocument();
-                imageDocument.LoadHtml(image.Value.Model.ElementOuterHTML);
+                imageDocument.LoadHtml(image.Value.OuterHTML);
                 HtmlNode imageNode = imageDocument.DocumentNode.SelectSingleNode(".//img");
                 if (imageNode == null)
                     continue;

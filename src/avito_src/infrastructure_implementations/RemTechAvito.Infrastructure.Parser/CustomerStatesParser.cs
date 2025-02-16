@@ -55,7 +55,7 @@ public sealed class CustomerStatesParser : BaseParser, ICustomerStatesParser
         CustomerStatesCollection collection = [];
         foreach (var element in pool.Elements)
         {
-            Result<CustomerState> state = CustomerState.Create(element.Model.ElementInnerText);
+            Result<CustomerState> state = CustomerState.Create(element.InnerText);
             if (state.IsFailure)
                 return state.Error;
 

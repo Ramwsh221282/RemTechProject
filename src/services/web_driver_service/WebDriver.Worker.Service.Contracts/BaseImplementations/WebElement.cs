@@ -5,13 +5,23 @@ using WebDriver.Worker.Service.Contracts.Responses;
 
 namespace WebDriver.Worker.Service.Contracts.BaseImplementations;
 
-public sealed record WebElement(WebElementResponse Model, string Name)
+public sealed record WebElement
 {
-    public WebElementResponse Model { get; private set; } = Model;
-
     private List<WebElement> _childs = [];
     public WebElement? Parent { get; private set; }
     public IReadOnlyCollection<WebElement> Childs => _childs;
+    public string Name { get; }
+    public Guid Id { get; }
+    public string InnerText { get; }
+    public string OuterHTML { get; }
+
+    public WebElement(WebElementResponse model, string name)
+    {
+        Id = model.ElementId;
+        InnerText = model.InnerText;
+        OuterHTML = model.OuterHTML;
+        Name = name;
+    }
 
     public void ExcludeChilds(Predicate<WebElement> predicate)
     {
@@ -105,6 +115,9 @@ public sealed record WebElement(WebElementResponse Model, string Name)
     }
 
     public void ClearChilds() => _childs.Clear();
+
+    public static implicit operator WebElementResponse(WebElement element) =>
+        new WebElementResponse(element.Id, element.OuterHTML, element.InnerText);
 }
 
 public static class AvitoWebElementExtensions

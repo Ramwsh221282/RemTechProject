@@ -17,10 +17,7 @@ public sealed class SendTextBehavior : IWebDriverBehavior
 
     public async Task<Result> Execute(IMessagePublisher publisher, CancellationToken ct = default)
     {
-        var writing = await publisher.Send(
-            new SendTextOnElementContract(_element.Model, _text),
-            ct
-        );
+        var writing = await publisher.Send(new SendTextOnElementContract(_element, _text), ct);
         return writing.ToResult();
     }
 }

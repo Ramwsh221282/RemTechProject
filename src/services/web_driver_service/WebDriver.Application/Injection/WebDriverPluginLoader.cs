@@ -75,15 +75,15 @@ public static class WebDriverPluginLoader
     private static void RegisterQueries(this IServiceCollection services)
     {
         services.AddScoped<
-            IWebDriverQueryHandler<GetElementQuery, WebElementObject>,
+            IWebDriverQueryHandler<GetElementQuery, WebElementResponseObject>,
             GetElementQueryHandler
         >();
         services.AddScoped<
-            IWebDriverQueryHandler<GetElementInsideOfElementQuery, WebElementObject>,
+            IWebDriverQueryHandler<GetElementInsideOfElementQuery, WebElementResponseObject>,
             GetElementInsideOfElementQueryHandler
         >();
         services.AddScoped<
-            IWebDriverQueryHandler<GetElementsInsideOfElementQuery, WebElementObject[]>,
+            IWebDriverQueryHandler<GetElementsInsideOfElementQuery, WebElementResponseObject[]>,
             GetElementsInsideOfElementQueryHandler
         >();
         services.AddScoped<

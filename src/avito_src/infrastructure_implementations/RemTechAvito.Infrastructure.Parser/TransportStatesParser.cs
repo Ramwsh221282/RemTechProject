@@ -48,7 +48,7 @@ public sealed class TransportStatesParser(IMessagePublisher publisher, ILogger l
         TransportStatesCollection collection = [];
         foreach (var element in pool.Elements)
         {
-            Result<TransportState> state = TransportState.Create(element.Model.ElementInnerText);
+            Result<TransportState> state = TransportState.Create(element.InnerText);
             if (state.IsFailure)
                 return state.Error;
 

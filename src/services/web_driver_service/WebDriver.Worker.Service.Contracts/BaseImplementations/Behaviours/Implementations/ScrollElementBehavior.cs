@@ -9,7 +9,7 @@ public sealed class ScrollElementBehavior(WebElement element) : IWebDriverBehavi
     public async Task<Result> Execute(IMessagePublisher publisher, CancellationToken ct = default)
     {
         ContractActionResult scrolling = await publisher.Send(
-            new ScrollElementContract(element.Model.ElementId),
+            new ScrollElementContract(element.Id),
             ct
         );
         return scrolling.ToResult();

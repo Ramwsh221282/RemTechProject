@@ -1,4 +1,5 @@
-﻿using Rabbit.RPC.Client.Abstractions;
+﻿using HtmlAgilityPack;
+using Rabbit.RPC.Client.Abstractions;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriver.Worker.Service.Contracts.BaseImplementations;
@@ -51,7 +52,12 @@ internal sealed class ParseDateBehavior : IWebDriverBehavior
                 return;
             }
 
-            _item.Date = element.Value.Model.ElementInnerText;
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(element.Value.OuterHTML);
+            HtmlNode dateNode = doc.DocumentNode.FirstChild;
+            HtmlNode dateText = dateNode.LastChild;
+
+            _item.Date = dateText.InnerText;
             _logger.Information("{Action} date {Text}", nameof(ParseDateBehavior), _item.Date);
         }
         catch (Exception ex)

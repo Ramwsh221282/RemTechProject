@@ -44,7 +44,7 @@ internal sealed class ParseSellerInfoBehavior(CatalogueItem item, ILogger logger
         }
 
         HtmlDocument doc = new HtmlDocument();
-        doc.LoadHtml(element.Value.Model.ElementOuterHTML);
+        doc.LoadHtml(element.Value.OuterHTML);
         ISellerInfoParsingChain asPerson = new PersonParsingNode(doc, item, logger);
         ISellerInfoParsingChain asCompany = new CompanyParsingNode(doc, item, logger, asPerson);
 

@@ -10,16 +10,20 @@ namespace RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models.CustomBehav
 
 internal sealed class InitializePaginationBehavior : IWebDriverBehavior
 {
-    private readonly CataloguePageModel _model;
+    private readonly CataloguePagination _pagination;
     private readonly ILogger _logger;
     private readonly string _baseUrl;
     private const string pathType = "xpath";
     private const string paginationPath = ".//ul[@data-marker='pagination-button']";
     private const string pagination = "pagination";
 
-    public InitializePaginationBehavior(CataloguePageModel model, ILogger logger, string baseUrl)
+    public InitializePaginationBehavior(
+        CataloguePagination pagination,
+        ILogger logger,
+        string baseUrl
+    )
     {
-        _model = model;
+        _pagination = pagination;
         _logger = logger;
         _baseUrl = baseUrl;
     }
@@ -45,29 +49,31 @@ internal sealed class InitializePaginationBehavior : IWebDriverBehavior
             return Result.Success();
         }
 
-        HtmlNode paginationNode = HtmlNode.CreateNode(
-            paginationContainer.Value.Model.ElementOuterHTML
-        );
+        HtmlNode paginationNode = HtmlNode.CreateNode(paginationContainer.Value.OuterHTML);
         HtmlNodeCollection? pages = paginationNode.SelectNodes(".//li");
         if (pages == null)
         {
             InitializeOnePageOnly();
             return Result.Success();
         }
+
         IEnumerable<HtmlNode> reversed = pages.Reverse();
         foreach (var node in reversed)
         {
             if (!int.TryParse(node.InnerText, out int page))
                 continue;
-            _model.InitializePagination(page);
-            _logger.Information("Initialized Max Page Numbers: {Count}", _model.MaxPage);
+            _pagination.SetMaxPage(ref page);
+            _logger.Information("Initialized Max Page Numbers: {Count}", page);
+            break;
         }
+
         return Result.Success();
     }
 
     private void InitializeOnePageOnly()
     {
-        _model.InitializePagination(1);
-        _logger.Information("Pool empty. Initialized Max Page Numbers: {Count}", _model.MaxPage);
+        int page = 1;
+        _pagination.SetMaxPage(ref page);
+        _logger.Information("Pool empty. Initialized Max Page Numbers: {Count}", 1);
     }
 }

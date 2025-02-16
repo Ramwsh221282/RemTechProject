@@ -67,7 +67,7 @@ public sealed class Parse_Photos_Tests : BasicParserTests
             Assert.True(scroller.IsSuccess);
 
             HtmlDocument document = new HtmlDocument();
-            document.LoadHtml(wrapper.Value.Model.ElementOuterHTML);
+            document.LoadHtml(wrapper.Value.OuterHTML);
             HtmlNodeCollection? items = document.DocumentNode.SelectNodes(".//li");
             Assert.NotNull(items);
             Assert.Equal(9, items.Count);
@@ -125,7 +125,7 @@ public sealed class Parse_Photos_Tests : BasicParserTests
                     Result<WebElement> image = pool[^1];
                     Assert.True(image.IsSuccess);
                     HtmlDocument imageDocument = new HtmlDocument();
-                    imageDocument.LoadHtml(image.Value.Model.ElementOuterHTML);
+                    imageDocument.LoadHtml(image.Value.OuterHTML);
                     HtmlNode imageNode = imageDocument.DocumentNode.SelectSingleNode(".//img");
                     if (imageNode == null)
                         continue;
