@@ -1,7 +1,15 @@
-﻿namespace WebDriver.Worker.Service.Responses;
+﻿using WebDriver.Core.Models;
 
-internal record WebElementResponse(
-    Guid ElementId,
-    ReadOnlyMemory<byte> ElementOuterHTMLBytes,
-    ReadOnlyMemory<byte> ElementInnterTextBytes
-);
+namespace WebDriver.Worker.Service.Responses;
+
+internal record WebElementResponse(Guid ElementId, string OuterHTML, string InnerText)
+{
+    public static implicit operator WebElementResponse(WebElementResponseObject internalObject)
+    {
+        return new WebElementResponse(
+            internalObject.Id,
+            internalObject.OuterHTML,
+            internalObject.InnerText
+        );
+    }
+}

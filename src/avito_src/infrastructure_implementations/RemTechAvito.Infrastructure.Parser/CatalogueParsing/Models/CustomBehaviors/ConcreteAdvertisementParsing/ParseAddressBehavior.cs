@@ -54,15 +54,16 @@ internal sealed class ParseAddressBehavior : IWebDriverBehavior
                 return;
             }
 
-            HtmlNode node = HtmlNode.CreateNode(element.Value.Model.ElementOuterHTML);
-            HtmlNode? concreteNode = node.SelectSingleNode(addressConcreteNodePath);
-            if (concreteNode == null)
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(element.Value.OuterHTML);
+            HtmlNode? addressNode = doc.DocumentNode.SelectSingleNode(addressConcreteNodePath);
+            if (addressNode == null)
             {
                 _logger.Error("{Action} address node was not found.", nameof(ParseAddressBehavior));
                 return;
             }
 
-            _item.Address = concreteNode.InnerText;
+            _item.Address = addressNode.InnerText;
             _logger.Information(
                 "{Action}. address: {Text}",
                 nameof(ParseAddressBehavior),
@@ -71,7 +72,7 @@ internal sealed class ParseAddressBehavior : IWebDriverBehavior
         }
         catch (Exception ex)
         {
-            _logger.Fatal("{Action} {Exception}", nameof(ParseTitleBehavior), ex.Message);
+            _logger.Fatal("{Action} {Exception}", nameof(ParseAddressBehavior), ex.Message);
         }
     }
 }

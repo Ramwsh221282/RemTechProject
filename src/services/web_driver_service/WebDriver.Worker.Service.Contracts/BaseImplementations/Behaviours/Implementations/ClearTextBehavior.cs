@@ -12,7 +12,7 @@ public class ClearTextBehavior : IWebDriverBehavior
 
     public async Task<Result> Execute(IMessagePublisher publisher, CancellationToken ct = default)
     {
-        var result = await publisher.Send(new ClearTextContract(_element.Model.ElementId), ct);
+        var result = await publisher.Send(new ClearTextContract(_element), ct);
         return result.ToResult();
     }
 }

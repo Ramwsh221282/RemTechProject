@@ -58,9 +58,9 @@ internal sealed class ParsePriceBehavior : IWebDriverBehavior
                 _logger.Error("Cannot get price attribute of advertisement");
                 return;
             }
-            HtmlNode parent = HtmlNode.CreateNode(element.Value.Model.ElementOuterHTML);
 
             // extracting price value
+            HtmlNode parent = HtmlNode.CreateNode(element.Value.OuterHTML);
             HtmlNode? priceValueNode = parent.SelectSingleNode(priceValueNodePath);
             if (priceValueNode == null)
             {
@@ -120,7 +120,7 @@ internal sealed class ParsePriceBehavior : IWebDriverBehavior
         }
         catch (Exception ex)
         {
-            _logger.Fatal("{Action} {Exception}", nameof(ParseTitleBehavior), ex.Message);
+            _logger.Fatal("{Action} {Exception}", nameof(ParsePriceBehavior), ex.Message);
         }
     }
 }

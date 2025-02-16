@@ -14,7 +14,7 @@ public sealed class DoForLastParent(
         if (element.IsFailure)
             return new Error("No last element in pool");
 
-        IWebDriverBehavior behavior = factory.Invoke(element.Value);
+        IWebDriverBehavior behavior = factory.Invoke(element);
         return await behavior.Execute(publisher, ct);
     }
 }

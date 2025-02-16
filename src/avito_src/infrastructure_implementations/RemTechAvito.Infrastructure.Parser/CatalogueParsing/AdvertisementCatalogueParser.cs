@@ -1,9 +1,8 @@
-﻿using Rabbit.RPC.Client.Abstractions;
-using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
+﻿using System.Runtime.CompilerServices;
+using Rabbit.RPC.Client.Abstractions;
 using RemTechAvito.Infrastructure.Contracts.Parser;
 using RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models;
 using RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models.CustomBehaviors;
-using RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models.CustomBehaviors.CatalogueParsing;
 using Serilog;
 using WebDriver.Worker.Service.Contracts.BaseImplementations;
 using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implementations;
@@ -15,21 +14,31 @@ public sealed class AdvertisementCatalogueParser : BaseParser, IAdvertisementCat
     public AdvertisementCatalogueParser(IMessagePublisher publisher, ILogger logger)
         : base(publisher, logger) { }
 
-    public async Task<IReadOnlyCollection<TransportAdvertisement>> Parse(
+    public async IAsyncEnumerable<ParsedTransportAdvertisement> Parse(
         string catalogueUrl,
-        CancellationToken ct = default
+        [EnumeratorCancellation] CancellationToken ct = default
     )
     {
-        CataloguePageModel model = new CataloguePageModel(catalogueUrl);
-        using WebDriverSession session = new WebDriverSession(_publisher);
+        using WebDriverSession session = new(_publisher);
         await session.ExecuteBehavior(new StartBehavior("none"), ct);
-        await session.ExecuteBehavior(
-            new InitializePaginationBehavior(model, _logger, catalogueUrl),
-            ct
-        );
-        await session.ExecuteBehavior(new ParseAvitoPages(model, _logger), ct);
-        await session.ExecuteBehavior(new ParseAdvertisements(model, _logger), ct);
+
+        CataloguePagination pagination = new(catalogueUrl, _publisher, _logger);
+        await pagination.InitializePagination(ct);
+
+        IEnumerable<string> cataloguePages = pagination.GetCataloguePageUrls();
+        foreach (string page in cataloguePages)
+        {
+            CataloguePageModel model = new(page, _publisher, _logger);
+            await model.Initialize(ct);
+
+            IEnumerable<CatalogueItem> items = model.GetItems();
+            foreach (CatalogueItem item in items)
+            {
+                AdvertisementParser parser = new(item, _publisher, _logger);
+                await parser.Execute(ct);
+                yield return item.ToParsed();
+            }
+        }
         await session.ExecuteBehavior(new StopBehavior(), ct);
-        return [];
     }
 }

@@ -88,13 +88,13 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
         TransportTypesCollection collection = [];
         foreach (var child in element.Value.Childs)
         {
-            string outerHTML = child.Model.ElementOuterHTML;
+            string outerHTML = child.OuterHTML;
             HtmlNode node = HtmlNode.CreateNode(outerHTML);
             HtmlAttribute? hrefAttribute = node.Attributes[popularMarkRubricatorAttribute];
             if (hrefAttribute == null)
                 continue;
 
-            string name = child.Model.ElementInnerText;
+            string name = child.OuterHTML;
             string href = PostProcessLink(hrefAttribute.Value);
 
             Result<TransportType> type = TransportType.Create(name, href);

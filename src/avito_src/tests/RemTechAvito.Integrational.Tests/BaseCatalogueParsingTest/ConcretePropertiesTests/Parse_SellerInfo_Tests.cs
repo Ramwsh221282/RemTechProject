@@ -46,7 +46,7 @@ public sealed class Parse_SellerInfo_Tests : BasicParserTests
 
             Result<WebElement> title = pool[^1];
             Assert.True(title.IsSuccess);
-            string html = title.Value.Model.ElementOuterHTML;
+            string html = title.Value.OuterHTML;
             Assert.NotEqual(string.Empty, html);
             HtmlNode node = HtmlNode.CreateNode(html);
             HtmlNode? sellerNameNode = node.SelectSingleNode(
@@ -110,7 +110,7 @@ public sealed class Parse_SellerInfo_Tests : BasicParserTests
 
             Result<WebElement> title = pool[^1];
             Assert.True(title.IsSuccess);
-            string html = title.Value.Model.ElementOuterHTML;
+            string html = title.Value.OuterHTML;
             Assert.NotEqual(string.Empty, html);
             HtmlNode node = HtmlNode.CreateNode(html);
             HtmlNode? sellerNameNode = node.SelectSingleNode(

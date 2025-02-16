@@ -16,7 +16,7 @@ public sealed class GetSingleChildAsParent(
     public async Task<Result> Execute(IMessagePublisher publisher, CancellationToken ct = default)
     {
         ContractActionResult request = await publisher.Send(
-            new GetSingleChildElementContract(parent.Model, path, pathType),
+            new GetSingleChildElementContract(parent, path, pathType),
             ct
         );
 

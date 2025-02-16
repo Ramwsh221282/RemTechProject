@@ -37,8 +37,13 @@ public sealed class BaseCatalogueParsingTests : BasicParserTests
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            await parser.Parse(url, ct);
-
+            IAsyncEnumerable<ParsedTransportAdvertisement> advertisements = parser.Parse(url, ct);
+            int count = 0;
+            await foreach (ParsedTransportAdvertisement advertisement in advertisements)
+            {
+                _logger.Information("Total: {Count}", count);
+                count++;
+            }
             sw.Stop();
             _logger.Information("Time elapsed: {Time}", sw.Elapsed.Minutes);
         }

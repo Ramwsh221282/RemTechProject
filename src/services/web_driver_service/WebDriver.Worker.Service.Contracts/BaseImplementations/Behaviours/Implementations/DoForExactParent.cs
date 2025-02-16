@@ -46,7 +46,7 @@ public sealed class DoForExactParent : DoForParent
 
         foreach (var factory in _behaviorFactories)
         {
-            IWebDriverBehavior behavior = factory.Invoke(element.Value);
+            IWebDriverBehavior behavior = factory.Invoke(element);
             Result execution = await behavior.Execute(publisher, ct);
             if (execution.IsFailure)
                 return execution;

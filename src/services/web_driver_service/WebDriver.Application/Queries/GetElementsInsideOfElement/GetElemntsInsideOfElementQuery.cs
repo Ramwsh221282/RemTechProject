@@ -12,16 +12,18 @@ using WebDriver.Core.Models.SearchStrategies.Implementations;
 namespace WebDriver.Application.Queries.GetElementsInsideOfElement;
 
 public record GetElementsInsideOfElementQuery(ExistingElementDTO Existing, ElementPathDataDTO Data)
-    : IWebDriverQuery<WebElementObject[]>;
+    : IWebDriverQuery<WebElementResponseObject[]>;
 
 internal sealed class GetElementsInsideOfElementQueryHandler(
     WebDriverInstance instance,
     ILogger logger,
     ExistingElementDTOValidator existingValidator,
     ElementPathDataDTOValidator pathValidator
-) : IWebDriverQueryHandler<GetElementsInsideOfElementQuery, WebElementObject[]>
+) : IWebDriverQueryHandler<GetElementsInsideOfElementQuery, WebElementResponseObject[]>
 {
-    public async Task<Result<WebElementObject[]>> Execute(GetElementsInsideOfElementQuery query)
+    public async Task<Result<WebElementResponseObject[]>> Execute(
+        GetElementsInsideOfElementQuery query
+    )
     {
         ExistingElementDTO dataExisting = query.Existing;
         ValidationResult existingValidation = await existingValidator.ValidateAsync(dataExisting);
@@ -44,17 +46,25 @@ internal sealed class GetElementsInsideOfElementQueryHandler(
         if (elements.IsFailure)
             return elements.LogAndReturn(logger);
 
+        WebElementResponseObject[] array = new WebElementResponseObject[elements.Value.Length];
+        int lastIndex = 0;
         foreach (var element in elements.Value)
         {
             IInteractionStrategy<string> initializeHTML = InteractionStrategyFactory.ExtractHtml(
                 element.ElementId
             );
-            await instance.PerformInteraction(initializeHTML);
+            Result<string> htmlRequest = await instance.PerformInteraction(initializeHTML);
 
             IInteractionStrategy<string> initializeText = InteractionStrategyFactory.ExtractText(
                 element.ElementId
             );
-            await instance.PerformInteraction(initializeText);
+            Result<string> textRequest = await instance.PerformInteraction(initializeText);
+
+            array[lastIndex] = new WebElementResponseObject(
+                element.ElementId,
+                htmlRequest.IsFailure ? string.Empty : htmlRequest.Value,
+                textRequest.IsFailure ? string.Empty : textRequest.Value
+            );
         }
 
         logger.Information(
@@ -63,6 +73,6 @@ internal sealed class GetElementsInsideOfElementQueryHandler(
             dataPath.Type,
             dataExisting.ExistingId
         );
-        return elements;
+        return array;
     }
 }

@@ -12,16 +12,18 @@ using WebDriver.Core.Models.SearchStrategies.Implementations;
 namespace WebDriver.Application.Queries.GetElementInsideOfElement;
 
 public record GetElementInsideOfElementQuery(ExistingElementDTO Existing, ElementPathDataDTO Data)
-    : IWebDriverQuery<WebElementObject>;
+    : IWebDriverQuery<WebElementResponseObject>;
 
 internal sealed class GetElementInsideOfElementQueryHandler(
     WebDriverInstance instance,
     ILogger logger,
     ExistingElementDTOValidator existingValidator,
     ElementPathDataDTOValidator pathValidator
-) : IWebDriverQueryHandler<GetElementInsideOfElementQuery, WebElementObject>
+) : IWebDriverQueryHandler<GetElementInsideOfElementQuery, WebElementResponseObject>
 {
-    public async Task<Result<WebElementObject>> Execute(GetElementInsideOfElementQuery query)
+    public async Task<Result<WebElementResponseObject>> Execute(
+        GetElementInsideOfElementQuery query
+    )
     {
         ExistingElementDTO existing = query.Existing;
         ValidationResult existingValidation = await existingValidator.ValidateAsync(existing);
@@ -46,14 +48,20 @@ internal sealed class GetElementInsideOfElementQueryHandler(
         IInteractionStrategy<string> initializeHTML = InteractionStrategyFactory.ExtractHtml(
             element.Value.ElementId
         );
-        await instance.PerformInteraction(initializeHTML);
+        Result<string> htmlRequest = await instance.PerformInteraction(initializeHTML);
 
         IInteractionStrategy<string> initializeText = InteractionStrategyFactory.ExtractText(
             element.Value.ElementId
         );
-        await instance.PerformInteraction(initializeText);
+        Result<string> textRequest = await instance.PerformInteraction(initializeText);
+
+        WebElementResponseObject response = new WebElementResponseObject(
+            element.Value.ElementId,
+            htmlRequest.IsFailure ? string.Empty : htmlRequest.Value,
+            textRequest.IsFailure ? string.Empty : textRequest.Value
+        );
 
         logger.Information("Children elements of parent ({Id}) found", existing.ExistingId);
-        return element;
+        return response;
     }
 }

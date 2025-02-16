@@ -1,36 +1,50 @@
-﻿using RemTechCommon.Utils.ResultPattern;
+﻿using Rabbit.RPC.Client.Abstractions;
+using RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models.CustomBehaviors.CatalogueParsing;
+using Serilog;
 
 namespace RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models;
 
 internal sealed class CataloguePagination
 {
-    private readonly ReadOnlyMemory<char> _urlMemory;
+    private readonly string _baseCatalogueUrl;
+    private readonly IMessagePublisher _publisher;
+    private readonly ILogger _logger;
+    private int _maxPage = -1;
+    private int _currentPage = -1;
 
-    private bool _isPaginationInited;
-
-    public CataloguePagination(string url) => _urlMemory = url.AsMemory();
-
-    public int CurrentPage { get; private set; } = 1;
-    public int MaxPage { get; private set; }
-
-    public string NewPageUrl => $"{_urlMemory}?p={CurrentPage}";
-    public bool IsReachedMaxPage => CurrentPage == MaxPage;
-
-    public Result IncrementCurrentPage()
+    public CataloguePagination(string url, IMessagePublisher publisher, ILogger logger)
     {
-        if (IsReachedMaxPage)
-            return new Error("Max page reached");
-        CurrentPage++;
-        return Result.Success();
+        _baseCatalogueUrl = url;
+        _publisher = publisher;
+        _logger = logger;
     }
 
-    public void SetMaxPage(int page)
+    public void SetMaxPage(ref int value)
     {
-        if (_isPaginationInited)
+        if (_maxPage != -1)
             return;
+        _maxPage = value;
+        _currentPage = 1;
+    }
 
-        MaxPage = page;
+    public async Task InitializePagination(CancellationToken ct = default)
+    {
+        InitializePaginationBehavior initialization = new InitializePaginationBehavior(
+            this,
+            _logger,
+            _baseCatalogueUrl
+        );
+        await initialization.Execute(_publisher, ct);
+    }
 
-        _isPaginationInited = true;
+    public IEnumerable<string> GetCataloguePageUrls()
+    {
+        while (_currentPage <= _maxPage)
+        {
+            ReadOnlySpan<char> url = _baseCatalogueUrl;
+            string result = $"{url}?p={_currentPage}";
+            _currentPage++;
+            yield return result;
+        }
     }
 }

@@ -20,20 +20,16 @@ internal sealed class GetMultipleChildrenContractHandler(WebDriverApi api)
         ElementPathDataDTO path = new(contract.Path, contract.Type);
 
         GetElementsInsideOfElementQuery query = new(existing, path);
-        Result<WebElementObject[]> result = await api.ExecuteQuery<
+        Result<WebElementResponseObject[]> result = await api.ExecuteQuery<
             GetElementsInsideOfElementQuery,
-            WebElementObject[]
+            WebElementResponseObject[]
         >(query);
 
         if (result.IsFailure)
             return ContractActionResult.Fail(result.Error.Description);
 
         WebElementResponse[] items = result
-            .Value.Select(i => new WebElementResponse(
-                i.ElementId,
-                i.ElementOuterHTMLBytes,
-                i.ElementInnerTextBytes
-            ))
+            .Value.Select(i => new WebElementResponse(i.Id, i.OuterHTML, i.InnerText))
             .ToArray();
 
         return ContractActionResult.Success(items);

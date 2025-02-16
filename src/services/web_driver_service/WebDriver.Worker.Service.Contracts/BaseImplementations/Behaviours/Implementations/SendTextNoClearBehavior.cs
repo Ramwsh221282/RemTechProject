@@ -18,7 +18,7 @@ public sealed class SendTextNoClearBehavior : IWebDriverBehavior
     public async Task<Result> Execute(IMessagePublisher publisher, CancellationToken ct = default)
     {
         var result = await publisher.Send(
-            new SendTextOnElementNoClearContract(_element.Model.ElementId, _text),
+            new SendTextOnElementNoClearContract(_element, _text),
             ct
         );
         return result.ToResult();

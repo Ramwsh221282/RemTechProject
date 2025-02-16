@@ -46,8 +46,8 @@ public sealed class Parse_Title_Tests : BasicParserTests
 
             Result<WebElement> title = pool[^1];
             Assert.True(title.IsSuccess);
-            Assert.NotEqual(string.Empty, title.Value.Model.ElementInnerText);
-            _logger.Information("Title: {Title}", title.Value.Model.ElementInnerText);
+            Assert.NotEqual(string.Empty, title.Value.InnerText);
+            _logger.Information("Title: {Title}", title.Value.InnerText);
         }
         catch (Exception ex)
         {
@@ -99,7 +99,7 @@ public sealed class Parse_Title_Tests : BasicParserTests
 
             Result<WebElement> title = pool[^1];
             Assert.True(title.IsSuccess);
-            string html = title.Value.Model.ElementOuterHTML;
+            string html = title.Value.OuterHTML;
             Assert.NotEqual(string.Empty, html);
             HtmlNode node = HtmlNode.CreateNode(html);
             string directInnerText = node.GetDirectInnerText();

@@ -1,24 +1,42 @@
-﻿using RemTechCommon.Utils.ResultPattern;
+﻿using Rabbit.RPC.Client.Abstractions;
+using RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models.CustomBehaviors.CatalogueParsing;
+using Serilog;
+using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implementations;
 
 namespace RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models;
 
 internal sealed class CataloguePageModel
 {
-    private readonly CatalogueItemsContainer _container = new CatalogueItemsContainer();
-    private readonly CataloguePagination _pagination;
+    private readonly IMessagePublisher _publisher;
+    private readonly ILogger _logger;
+    public string Url { get; }
 
-    public CataloguePageModel(string baseUrl) => _pagination = new CataloguePagination(baseUrl);
+    private readonly Queue<CatalogueItem> _items = new Queue<CatalogueItem>();
 
-    public void AddCatalogueItems(int pageNumber, CatalogueItem[] items) =>
-        _container.AddCatalogueItems(pageNumber, items);
+    public CataloguePageModel(string url, IMessagePublisher publisher, ILogger logger)
+    {
+        Url = url;
+        _publisher = publisher;
+        _logger = logger;
+        _logger.Information("Created {Class}. Url: {Url}", nameof(CataloguePageModel), url);
+    }
 
-    public Result IncrementPage() => _pagination.IncrementCurrentPage();
+    public async Task Initialize(CancellationToken ct = default)
+    {
+        OpenPageBehavior openPage = new OpenPageBehavior(Url);
+        await openPage.Execute(_publisher, ct);
 
-    public void InitializePagination(int page) => _pagination.SetMaxPage(page);
+        ParseCataloguePageBehavior execution = new ParseCataloguePageBehavior(this, _logger);
+        await execution.Execute(_publisher, ct);
+    }
 
-    public IReadOnlyDictionary<int, CatalogueItem[]> ItemSections => _container.ItemSections;
-    public bool IsReachedMaxPage => _pagination.IsReachedMaxPage;
-    public string NewPageUrl => _pagination.NewPageUrl;
-    public int CurrentPage => _pagination.CurrentPage;
-    public int MaxPage => _pagination.MaxPage;
+    public void AddItem(CatalogueItem item) => _items.Enqueue(item);
+
+    public IEnumerable<CatalogueItem> GetItems()
+    {
+        while (_items.Count != 0)
+        {
+            yield return _items.Dequeue();
+        }
+    }
 }

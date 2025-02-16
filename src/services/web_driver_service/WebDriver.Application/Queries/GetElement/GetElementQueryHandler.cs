@@ -11,15 +11,16 @@ using WebDriver.Core.Models.SearchStrategies.Implementations;
 
 namespace WebDriver.Application.Queries.GetElement;
 
-public sealed record GetElementQuery(ElementPathDataDTO Data) : IWebDriverQuery<WebElementObject>;
+public sealed record GetElementQuery(ElementPathDataDTO Data)
+    : IWebDriverQuery<WebElementResponseObject>;
 
 internal sealed class GetElementQueryHandler(
     WebDriverInstance instance,
     ILogger logger,
     ElementPathDataDTOValidator validator
-) : IWebDriverQueryHandler<GetElementQuery, WebElementObject>
+) : IWebDriverQueryHandler<GetElementQuery, WebElementResponseObject>
 {
-    public async Task<Result<WebElementObject>> Execute(GetElementQuery query)
+    public async Task<Result<WebElementResponseObject>> Execute(GetElementQuery query)
     {
         ElementPathDataDTO data = query.Data;
         ValidationResult validation = await validator.ValidateAsync(data);
@@ -38,14 +39,20 @@ internal sealed class GetElementQueryHandler(
         IInteractionStrategy<string> initializeHTML = InteractionStrategyFactory.ExtractHtml(
             element.Value.ElementId
         );
-        await instance.PerformInteraction(initializeHTML);
+        Result<string> outerHTMLRequest = await instance.PerformInteraction(initializeHTML);
 
         IInteractionStrategy<string> initializeText = InteractionStrategyFactory.ExtractText(
             element.Value.ElementId
         );
-        await instance.PerformInteraction(initializeText);
+        Result<string> innerTextRequest = await instance.PerformInteraction(initializeText);
+
+        WebElementResponseObject response = new WebElementResponseObject(
+            element.Value.ElementId,
+            outerHTMLRequest.IsFailure ? string.Empty : outerHTMLRequest.Value,
+            innerTextRequest.IsFailure ? string.Empty : innerTextRequest.Value
+        );
 
         logger.Information("Got element with path: {Path} and type {Type}", data.Path, data.Type);
-        return await Task.FromResult(element);
+        return await Task.FromResult(response);
     }
 }

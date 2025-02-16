@@ -15,7 +15,7 @@ public sealed class GetChildrenBehavior(
     public async Task<Result> Execute(IMessagePublisher publisher, CancellationToken ct = default)
     {
         var getChildren = await publisher.Send(
-            new GetMultipleChildrenContract(element.Model.ElementId, path, pathType),
+            new GetMultipleChildrenContract(element, path, pathType),
             ct
         );
 

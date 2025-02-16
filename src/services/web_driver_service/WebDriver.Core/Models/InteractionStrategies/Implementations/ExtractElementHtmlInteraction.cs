@@ -18,7 +18,6 @@ internal sealed class ExtractElementHtmlInteraction : IInteractionStrategy<strin
         IWebElement model = element.Value.Model;
 
         string html = model.GetAttribute("outerHTML");
-        element.Value.SetOuterHtml(html);
         return await Task.FromResult(html);
     }
 }

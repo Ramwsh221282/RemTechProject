@@ -56,7 +56,7 @@ internal sealed class ParseCataloguePageBehavior : IWebDriverBehavior
                 return;
             }
 
-            HtmlNode node = HtmlNode.CreateNode(container.Value.Model.ElementOuterHTML);
+            HtmlNode node = HtmlNode.CreateNode(container.Value.OuterHTML);
             _logger.Information("Created items node url tree");
             HtmlNodeCollection items = node.ChildNodes;
             if (items.Count == 0)
@@ -65,10 +65,9 @@ internal sealed class ParseCataloguePageBehavior : IWebDriverBehavior
                 return;
             }
 
-            List<CatalogueItem> results = [];
             foreach (var catalogueItem in items)
             {
-                if (catalogueItem is null)
+                if (catalogueItem == null)
                     continue;
 
                 HtmlNode? linkNode = catalogueItem.SelectSingleNode(
@@ -105,15 +104,14 @@ internal sealed class ParseCataloguePageBehavior : IWebDriverBehavior
                     Title = linkContainer.InnerText,
                 };
 
-                results.Add(result);
+                _model.AddItem(result);
                 _logger.Information(
-                    "Added item. Section: {Number}. Id: {Id} Url: {Url}",
-                    _model.CurrentPage,
+                    "{Action}. Added item. Id: {Id} Url: {Url}.",
+                    nameof(ParseCataloguePageBehavior),
                     result.Id,
                     result.Url
                 );
             }
-            _model.AddCatalogueItems(_model.CurrentPage, results.ToArray());
         }
         catch
         {
