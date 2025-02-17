@@ -1,6 +1,5 @@
 ﻿using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Core.FiltersManagement.TransportTypes;
-using RemTechAvito.Infrastructure.Contracts.Parser;
 using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechCommon.Utils.ResultPattern;
@@ -23,20 +22,32 @@ public sealed class ParseTransportTypesCommandHandler(
     {
         logger.Information("{Command} invoked.", nameof(ParseTransportTypesCommand));
 
-        Result<TransportTypesCollection> collection = await parser.Parse(ct);
-        if (collection.IsFailure)
-            return collection;
+        IAsyncEnumerable<Result<TransportType>> types = parser.Parse(ct);
+        int count = 0;
+        await foreach (var type in types)
+        {
+            if (type.IsFailure)
+            {
+                logger.Error(
+                    "{Command}. Error: {Text}",
+                    nameof(ParseTransportTypesCommand),
+                    type.Error.Description
+                );
+                continue;
+            }
 
-        Result insertion = await repository.Add(collection, ct);
-        if (insertion.IsFailure)
-            return insertion;
+            Result saving = await repository.Add(type);
+            if (saving.IsFailure)
+                continue;
+            count++;
+        }
 
         logger.Information(
             "{Command} parsing completed. Parsed results: {Count}.",
             nameof(ParseTransportTypesCommand),
-            collection.Value.Count
+            count
         );
 
-        return insertion;
+        return Result.Success();
     }
 }

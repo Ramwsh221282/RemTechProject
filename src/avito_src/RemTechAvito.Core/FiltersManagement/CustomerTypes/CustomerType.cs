@@ -6,10 +6,16 @@ public sealed record CustomerType
 {
     public string Type { get; }
 
-    private CustomerType(string type) => Type = type;
+    public DateOnly CreatedOn { get; }
 
-    public static Result<CustomerType> Create(string? type) =>
+    private CustomerType(string type, DateOnly createdOn)
+    {
+        Type = type;
+        CreatedOn = createdOn;
+    }
+
+    public static Result<CustomerType> Create(string? type, DateOnly createdOn) =>
         string.IsNullOrWhiteSpace(type)
             ? new Error("Customer type cannot be empty")
-            : new CustomerType(type);
+            : new CustomerType(type, createdOn);
 }

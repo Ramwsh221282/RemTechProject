@@ -77,6 +77,7 @@ public static class ParsedTransportAdvertisementExtensions
             price,
             title,
             description,
+            DateOnly.FromDateTime(DateTime.Now),
             url
         );
 

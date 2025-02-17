@@ -30,6 +30,7 @@ internal sealed class WebDriverOptionsFactory
             Result<string> profilePath = CreateUniqueProfileFromExisting(options);
             uniqueProfilePath = profilePath;
         }
+        options.AddExcludedArgument("enable-automation");
         options.AddArgument("--start-maximized");
         options.AddArgument("--disable-blink-features=AutomationControlled");
         options.AddExcludedArguments("excludeSwitches", "enable-automation");
@@ -54,6 +55,9 @@ internal sealed class WebDriverOptionsFactory
         options.AddArgument("--disable-default-apps");
         options.AddArgument("--disable-hang-monitor");
         options.AddArgument("--disable-prompt-on-repost");
+        options.AddArgument(
+            "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"
+        );
         options.AcceptInsecureCertificates = true;
         options.AddAdditionalOption("useAutomationExtensions", false);
         return options;
@@ -91,6 +95,7 @@ internal sealed class WebDriverOptionsFactory
             profileOptionsBuilder.Append("user-data-dir=");
             profileOptionsBuilder.Append(uniquePath);
             options.AddArgument(profileOptionsBuilder.ToString());
+            options.AddArgument("profile-directory=Default");
         }
         catch (Exception ex)
         {

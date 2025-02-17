@@ -4,6 +4,6 @@ namespace RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement.Value
 
 public sealed record PublishedDate
 {
-    // Date should be converted from avito advertisement date.
+    // Date should be converted from avito advertisement Date.
     // So needs to implement custom conversion and create PublishedDate VO from custom conversion result.
 }

@@ -11,13 +11,13 @@ public sealed class TransportAdvertisementsRepository : ITransportAdvertisements
 {
     private readonly ILogger _logger;
     private readonly MongoClient _client;
-    private const string DbName = "Transport_Advertisements_Db";
+    public const string DbName = "Transport_Advertisements_Db";
     private const string CollectionName = "Transport_Advertisements_Collection";
 
-    public TransportAdvertisementsRepository(ILogger logger, MongoDbOptions options)
+    public TransportAdvertisementsRepository(ILogger logger, MongoClient client)
     {
         _logger = logger;
-        _client = new MongoClient(options.ConnectionString);
+        _client = client;
     }
 
     public async Task<Guid> Add(

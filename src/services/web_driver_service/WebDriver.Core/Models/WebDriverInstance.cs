@@ -11,14 +11,49 @@ namespace WebDriver.Core.Models;
 public sealed class WebDriverInstance
 {
     private static readonly string script =
-        @"
-                // 1. Overwrite the webdriver property
+        @"                
                 Object.defineProperty(navigator, 'webdriver', {
-                    get: () => false,
+                    get: () => undefined,
                     configurable: true // Make it configurable so it can be redefined later if needed
                 });
 
-                // 2. Redefine plugins and mimeTypes to return empty arrays
+                Object.defineProperty(navigator, 'languages', { 
+                     get: () => ['ru-RU', 'ru'] 
+                });
+
+                Object.defineProperty(navigator, 'vendor', { 
+                     get: () => 'Google Inc.' 
+                });
+
+                Object.defineProperty(navigator, 'platform', { 
+                    get: () => 'Win32' 
+                });
+
+                Object.defineProperty(navigator, 'mimeTypes', { 
+                    get: () => [{ type: 'application/pdf' }, { type: 'application/x-google-chrome-pdf' }] 
+                });
+
+                const originalQuery = window.navigator.permissions.query;
+                    window.navigator.permissions.__proto__.query = (parameters) => (
+                        parameters.name === 'notifications' ?
+                        Promise.resolve({ state: Notification.permission }) :
+                        originalQuery(parameters)
+                    );
+
+                if (window.WebGLRenderingContext) {
+                        const originalGetParameter = WebGLRenderingContext.prototype.getParameter;
+                        WebGLRenderingContext.prototype.getParameter = function(parameter) {
+                            // Constants for UNMASKED_VENDOR_WEBGL and UNMASKED_RENDERER_WEBGL
+                            if (parameter === 37445) { 
+                                return 'Google Inc.';
+                            }
+                            if (parameter === 37446) { 
+                                return 'ANGLE (Intel(R) HD Graphics)';
+                            }
+                            return originalGetParameter.call(this, parameter);
+                        };
+                    }
+                
                 Object.defineProperty(navigator, 'plugins', {
                     get: () => ({
                         length: 0,
@@ -26,28 +61,15 @@ public sealed class WebDriverInstance
                         namedItem: () => null
                     }),
                     configurable: true
-                });
-
-                Object.defineProperty(navigator, 'mimeTypes', {
-                    get: () => ({
-                        length: 0,
-                        item: () => null,
-                        namedItem: () => null
-                    }),
-                    configurable: true
-                });
-
-                // 3. Modify userAgent, making it configurable is important if other scripts might interact with it
+                });               
+                
                 const originalUserAgent = navigator.userAgent;
                 Object.defineProperty(navigator, 'userAgent', {
                     get: () => originalUserAgent.replace('HeadlessChrome', 'Chrome'),
                     configurable: true
                 });
-
-                // 4. Delete potential Headless Chrome indicators
-                delete window.__cdc_function_toString;
-                // Be cautious with deleting browser built-ins like attachShadow. It might break functionality.
-                // If you must, check if it exists first.
+                
+                delete window.__cdc_function_toString;                
                 if (Element.prototype.hasOwnProperty('attachShadow')) {
                     delete Element.prototype.attachShadow;
                 }
@@ -94,7 +116,7 @@ public sealed class WebDriverInstance
             }
             catch
             {
-                continue;
+                // ignored
             }
         }
 

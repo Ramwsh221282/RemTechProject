@@ -5,5 +5,5 @@ namespace RemTechAvito.Infrastructure.Contracts.Repository;
 
 public interface ICustomerStatesRepository
 {
-    Task<Result> Add(CustomerStatesCollection collection, CancellationToken ct = default);
+    Task<Result> Add(CustomerState state, CancellationToken ct = default);
 }

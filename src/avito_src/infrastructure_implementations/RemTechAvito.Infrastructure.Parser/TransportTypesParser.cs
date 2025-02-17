@@ -1,8 +1,9 @@
-﻿using HtmlAgilityPack;
+﻿using System.Runtime.CompilerServices;
+using HtmlAgilityPack;
 using Rabbit.RPC.Client.Abstractions;
 using RemTechAvito.Core.FiltersManagement.TransportTypes;
-using RemTechAvito.Infrastructure.Contracts.Parser;
 using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
+using RemTechAvito.Infrastructure.Parser.Extensions;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriver.Worker.Service.Contracts.BaseImplementations;
@@ -24,99 +25,94 @@ public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
 
     private const string popularMarkRubricatorLinkXPath =
         ".//a[@data-marker='popular-rubricator/link']";
-    private const string popularMarkRubricatorName = "popular-mark-rubricator";
     private const string popularMarkRubricatorAttribute = "href";
 
     public TransportTypesParser(IMessagePublisher publisher, ILogger logger)
         : base(publisher, logger) { }
 
-    public async Task<Result<TransportTypesCollection>> Parse(CancellationToken ct = default)
+    public async IAsyncEnumerable<Result<TransportType>> Parse(
+        [EnumeratorCancellation] CancellationToken ct = default
+    )
     {
         WebElementPool pool = new();
-        CompositeBehavior behavior = new CompositeBehavior(_logger)
-            .AddBehavior(
-                new CompositeBehavior()
-                    .AddBehavior(new StartBehavior("none"))
-                    .AddBehavior(new OpenPageBehavior(Url))
-                    .AddBehavior(new ScrollToBottomBehavior())
-                    .AddBehavior(new ScrollToTopBehavior())
-            )
-            .AddBehavior(
-                new GetNewElementInstant(pool, popularMarkButtonXpath, pathType, popularMarkButton)
-            )
-            .AddBehavior(
-                new DoForExactParent(
-                    pool,
-                    popularMarkButton,
-                    element => new ClickOnElementRetriable(element, 50)
-                )
-            )
-            .AddBehavior(
-                new GetNewElementInstant(
-                    pool,
-                    popularMarksRubricatorContainerXPath,
-                    pathType,
-                    popularMarksRubricatorName
-                )
-            )
-            .AddBehavior(
-                new DoForExactParent(
-                    pool,
-                    popularMarksRubricatorName,
-                    element => new GetChildrenBehavior(
-                        element,
-                        popularMarkRubricatorName,
-                        popularMarkRubricatorLinkXPath,
-                        pathType
-                    )
-                )
-            )
-            .AddBehavior(new StopBehavior())
-            .AddBehavior(new ClearPoolBehavior());
-
-        using WebDriverSession session = new(_publisher);
-
-        Result execution = await session.ExecuteBehavior(behavior, ct);
-        if (execution.IsFailure)
-            return execution.Error;
-
-        Result<WebElement> element = pool.GetWebElement(el =>
-            el.Name == popularMarksRubricatorName
-        );
-        if (element.IsFailure)
-            return element.Error;
-
-        TransportTypesCollection collection = [];
-        foreach (var child in element.Value.Childs)
+        StartRetriable start = new StartRetriable("none", 10);
+        Result starting = await start.Execute(_publisher, ct);
+        if (starting.IsFailure)
         {
-            string outerHTML = child.OuterHTML;
-            HtmlNode node = HtmlNode.CreateNode(outerHTML);
-            HtmlAttribute? hrefAttribute = node.Attributes[popularMarkRubricatorAttribute];
-            if (hrefAttribute == null)
-                continue;
-
-            string name = child.OuterHTML;
-            string href = PostProcessLink(hrefAttribute.Value);
-
-            Result<TransportType> type = TransportType.Create(name, href);
-            if (type.IsFailure)
-                continue;
-
-            collection.Add(type);
+            yield return starting.Error;
+            yield break;
         }
 
-        pool.Clear();
+        OpenPageBehavior open = new OpenPageBehavior(Url);
+        ScrollToBottomRetriable bottom = new ScrollToBottomRetriable(10);
+        ScrollToTopRetriable top = new ScrollToTopRetriable(10);
+        GetNewElementRetriable getButton = new GetNewElementRetriable(
+            pool,
+            popularMarkButtonXpath,
+            pathType,
+            popularMarkButton,
+            10
+        );
+        StopBehavior stop = new StopBehavior();
 
-        _logger.Information(
-            "{Parser} parsed Transport Types {Count}",
-            nameof(TransportTypesParser),
-            collection.Count
+        await open.Execute(_publisher, ct);
+        await bottom.Execute(_publisher, ct);
+        await top.Execute(_publisher, ct);
+        await getButton.Execute(_publisher, ct);
+
+        Result<WebElement> button = pool[^1];
+        if (button.IsFailure)
+        {
+            yield return new Error("No rubricator button found");
+            await stop.Execute(_publisher, ct);
+            yield break;
+        }
+
+        ClickOnElementRetriable click = new ClickOnElementRetriable(button, 10);
+        await click.Execute(_publisher, ct);
+
+        GetNewElementRetriable getContainer = new GetNewElementRetriable(
+            pool,
+            popularMarksRubricatorContainerXPath,
+            pathType,
+            popularMarksRubricatorName,
+            10
         );
 
-        return collection;
+        await getContainer.Execute(_publisher, ct);
+        ClearPoolBehavior clear = new ClearPoolBehavior();
+        await clear.Execute(_publisher, ct);
+
+        Result<WebElement> container = pool[^1];
+        if (container.IsFailure)
+        {
+            yield return new Error("No container found");
+            await stop.Execute(_publisher, ct);
+            yield break;
+        }
+
+        HtmlDocument doc = new HtmlDocument();
+        doc.LoadHtml(container.Value.OuterHTML);
+
+        HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes(popularMarkRubricatorLinkXPath);
+        DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+
+        foreach (var node in nodes)
+        {
+            HtmlAttribute? hrefAttribute = node.Attributes.First(a =>
+                a.Name == popularMarkRubricatorAttribute
+            );
+            if (hrefAttribute == null)
+                continue;
+            string name = node.InnerText.CleanString();
+            string link = PostProcessLink(hrefAttribute.Value);
+            Result<TransportType> type = TransportType.Create(name, link, date);
+            yield return type;
+        }
+        await stop.Execute(_publisher, ct);
     }
 
-    public static ReadOnlySpan<char> GetDomainUrlPart() =>
+    internal static ReadOnlySpan<char> GetDomainUrlPart() =>
         ['h', 't', 't', 'p', 's', ':', '/', '/', 'a', 'v', 'i', 't', 'o', '.', 'r', 'u'];
 
     private static string PostProcessLink(ReadOnlySpan<char> href)

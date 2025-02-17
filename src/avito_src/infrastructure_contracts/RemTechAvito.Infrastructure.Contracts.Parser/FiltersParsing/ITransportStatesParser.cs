@@ -5,5 +5,5 @@ namespace RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
 
 public interface ITransportStatesParser
 {
-    Task<Result<TransportStatesCollection>> Parse(CancellationToken ct = default);
+    IAsyncEnumerable<Result<TransportState>> Parse(CancellationToken ct = default);
 }
