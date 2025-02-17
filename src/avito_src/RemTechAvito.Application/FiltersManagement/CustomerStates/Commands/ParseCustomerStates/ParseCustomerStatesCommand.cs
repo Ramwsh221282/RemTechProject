@@ -1,6 +1,7 @@
 ﻿using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Core.FiltersManagement.CustomerStates;
 using RemTechAvito.Infrastructure.Contracts.Parser;
+using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;

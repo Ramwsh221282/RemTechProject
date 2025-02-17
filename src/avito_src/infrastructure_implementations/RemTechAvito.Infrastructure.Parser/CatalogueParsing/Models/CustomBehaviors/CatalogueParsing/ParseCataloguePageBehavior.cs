@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Rabbit.RPC.Client.Abstractions;
+using RemTechAvito.Infrastructure.Parser.Extensions;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriver.Worker.Service.Contracts.BaseImplementations;
@@ -99,9 +100,12 @@ internal sealed class ParseCataloguePageBehavior : IWebDriverBehavior
                 CatalogueItem result = new CatalogueItem()
                 {
                     Url = $"{domain}{url}",
-                    Id = idAttributeItem == null ? "" : idAttributeItem.Value,
-                    Description = descriptionNode == null ? "" : descriptionNode.InnerText,
-                    Title = linkContainer.InnerText,
+                    Id = idAttributeItem == null ? "" : idAttributeItem.Value.CleanString(),
+                    Description =
+                        descriptionNode == null
+                            ? ""
+                            : descriptionNode.FirstChild.InnerText.CleanString(),
+                    Title = linkContainer.InnerText.CleanString(),
                 };
 
                 _model.AddItem(result);

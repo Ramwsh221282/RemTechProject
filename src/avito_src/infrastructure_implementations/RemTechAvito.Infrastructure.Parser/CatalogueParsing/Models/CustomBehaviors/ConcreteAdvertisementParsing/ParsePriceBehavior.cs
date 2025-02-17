@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Rabbit.RPC.Client.Abstractions;
+using RemTechAvito.Infrastructure.Parser.Extensions;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriver.Worker.Service.Contracts.BaseImplementations;
@@ -107,9 +108,9 @@ internal sealed class ParsePriceBehavior : IWebDriverBehavior
             int index = extraSpan.IndexOf(';');
             extraSpan = extraSpan.Slice(index + 1);
 
-            _item.Price.Value = price;
-            _item.Price.Currency = currency;
-            _item.Price.Extra = $"{extraSpan}";
+            _item.Price.Value = price.CleanString();
+            _item.Price.Currency = currency.CleanString();
+            _item.Price.Extra = $"{extraSpan}".CleanString();
             _logger.Information(
                 "{Action}. Price: {Price}. Currency: {Currency}. Extra: {Extra}",
                 nameof(ParsePriceBehavior),

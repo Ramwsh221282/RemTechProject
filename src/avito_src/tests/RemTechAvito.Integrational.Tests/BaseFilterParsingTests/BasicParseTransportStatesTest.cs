@@ -2,6 +2,7 @@
 using Rabbit.RPC.Client.Abstractions;
 using RemTechAvito.Application.FiltersManagement.TransportStates.Commands.ParseTransportStates;
 using RemTechAvito.Infrastructure.Contracts.Parser;
+using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechAvito.Infrastructure.Parser;
 using RemTechAvito.Infrastructure.Repository;

@@ -4,8 +4,8 @@ namespace RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement.Value
 
 public sealed record OwnerInformation
 {
-    private string Text { get; }
-    private string Status { get; }
+    public string Text { get; }
+    public string Status { get; }
 
     public OwnerInformation(string text, string status)
     {
