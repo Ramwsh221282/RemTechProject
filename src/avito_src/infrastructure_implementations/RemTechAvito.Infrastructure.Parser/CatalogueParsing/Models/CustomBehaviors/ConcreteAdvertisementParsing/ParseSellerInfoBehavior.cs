@@ -36,23 +36,30 @@ internal sealed class ParseSellerInfoBehavior(CatalogueItem item, ILogger logger
 
     private void InitializeSellerInfo(WebElementPool pool)
     {
-        Result<WebElement> element = pool[^1];
-        if (element.IsFailure)
+        try
         {
-            logger.Error("{Action} cannot get seller info", nameof(ParseSellerInfoBehavior));
-            return;
+            Result<WebElement> element = pool[^1];
+            if (element.IsFailure)
+            {
+                logger.Error("{Action} cannot get seller info", nameof(ParseSellerInfoBehavior));
+                return;
+            }
+
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(element.Value.OuterHTML);
+            ISellerInfoParsingChain asPerson = new PersonParsingNode(doc, item, logger);
+            ISellerInfoParsingChain asCompany = new CompanyParsingNode(doc, item, logger, asPerson);
+
+            asCompany.TryParse();
+            logger.Information(
+                "Seller info: Name: {Name} Status: {Status}",
+                item.SellerInfo.Name,
+                item.SellerInfo.Status
+            );
         }
-
-        HtmlDocument doc = new HtmlDocument();
-        doc.LoadHtml(element.Value.OuterHTML);
-        ISellerInfoParsingChain asPerson = new PersonParsingNode(doc, item, logger);
-        ISellerInfoParsingChain asCompany = new CompanyParsingNode(doc, item, logger, asPerson);
-
-        asCompany.TryParse();
-        logger.Information(
-            "Seller info: Name: {Name} Status: {Status}",
-            item.SellerInfo.Name,
-            item.SellerInfo.Status
-        );
+        catch (Exception ex)
+        {
+            logger.Fatal("{Action}. Exception: {Ex}", nameof(ParseSellerInfoBehavior), ex.Message);
+        }
     }
 }

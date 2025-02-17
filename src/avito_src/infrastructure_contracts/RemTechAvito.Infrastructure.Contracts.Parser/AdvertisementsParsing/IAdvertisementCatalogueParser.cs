@@ -1,4 +1,4 @@
-﻿namespace RemTechAvito.Infrastructure.Contracts.Parser;
+﻿namespace RemTechAvito.Infrastructure.Contracts.Parser.AdvertisementsParsing;
 
 public interface IAdvertisementCatalogueParser
 {

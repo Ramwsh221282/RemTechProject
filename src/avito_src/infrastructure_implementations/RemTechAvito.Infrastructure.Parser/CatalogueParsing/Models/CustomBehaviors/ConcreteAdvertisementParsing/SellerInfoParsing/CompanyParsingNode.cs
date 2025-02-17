@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using RemTechAvito.Infrastructure.Parser.Extensions;
 using Serilog;
 
 namespace RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models.CustomBehaviors.ConcreteAdvertisementParsing.SellerInfoParsing;
@@ -31,8 +32,8 @@ internal sealed class CompanyParsingNode(
             HtmlNode nameContainer = companyAttributesWrapper.FirstChild;
             HtmlNode statusContainer = companyAttributesWrapper.LastChild;
 
-            item.SellerInfo.Name = nameContainer.InnerText;
-            item.SellerInfo.Status = statusContainer.InnerText;
+            item.SellerInfo.Name = nameContainer.InnerText.CleanString();
+            item.SellerInfo.Status = statusContainer.InnerText.CleanString();
         }
         catch (Exception ex)
         {

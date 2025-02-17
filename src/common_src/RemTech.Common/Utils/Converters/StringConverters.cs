@@ -14,6 +14,16 @@ public static class StringConverters
         return result;
     }
 
+    public static Result<long> ToLong(this string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return new Error("Text is empty");
+        bool success = long.TryParse(text, out var result);
+        if (!success)
+            return new Error("Cannot convert to long");
+        return result;
+    }
+
     public static Result<uint> ToUint(this string? text)
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -22,5 +32,15 @@ public static class StringConverters
         if (!isConvertable)
             return new Error("Cannot convert to uint");
         return result;
+    }
+
+    public static Result<int> ToInt(this string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return new Error("Text is empty");
+        bool isConvertable = int.TryParse(text, out int value);
+        if (!isConvertable)
+            return new Error("Cannot convert to int");
+        return value;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Rabbit.RPC.Client.Abstractions;
 using RemTechAvito.Core.FiltersManagement.TransportStates;
 using RemTechAvito.Infrastructure.Contracts.Parser;
+using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriver.Worker.Service.Contracts.BaseImplementations;
