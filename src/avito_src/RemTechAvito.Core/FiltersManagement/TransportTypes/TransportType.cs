@@ -6,14 +6,16 @@ public sealed record TransportType
 {
     public string Name { get; }
     public string Link { get; }
+    public DateOnly CreatedOn { get; }
 
-    private TransportType(string name, string link)
+    private TransportType(string name, string link, DateOnly dateCreated)
     {
         Name = name;
         Link = link;
+        CreatedOn = dateCreated;
     }
 
-    public static Result<TransportType> Create(string? name, string? link)
+    public static Result<TransportType> Create(string? name, string? link, DateOnly dateCreated)
     {
         if (string.IsNullOrWhiteSpace(name))
             return new Error("Cannot create transport type without type name provided");
@@ -21,6 +23,6 @@ public sealed record TransportType
         if (string.IsNullOrWhiteSpace(link))
             return new Error("Cannot create transport type filter without link provided");
 
-        return new TransportType(name, link);
+        return new TransportType(name, link, dateCreated);
     }
 }

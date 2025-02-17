@@ -12,8 +12,8 @@ namespace RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models.CustomBehav
 internal sealed class ParseDateBehavior : IWebDriverBehavior
 {
     private const string pathType = "xpath";
-    private const string datePath = ".//span[@data-marker='item-view/item-date']";
-    private const string date = "date";
+    private const string footerPath = ".//div[@class='style-item-footer-Ufxh_']";
+    private const string footer = "footer";
     private readonly CatalogueItem _item;
     private readonly ILogger _logger;
 
@@ -26,16 +26,16 @@ internal sealed class ParseDateBehavior : IWebDriverBehavior
     public async Task<Result> Execute(IMessagePublisher publisher, CancellationToken ct = default)
     {
         WebElementPool pool = new WebElementPool();
-        GetNewElementRetriable getDate = new GetNewElementRetriable(
+        GetNewElementRetriable getFooter = new GetNewElementRetriable(
             pool,
-            datePath,
+            footerPath,
             pathType,
-            date,
-            5
+            footer,
+            10
         );
         ClearPoolBehavior clear = new ClearPoolBehavior();
 
-        await getDate.Execute(publisher, ct);
+        await getFooter.Execute(publisher, ct);
         await clear.Execute(publisher, ct);
 
         InitializeDateAsString(pool);
@@ -49,17 +49,24 @@ internal sealed class ParseDateBehavior : IWebDriverBehavior
             Result<WebElement> element = pool[^1];
             if (element.IsFailure)
             {
-                _logger.Error("{Action} date is not found", nameof(ParseDateBehavior));
+                _logger.Error("{Action} Date is not found", nameof(ParseDateBehavior));
                 return;
             }
 
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(element.Value.OuterHTML);
-            HtmlNode dateNode = doc.DocumentNode.FirstChild;
+            HtmlNode articleNode = doc.DocumentNode.FirstChild;
+            HtmlNode container = articleNode.FirstChild;
+            HtmlNode? dateNode = container.SelectSingleNode(
+                ".//span[@data-marker='item-view/item-date']"
+            );
+            if (dateNode == null)
+                return;
+
             HtmlNode dateText = dateNode.LastChild;
 
             _item.Date = dateText.InnerText.CleanString();
-            _logger.Information("{Action} date {Text}", nameof(ParseDateBehavior), _item.Date);
+            _logger.Information("{Action} Date {Text}", nameof(ParseDateBehavior), _item.Date);
         }
         catch (Exception ex)
         {

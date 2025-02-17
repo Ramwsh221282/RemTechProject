@@ -5,5 +5,5 @@ namespace RemTechAvito.Infrastructure.Contracts.Repository;
 
 public interface ITransportTypesRepository
 {
-    Task<Result> Add(TransportTypesCollection collection, CancellationToken ct = default);
+    Task<Result> Add(TransportType type, CancellationToken ct = default);
 }

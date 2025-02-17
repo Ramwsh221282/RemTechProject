@@ -5,5 +5,5 @@ namespace RemTechAvito.Infrastructure.Contracts.Repository;
 
 public interface ITransportStatesRepository
 {
-    Task<Result> Add(TransportStatesCollection collection, CancellationToken ct = default);
+    Task<Result> Add(TransportState state, CancellationToken ct = default);
 }

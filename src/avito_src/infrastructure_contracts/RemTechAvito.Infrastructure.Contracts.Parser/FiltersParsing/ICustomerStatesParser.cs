@@ -5,5 +5,5 @@ namespace RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
 
 public interface ICustomerStatesParser
 {
-    Task<Result<CustomerStatesCollection>> Parse(CancellationToken ct = default);
+    IAsyncEnumerable<Result<CustomerState>> Parse(CancellationToken ct = default);
 }

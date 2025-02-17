@@ -21,7 +21,7 @@ public sealed class AdvertisementCatalogueParser : BaseParser, IAdvertisementCat
     )
     {
         using WebDriverSession session = new(_publisher);
-        await session.ExecuteBehavior(new StartBehavior("none"), ct);
+        await session.ExecuteBehavior(new StartBehavior("eager"), ct);
 
         CataloguePagination pagination = new(catalogueUrl, _publisher, _logger);
         await pagination.InitializePagination(ct);

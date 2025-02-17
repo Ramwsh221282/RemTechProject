@@ -5,5 +5,5 @@ namespace RemTechAvito.Infrastructure.Contracts.Repository;
 
 public interface ICustomerTypesRepository
 {
-    Task<Result> Add(CustomerTypesCollection collection, CancellationToken ct = default);
+    Task<Result> Add(CustomerType type, CancellationToken ct = default);
 }

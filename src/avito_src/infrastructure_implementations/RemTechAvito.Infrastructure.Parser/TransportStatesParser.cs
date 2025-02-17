@@ -1,6 +1,6 @@
-﻿using Rabbit.RPC.Client.Abstractions;
+﻿using System.Runtime.CompilerServices;
+using Rabbit.RPC.Client.Abstractions;
 using RemTechAvito.Core.FiltersManagement.TransportStates;
-using RemTechAvito.Infrastructure.Contracts.Parser;
 using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
@@ -24,46 +24,57 @@ public sealed class TransportStatesParser(IMessagePublisher publisher, ILogger l
     private const string stateBUXpath = ".//label[@data-marker='params[110276]/426647']";
     private const string stateBU = "Б/у";
 
-    public async Task<Result<TransportStatesCollection>> Parse(CancellationToken ct = default)
+    public async IAsyncEnumerable<Result<TransportState>> Parse(
+        [EnumeratorCancellation] CancellationToken ct = default
+    )
     {
-        WebElementPool pool = new WebElementPool();
-        CompositeBehavior behavior = new CompositeBehavior(_logger)
-            .AddBehavior(
-                new StartBehavior("none"),
-                new OpenPageBehavior(Url),
-                new ScrollToBottomBehavior(),
-                new ScrollToTopBehavior()
-            )
-            .AddBehavior(new GetNewElementInstant(pool, stateAllXpath, pathType, stateAll))
-            .AddBehavior(new GetNewElementInstant(pool, stateNewXpath, pathType, stateNew))
-            .AddBehavior(new GetNewElementInstant(pool, stateBUXpath, pathType, stateBU))
-            .AddBehavior(new StopBehavior())
-            .AddBehavior(new ClearPoolBehavior());
-
-        using WebDriverSession session = new WebDriverSession(_publisher);
-        Result result = await session.ExecuteBehavior(behavior, ct);
-
-        if (result.IsFailure)
-            return result.Error;
-
-        TransportStatesCollection collection = [];
-        foreach (var element in pool.Elements)
+        StartRetriable start = new("none", 10);
+        Result starting = await start.Execute(publisher, ct);
+        if (starting.IsFailure)
         {
-            Result<TransportState> state = TransportState.Create(element.InnerText);
-            if (state.IsFailure)
-                return state.Error;
-
-            collection.Add(state);
+            _logger.Error(
+                "{ClassName} cannot execute. Error: {Error}",
+                nameof(TransportStatesParser),
+                starting.Error.Description
+            );
+            yield return starting.Error;
+            yield break;
         }
 
-        pool.Clear();
+        WebElementPool pool = new();
+        OpenPageBehavior open = new(Url);
+        ScrollToBottomRetriable bottom = new(10);
+        ScrollToTopRetriable top = new(10);
+        GetNewElementRetriable statesAllContainer =
+            new(pool, stateAllXpath, pathType, stateAll, 10);
+        GetNewElementRetriable stateNewContainer = new(pool, stateNewXpath, pathType, stateNew, 10);
+        GetNewElementRetriable stateBuContainer = new(pool, stateBUXpath, pathType, stateBU, 10);
+        StopBehavior stop = new();
 
-        _logger.Information(
-            "{Parser} parsed Transport States {Count}",
-            nameof(TransportTypesParser),
-            collection.Count
-        );
+        Result opening = await open.Execute(publisher, ct);
+        if (opening.IsFailure)
+        {
+            _logger.Error(
+                "{ClassName} cannot execute. Error: {Error}",
+                nameof(TransportStatesParser),
+                starting.Error.Description
+            );
+            yield return starting.Error;
+            yield break;
+        }
 
-        return collection;
+        await bottom.Execute(publisher, ct);
+        await top.Execute(publisher, ct);
+        await statesAllContainer.Execute(publisher, ct);
+        await stateNewContainer.Execute(publisher, ct);
+        await stateBuContainer.Execute(publisher, ct);
+        await stop.Execute(publisher, ct);
+
+        DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+        foreach (WebElement element in pool)
+        {
+            string name = element.InnerText;
+            yield return TransportState.Create(name, date);
+        }
     }
 }

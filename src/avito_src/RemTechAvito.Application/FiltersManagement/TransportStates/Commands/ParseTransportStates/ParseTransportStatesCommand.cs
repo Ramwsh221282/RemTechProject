@@ -1,6 +1,5 @@
 ﻿using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Core.FiltersManagement.TransportStates;
-using RemTechAvito.Infrastructure.Contracts.Parser;
 using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechCommon.Utils.ResultPattern;
@@ -22,21 +21,33 @@ public sealed class ParseTransportStatesCommandHandler(
     )
     {
         logger.Information("{Command} invoked.", nameof(ParseTransportStatesCommand));
+        IAsyncEnumerable<Result<TransportState>> states = parser.Parse(ct);
+        int count = 0;
+        await foreach (var state in states)
+        {
+            if (state.IsFailure)
+            {
+                logger.Error(
+                    "{Command} state is invalid: {Error}",
+                    nameof(ParseTransportStatesCommand),
+                    state.Error.Description
+                );
+                continue;
+            }
 
-        Result<TransportStatesCollection> collection = await parser.Parse(ct);
-        if (collection.IsFailure)
-            return collection;
+            Result insertion = await repository.Add(state, ct);
+            if (insertion.IsFailure)
+                continue;
 
-        Result insertion = await repository.Add(collection, ct);
-        if (insertion.IsFailure)
-            return insertion;
+            count++;
+        }
 
         logger.Information(
             "{Command} parsing completed. Parsed results: {Count}.",
             nameof(ParseTransportStatesCommand),
-            collection.Value.Count
+            count
         );
 
-        return insertion;
+        return Result.Success();
     }
 }

@@ -1,6 +1,5 @@
 ﻿using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Core.FiltersManagement.CustomerTypes;
-using RemTechAvito.Infrastructure.Contracts.Parser;
 using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechCommon.Utils.ResultPattern;
@@ -22,21 +21,33 @@ public sealed class ParseCustomerTypesCommandHandler(
     )
     {
         logger.Information("{Command} invoked.", nameof(ParseCustomerTypesCommandHandler));
+        IAsyncEnumerable<Result<CustomerType>> types = parser.Parse(ct);
+        int count = 0;
 
-        Result<CustomerTypesCollection> collection = await parser.Parse(ct);
-        if (collection.IsFailure)
-            return collection;
+        await foreach (var type in types)
+        {
+            if (type.IsFailure)
+            {
+                logger.Error(
+                    "{Command} invalid type {Type}",
+                    nameof(ParseCustomerTypesCommand),
+                    type
+                );
+                continue;
+            }
 
-        Result insertion = await repository.Add(collection, ct);
-        if (insertion.IsFailure)
-            return insertion;
+            Result inserting = await repository.Add(type, ct);
+            if (inserting.IsFailure)
+                continue;
+
+            count++;
+        }
 
         logger.Information(
             "{Command} parsing completed. Parsed results: {Count}.",
             nameof(ParseCustomerTypesCommandHandler),
-            collection.Value.Count
+            count
         );
-
-        return insertion;
+        return Result.Success();
     }
 }

@@ -15,8 +15,8 @@ public sealed class TransportAdvertisement
     public Price Price { get; }
     public Title Title { get; }
     public Description Description { get; }
-
     public AdvertisementUrl Url { get; }
+    public DateOnly CreatedOn { get; }
 
     public TransportAdvertisement(
         AdvertisementID advertisementId,
@@ -27,7 +27,8 @@ public sealed class TransportAdvertisement
         Price price,
         Title title,
         Description description,
-        AdvertisementUrl url = null
+        DateOnly createdOn,
+        AdvertisementUrl url
     )
     {
         AdvertisementId = advertisementId;
@@ -40,5 +41,6 @@ public sealed class TransportAdvertisement
         Title = title;
         Description = description;
         Url = url;
+        CreatedOn = createdOn;
     }
 }

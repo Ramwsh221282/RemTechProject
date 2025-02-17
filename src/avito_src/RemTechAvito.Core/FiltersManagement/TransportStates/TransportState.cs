@@ -5,11 +5,16 @@ namespace RemTechAvito.Core.FiltersManagement.TransportStates;
 public sealed record TransportState
 {
     public string State { get; }
+    public DateOnly DateCreated { get; }
 
-    private TransportState(string state) => State = state;
+    private TransportState(string state, DateOnly dateCreated)
+    {
+        State = state;
+        DateCreated = dateCreated;
+    }
 
-    public static Result<TransportState> Create(string? state) =>
+    public static Result<TransportState> Create(string? state, DateOnly dateCreated) =>
         string.IsNullOrWhiteSpace(state)
             ? new Error("Transport state should be provided")
-            : new TransportState(state);
+            : new TransportState(state, dateCreated);
 }

@@ -1,6 +1,6 @@
-﻿using Rabbit.RPC.Client.Abstractions;
+﻿using System.Runtime.CompilerServices;
+using Rabbit.RPC.Client.Abstractions;
 using RemTechAvito.Core.FiltersManagement.CustomerStates;
-using RemTechAvito.Infrastructure.Contracts.Parser;
 using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
@@ -23,54 +23,55 @@ public sealed class CustomerStatesParser : BaseParser, ICustomerStatesParser
     public CustomerStatesParser(IMessagePublisher publisher, ILogger logger)
         : base(publisher, logger) { }
 
-    public async Task<Result<CustomerStatesCollection>> Parse(CancellationToken ct = default)
+    public async IAsyncEnumerable<Result<CustomerState>> Parse(
+        [EnumeratorCancellation] CancellationToken ct = default
+    )
     {
-        WebElementPool pool = new();
-        CompositeBehavior pipeline = new CompositeBehavior(_logger)
-            .AddBehavior(
-                new StartBehavior("none"),
-                new OpenPageBehavior(Url).WithWait(10),
-                new ScrollToBottomBehavior(),
-                new ScrollToTopBehavior()
-            )
-            .AddBehavior(
-                new GetNewElementInstant(
-                    pool,
-                    ratingFourStarsAndMorePath,
-                    pathType,
-                    ratingFourStarsAndMore
-                )
-            )
-            .AddBehavior(
-                new GetNewElementInstant(pool, ratingCompaniesPath, pathType, ratingCompanies)
-            )
-            .AddBehavior(new StopBehavior())
-            .AddBehavior(new ClearPoolBehavior());
-
-        using WebDriverSession session = new(_publisher);
-        Result execution = await session.ExecuteBehavior(pipeline, ct);
-
-        if (execution.IsFailure)
-            return execution.Error;
-
-        CustomerStatesCollection collection = [];
-        foreach (var element in pool.Elements)
+        StartRetriable start = new StartRetriable("none", 10);
+        Result starting = await start.Execute(_publisher, ct);
+        if (starting.IsFailure)
         {
-            Result<CustomerState> state = CustomerState.Create(element.InnerText);
-            if (state.IsFailure)
-                return state.Error;
-
-            collection.Add(state);
+            _logger.Error(
+                "{Parser} cannot start. Error: {error}",
+                nameof(CustomerStatesParser),
+                starting.Error.Description
+            );
+            yield return starting.Error;
+            yield break;
         }
 
-        pool.Clear();
+        WebElementPool pool = new();
+        OpenPageBehavior open = new(Url);
+        ScrollToBottomRetriable bottom = new(10);
+        ScrollToTopRetriable top = new(10);
+        StopBehavior stop = new StopBehavior();
+        GetNewElementRetriable getFourStars =
+            new(pool, ratingFourStarsAndMorePath, pathType, ratingFourStarsAndMore, 10);
+        GetNewElementRetriable getCompanies =
+            new(pool, ratingCompaniesPath, pathType, ratingCompanies, 10);
 
-        _logger.Information(
-            "{Parser} parsed Customer States {Count}",
-            nameof(TransportTypesParser),
-            collection.Count
-        );
+        Result opening = await open.Execute(_publisher, ct);
+        if (opening.IsFailure)
+        {
+            _logger.Error(
+                "{Parser} cannot open url. Error: {error}",
+                nameof(CustomerStatesParser),
+                opening.Error.Description
+            );
+            yield return opening.Error;
+            yield break;
+        }
 
-        return collection;
+        await bottom.Execute(_publisher, ct);
+        await top.Execute(_publisher, ct);
+        await getFourStars.Execute(_publisher, ct);
+        await getCompanies.Execute(_publisher, ct);
+        await stop.Execute(_publisher, ct);
+
+        DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+        foreach (var element in pool)
+        {
+            yield return CustomerState.Create(element.InnerText, date);
+        }
     }
 }

@@ -6,10 +6,16 @@ public sealed record CustomerState
 {
     public string State { get; }
 
-    private CustomerState(string state) => State = state;
+    public DateOnly CreatedOn { get; }
 
-    public static Result<CustomerState> Create(string? state) =>
+    private CustomerState(string state, DateOnly createdOn)
+    {
+        State = state;
+        CreatedOn = createdOn;
+    }
+
+    public static Result<CustomerState> Create(string? state, DateOnly createdOn) =>
         string.IsNullOrWhiteSpace(state)
             ? new Error("Customer state cannot be empty")
-            : new CustomerState(state);
+            : new CustomerState(state, createdOn);
 }

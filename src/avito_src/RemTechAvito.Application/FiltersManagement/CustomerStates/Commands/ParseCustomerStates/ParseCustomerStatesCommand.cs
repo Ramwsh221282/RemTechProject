@@ -1,6 +1,5 @@
 ﻿using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Core.FiltersManagement.CustomerStates;
-using RemTechAvito.Infrastructure.Contracts.Parser;
 using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechCommon.Utils.ResultPattern;
@@ -22,21 +21,33 @@ public sealed class ParseCustomerStatesCommandHandler(
     )
     {
         logger.Information("{Command} invoked.", nameof(ParseCustomerStatesCommandHandler));
+        IAsyncEnumerable<Result<CustomerState>> states = parser.Parse(ct);
+        int count = 0;
 
-        Result<CustomerStatesCollection> collection = await parser.Parse(ct);
-        if (collection.IsFailure)
-            return collection;
+        await foreach (var state in states)
+        {
+            if (state.IsFailure)
+            {
+                logger.Error(
+                    "{Command} cannot add {State} is invalid",
+                    nameof(ParseCustomerStatesCommand),
+                    state
+                );
+                continue;
+            }
 
-        Result insertion = await repository.Add(collection, ct);
-        if (insertion.IsFailure)
-            return insertion;
+            Result inserting = await repository.Add(state, ct);
+            if (inserting.IsFailure)
+                continue;
+
+            count++;
+        }
 
         logger.Information(
             "{Command} parsing completed. Parsed results: {Count}.",
-            nameof(ParseCustomerStatesCommandHandler),
-            collection.Value.Count
+            nameof(ParseCustomerStatesCommand),
+            count
         );
-
-        return insertion;
+        return Result.Success();
     }
 }

@@ -15,9 +15,9 @@ public sealed class Parse_Date_Tests : BasicParserTests
     {
         const string url =
             "https://www.avito.ru/moskva/gruzoviki_i_spetstehnika/vilochnyy_pogruzchik_hifoune_fd30_2025_4373248650?context=H4sIAAAAAAAA_wE_AMD_YToyOntzOjEzOiJsb2NhbFByaW9yaXR5IjtiOjA7czoxOiJ4IjtzOjE2OiJvSDRrWjg0SElwTlQwQnN2Ijt94UlT_z8AAAA";
-        const string path = ".//span[@data-marker='item-view/item-date']";
+        const string path = ".//span[@data-marker='item-view/item-Date']";
         const string type = "xpath";
-        const string name = "date";
+        const string name = "Date";
 
         using CancellationTokenSource cts = new CancellationTokenSource();
         CancellationToken ct = cts.Token;
