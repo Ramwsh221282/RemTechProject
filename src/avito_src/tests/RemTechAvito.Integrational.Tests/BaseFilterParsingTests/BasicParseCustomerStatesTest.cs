@@ -3,6 +3,7 @@ using Rabbit.RPC.Client.Abstractions;
 using RemTechAvito.Application.FiltersManagement.CustomerStates.Commands.ParseCustomerStates;
 using RemTechAvito.Application.FiltersManagement.CustomerTypes.Commands.ParseCustomerTypes;
 using RemTechAvito.Infrastructure.Contracts.Parser;
+using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechAvito.Infrastructure.Parser;
 using RemTechAvito.Infrastructure.Repository;

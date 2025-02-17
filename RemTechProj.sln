@@ -55,6 +55,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F45CFE55
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTechAvito.Integrational.Tests", "src\avito_src\tests\RemTechAvito.Integrational.Tests\RemTechAvito.Integrational.Tests.csproj", "{57E26BCC-05C2-42A9-BCB9-A14902C6E9A1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTechAvito.MongoDb.Tests", "src\avito_src\tests\RemTechAvito.MongoDb.Tests\RemTechAvito.MongoDb.Tests.csproj", "{192AADA9-E289-451B-9A45-8CD3CD94234E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +87,7 @@ Global
 		{F45CFE55-F81F-4D5C-941B-C2C4CF186581} = {2FD50146-D397-4CE0-A4AA-27EE5993589D}
 		{2E2A63C5-67BF-4965-A924-22B340F6B9A8} = {F45CFE55-F81F-4D5C-941B-C2C4CF186581}
 		{57E26BCC-05C2-42A9-BCB9-A14902C6E9A1} = {F45CFE55-F81F-4D5C-941B-C2C4CF186581}
+		{192AADA9-E289-451B-9A45-8CD3CD94234E} = {F45CFE55-F81F-4D5C-941B-C2C4CF186581}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{19D97A14-AB77-4D4A-8C85-C01B60EFE240}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -151,5 +154,9 @@ Global
 		{57E26BCC-05C2-42A9-BCB9-A14902C6E9A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57E26BCC-05C2-42A9-BCB9-A14902C6E9A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57E26BCC-05C2-42A9-BCB9-A14902C6E9A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{192AADA9-E289-451B-9A45-8CD3CD94234E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{192AADA9-E289-451B-9A45-8CD3CD94234E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{192AADA9-E289-451B-9A45-8CD3CD94234E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{192AADA9-E289-451B-9A45-8CD3CD94234E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

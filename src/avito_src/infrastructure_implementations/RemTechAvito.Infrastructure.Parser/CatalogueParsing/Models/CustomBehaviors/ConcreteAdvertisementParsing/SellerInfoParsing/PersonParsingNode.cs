@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using RemTechAvito.Infrastructure.Parser.Extensions;
 using Serilog;
 
 namespace RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models.CustomBehaviors.ConcreteAdvertisementParsing.SellerInfoParsing;
@@ -35,8 +36,8 @@ internal sealed class PersonParsingNode(
                 return;
             }
 
-            item.SellerInfo.Name = sellerNameNode.InnerText;
-            item.SellerInfo.Status = sellerStatusNode.InnerText;
+            item.SellerInfo.Name = sellerNameNode.InnerText.CleanString();
+            item.SellerInfo.Status = sellerStatusNode.InnerText.CleanString();
         }
         catch (Exception ex)
         {

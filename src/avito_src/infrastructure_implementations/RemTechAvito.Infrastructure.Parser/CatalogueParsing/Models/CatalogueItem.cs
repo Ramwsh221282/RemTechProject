@@ -1,4 +1,5 @@
 ﻿using RemTechAvito.Infrastructure.Contracts.Parser;
+using RemTechAvito.Infrastructure.Contracts.Parser.AdvertisementsParsing;
 
 namespace RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models;
 

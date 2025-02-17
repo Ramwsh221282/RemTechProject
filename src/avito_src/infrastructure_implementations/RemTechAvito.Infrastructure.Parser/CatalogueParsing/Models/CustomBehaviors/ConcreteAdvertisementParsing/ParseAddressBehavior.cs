@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Rabbit.RPC.Client.Abstractions;
+using RemTechAvito.Infrastructure.Parser.Extensions;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriver.Worker.Service.Contracts.BaseImplementations;
@@ -63,7 +64,7 @@ internal sealed class ParseAddressBehavior : IWebDriverBehavior
                 return;
             }
 
-            _item.Address = addressNode.InnerText;
+            _item.Address = addressNode.InnerText.CleanString();
             _logger.Information(
                 "{Action}. address: {Text}",
                 nameof(ParseAddressBehavior),

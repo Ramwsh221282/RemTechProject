@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Rabbit.RPC.Client.Abstractions;
 using RemTechAvito.Infrastructure.Contracts.Parser;
+using RemTechAvito.Infrastructure.Contracts.Parser.AdvertisementsParsing;
 using RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models;
 using RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models.CustomBehaviors;
 using Serilog;

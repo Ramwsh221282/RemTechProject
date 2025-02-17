@@ -1,5 +1,7 @@
-﻿using HtmlAgilityPack;
+﻿using System.Text;
+using HtmlAgilityPack;
 using Rabbit.RPC.Client.Abstractions;
+using RemTechAvito.Infrastructure.Parser.Extensions;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriver.Worker.Service.Contracts.BaseImplementations;
@@ -76,12 +78,20 @@ internal sealed class ParseCharacteristics(CatalogueItem item, ILogger logger) :
             {
                 if (node == null)
                 {
-                    item.Characteristics[lastInitializationIndex] = String.Empty;
+                    item.Characteristics[lastInitializationIndex] = string.Empty;
                     lastInitializationIndex++;
                     continue;
                 }
 
-                item.Characteristics[lastInitializationIndex] = node.InnerText;
+                HtmlNode ctxName = node.FirstChild;
+                HtmlNode ctxValue = node.LastChild;
+
+                StringBuilder sb = new StringBuilder()
+                    .Append(ctxName.InnerText.Trim())
+                    .Append(ctxValue.InnerText.Trim().CleanString());
+
+                string text = sb.ToString();
+                item.Characteristics[lastInitializationIndex] = text;
                 lastInitializationIndex++;
             }
         }

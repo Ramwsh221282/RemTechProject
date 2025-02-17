@@ -8,7 +8,7 @@ public sealed class TransportAdvertisement
     public const string CollectionName = "Спецтехника";
     public AdvertisementID AdvertisementId { get; }
     public EntityID EntityId { get; }
-    public Characteristic Characteristic { get; }
+    public Characteristics Characteristics { get; }
     public Address Address { get; }
     public OwnerInformation OwnerInformation { get; }
     public PhotoAttachments PhotoAttachments { get; }
@@ -16,25 +16,29 @@ public sealed class TransportAdvertisement
     public Title Title { get; }
     public Description Description { get; }
 
+    public AdvertisementUrl Url { get; }
+
     public TransportAdvertisement(
         AdvertisementID advertisementId,
-        Characteristic characteristic,
+        Characteristics characteristics,
         Address address,
         OwnerInformation ownerInformation,
         PhotoAttachments photoAttachments,
         Price price,
         Title title,
-        Description description
+        Description description,
+        AdvertisementUrl url = null
     )
     {
         AdvertisementId = advertisementId;
         EntityId = EntityID.New();
-        Characteristic = characteristic;
+        Characteristics = characteristics;
         Address = address;
         OwnerInformation = ownerInformation;
         PhotoAttachments = photoAttachments;
         Price = price;
         Title = title;
         Description = description;
+        Url = url;
     }
 }

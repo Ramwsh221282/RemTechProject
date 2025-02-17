@@ -3,17 +3,17 @@ using RemTechCommon.Utils.ResultPattern;
 
 namespace RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement.ValueObjects;
 
-public sealed record AdvertisementID
+public readonly record struct AdvertisementID
 {
-    public uint Id { get; }
+    public long Id { get; }
 
-    private AdvertisementID(uint id) => Id = id;
+    private AdvertisementID(long id) => Id = id;
 
-    public static AdvertisementID Create(uint id) => new AdvertisementID(id);
+    public static AdvertisementID Create(long id) => new AdvertisementID(id);
 
     public static Result<AdvertisementID> Create(string? id)
     {
-        Result<uint> converted = id.ToUint();
+        Result<long> converted = id.ToLong();
         return converted.IsFailure ? converted.Error : Create(converted);
     }
 }

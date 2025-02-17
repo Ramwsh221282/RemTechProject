@@ -11,6 +11,7 @@
       <Folder Include="FiltersManagement\CustomerTypes\Queries\" />
       <Folder Include="FiltersManagement\TransportStates\Queries\" />
       <Folder Include="FiltersManagement\TransportTypes\Queries\" />
+      <Folder Include="TransportAdvertisementsManagement\TransportAdvertisements\Queries\" />
     </ItemGroup>
 
     <ItemGroup>
