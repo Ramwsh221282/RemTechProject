@@ -86,34 +86,23 @@ internal sealed class ParseCataloguePageBehavior : IWebDriverBehavior
                 if (linkAttribute == null)
                     continue;
 
-                IEnumerable<HtmlAttribute> itemAttributes = catalogueItem.GetAttributes();
-                HtmlAttribute? idAttributeItem = itemAttributes.FirstOrDefault(a =>
-                    a.Name == "data-item-id"
-                );
-
-                HtmlNode? descriptionNode = catalogueItem.SelectSingleNode(
-                    ".//div[@class='iva-item-bottomBlock-FhNhY']"
-                );
-
                 ReadOnlySpan<char> domain = TransportTypesParser.GetDomainUrlPart();
                 ReadOnlySpan<char> url = linkAttribute.Value;
-                CatalogueItem result = new CatalogueItem()
-                {
-                    Url = $"{domain}{url}",
-                    Id = idAttributeItem == null ? "" : idAttributeItem.Value.CleanString(),
-                    Description =
-                        descriptionNode == null
-                            ? ""
-                            : descriptionNode.FirstChild.InnerText.CleanString(),
-                    Title = linkContainer.InnerText.CleanString(),
-                };
 
-                _model.AddItem(result);
+                CatalogueItem item = new CatalogueItem();
+                item.Url = $"{domain}{url}";
+                item.Title = linkContainer.InnerText.CleanString();
+                InitializeIdIfExists(catalogueItem, item);
+                InitializeDescriptionIfExists(catalogueItem, item);
+                InitializePriceIfExists(catalogueItem, item);
+                InitializeAddressIfExists(catalogueItem, item);
+
+                _model.AddItem(item);
                 _logger.Information(
                     "{Action}. Added item. Id: {Id} Url: {Url}.",
                     nameof(ParseCataloguePageBehavior),
-                    result.Id,
-                    result.Url
+                    item.Id,
+                    item.Url
                 );
             }
         }
@@ -121,5 +110,77 @@ internal sealed class ParseCataloguePageBehavior : IWebDriverBehavior
         {
             // ignored
         }
+    }
+
+    private void InitializeIdIfExists(HtmlNode node, CatalogueItem item)
+    {
+        IEnumerable<HtmlAttribute> attributes = node.GetAttributes();
+        HtmlAttribute? attribute = attributes.FirstOrDefault(a => a.Name == "data-item-id");
+        if (attribute != null)
+            item.Id = attribute.Value.CleanString();
+    }
+
+    private void InitializeDescriptionIfExists(HtmlNode node, CatalogueItem item)
+    {
+        HtmlNode? descriptionNode = node.SelectSingleNode(
+            ".//div[@class='iva-item-bottomBlock-FhNhY']"
+        );
+        if (descriptionNode != null)
+            item.Description = descriptionNode.FirstChild.InnerText.CleanString();
+    }
+
+    private void InitializePriceIfExists(HtmlNode node, CatalogueItem item)
+    {
+        HtmlNode? priceContainer = node.SelectSingleNode(".//p[@data-marker='item-price']");
+        if (priceContainer == null)
+            return;
+        HtmlNodeCollection childs = priceContainer.ChildNodes;
+        foreach (var child in childs)
+        {
+            if (child == null)
+                return;
+
+            HtmlAttribute? propertyAttribute = child.Attributes.FirstOrDefault(a =>
+                a.Name == "itemprop"
+            );
+            if (propertyAttribute == null)
+                continue;
+
+            if (propertyAttribute.Value == "priceCurrency")
+            {
+                HtmlAttribute? currencyAttribute = child.Attributes.FirstOrDefault(a =>
+                    a.Name == "content"
+                );
+                if (currencyAttribute != null)
+                    item.Price.Currency = currencyAttribute.Value;
+            }
+
+            if (propertyAttribute.Value == "price")
+            {
+                HtmlAttribute? currencyAttribute = child.Attributes.FirstOrDefault(a =>
+                    a.Name == "content"
+                );
+                if (currencyAttribute != null)
+                    item.Price.Value = currencyAttribute.Value;
+            }
+        }
+
+        HtmlNode extraPriceData = priceContainer.SelectSingleNode(
+            ".//span[@class='styles-module-size_l-j3Csw styles-module-size_l_dense-JjSpL']"
+        );
+        if (extraPriceData == null)
+            return;
+        HtmlNode lastChild = extraPriceData.LastChild;
+        ReadOnlySpan<char> extraTextSpan = lastChild.InnerText;
+        int index = extraTextSpan.IndexOf(';');
+        item.Price.Extra = $"{extraTextSpan.Slice(index + 1)}";
+    }
+
+    private void InitializeAddressIfExists(HtmlNode node, CatalogueItem item)
+    {
+        HtmlNode? geoNode = node.SelectSingleNode(".//div[@class='geo-root-NrkbV']");
+        if (geoNode == null)
+            return;
+        item.Address = geoNode.InnerText;
     }
 }

@@ -18,7 +18,11 @@ public sealed record ParsedTransportAdvertisement(
     ParsedTransportAdvertisementPriceInfo PriceInfo
 );
 
-public sealed record ParsedTransportAdvertisementSellerInfo(string Name, string Status);
+public sealed record ParsedTransportAdvertisementSellerInfo(
+    string Name,
+    string Status,
+    string Contacts
+);
 
 public sealed record ParsedTransportAdvertisementPriceInfo(
     string Value,
@@ -84,7 +88,7 @@ public static class ParsedTransportAdvertisementExtensions
 
     public static Result<OwnerInformation> ToValueObject(
         this ParsedTransportAdvertisementSellerInfo info
-    ) => OwnerInformation.Create(info.Name, info.Status);
+    ) => OwnerInformation.Create(info.Name, info.Status, info.Contacts);
 
     public static List<Characteristic> GetCharacteristicsList(
         this ParsedTransportAdvertisement advertisement

@@ -31,6 +31,9 @@ public sealed class OwnerInformationSerializer : IBsonSerializer<OwnerInformatio
         writer.WriteName("owner_status");
         writer.WriteString(value.Status);
 
+        writer.WriteName("owner_contacts");
+        writer.WriteString(value.Contacts);
+
         writer.WriteEndDocument();
     }
 
@@ -44,6 +47,7 @@ public sealed class OwnerInformationSerializer : IBsonSerializer<OwnerInformatio
 
         string text = string.Empty;
         string status = string.Empty;
+        string contacts = string.Empty;
 
         while (reader.ReadBsonType() != BsonType.EndOfDocument)
         {
@@ -56,6 +60,9 @@ public sealed class OwnerInformationSerializer : IBsonSerializer<OwnerInformatio
                 case "owner_status":
                     status = reader.ReadString();
                     break;
+                case "owner_contacts":
+                    contacts = reader.ReadString();
+                    break;
                 default:
                     reader.SkipValue();
                     break;
@@ -63,7 +70,7 @@ public sealed class OwnerInformationSerializer : IBsonSerializer<OwnerInformatio
         }
         reader.ReadEndDocument();
 
-        return OwnerInformation.Create(text, status);
+        return OwnerInformation.Create(text, status, contacts);
     }
 
     public void Serialize(
