@@ -3,6 +3,9 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+# mongo_db
+mongodb_data/
+
 # dotenv files
 .env
 
