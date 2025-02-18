@@ -31,6 +31,7 @@ public sealed class TransportAdvertisementsRepository : ITransportAdvertisements
             await db.CreateCollectionAsync(CollectionName, cancellationToken: ct);
             var collection = db.GetCollection<TransportAdvertisement>(CollectionName);
             await collection.InsertOneAsync(advertisement, cancellationToken: ct);
+
             return advertisement.EntityId.Id;
         }
         catch (Exception ex)
