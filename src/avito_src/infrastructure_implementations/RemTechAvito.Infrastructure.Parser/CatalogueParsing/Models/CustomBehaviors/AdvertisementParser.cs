@@ -47,7 +47,7 @@ internal sealed class AdvertisementParser
             await _characteristics.Execute(_publisher, ct);
             await _date.Execute(_publisher, ct);
             await _photos.Execute(_publisher, ct);
-            await _phone.Execute(_publisher, ct);
+            //await _phone.Execute(_publisher, ct);
 
             _logger.Information(
                 "{Action}. {Url} was parsed",

@@ -89,7 +89,7 @@ public static class ParsedTransportAdvertisementExtensions
 
     public static Result<OwnerInformation> ToValueObject(
         this ParsedTransportAdvertisementSellerInfo info
-    ) => OwnerInformation.Create(info.Name, info.Status, info.Contacts);
+    ) => OwnerInformation.Create(info.Name, info.Status, "");
 
     public static List<Characteristic> GetCharacteristicsList(
         this ParsedTransportAdvertisement advertisement

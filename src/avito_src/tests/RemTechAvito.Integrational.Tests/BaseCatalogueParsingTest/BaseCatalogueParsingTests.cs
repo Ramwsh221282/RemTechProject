@@ -152,8 +152,12 @@ public sealed class BaseCatalogueParsingTests : BasicParserTests
 
         try
         {
+            // const string url =
+            //     "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki/hifoune-ASgBAgICAkRU4E3cxg2WkdsR";
+
             const string url =
-                "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki/hifoune-ASgBAgICAkRU4E3cxg2WkdsR";
+                "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki/merlo-ASgBAgICAkRU4E3cxg2Arz8";
+
             IMessagePublisher publisher = new MultiCommunicationPublisher(
                 queue,
                 host,
