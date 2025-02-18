@@ -1,7 +1,8 @@
 ﻿namespace RemTechAvito.Contracts.Common.Dto.TransportAdvertisementsManagement;
 
 public sealed record FilterAdvertisementsDto(
-    CharacteristicsListDto? Characteristics = null,
+    CharacteristicsListDto? CharacteristicsSearch = null,
+    CharacteristicsListDto? CharacteristicsExactDto = null,
     AddressDto? Address = null,
     OwnerInformationDto? OwnerInformation = null,
     PriceFilterDto? Price = null,

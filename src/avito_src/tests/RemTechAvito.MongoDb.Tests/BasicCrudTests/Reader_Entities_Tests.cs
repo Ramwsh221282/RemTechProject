@@ -31,16 +31,40 @@ public sealed class Reader_Entities_Tests
         try
         {
             CharacteristicsListDto listDto = new CharacteristicsListDto(
-                [new CharacteristicDto("Марка", "Kandela")]
+                [new CharacteristicDto("Марка", "Merlo")]
             );
-
-            FilterAdvertisementsDto dto = new FilterAdvertisementsDto(Characteristics: listDto);
+            FilterAdvertisementsDto dto = new FilterAdvertisementsDto(
+                CharacteristicsSearch: listDto
+            );
             IEnumerable<TransportAdvertisement> data = await _repository.Query(dto);
+            foreach (var item in data)
+            {
+                bool containsMark = item.Characteristics.Data.Any(d =>
+                    d.Name.Contains("Марка") && d.Value.Contains("Merlo")
+                );
+                Assert.True(containsMark);
+            }
 
             listDto = new CharacteristicsListDto(
                 [new CharacteristicDto("Другой Текст", "Другой текст")]
             );
-            dto = new FilterAdvertisementsDto(Characteristics: listDto);
+
+            dto = new FilterAdvertisementsDto(CharacteristicsSearch: listDto);
+            data = await _repository.Query(dto);
+            Assert.Empty(data);
+
+            listDto = new CharacteristicsListDto([new CharacteristicDto("Модель", "P 50.18 HM")]);
+            dto = new FilterAdvertisementsDto(CharacteristicsSearch: listDto);
+            data = await _repository.Query(dto);
+
+            listDto = new CharacteristicsListDto(
+                [new CharacteristicDto("Тип техники", "Телескопический погрузчик")]
+            );
+            dto = new FilterAdvertisementsDto(CharacteristicsSearch: listDto);
+            data = await _repository.Query(dto);
+
+            listDto = new CharacteristicsListDto([new CharacteristicDto("", "2008")]);
+            dto = new FilterAdvertisementsDto(CharacteristicsSearch: listDto);
             data = await _repository.Query(dto);
         }
         catch (Exception ex)

@@ -48,66 +48,70 @@ internal static class TransportAdvertisementsRepository
 
     public static async Task RegisterIndexes(MongoClient client, CancellationToken ct = default)
     {
-        var textIndexModel = new CreateIndexModel<TransportAdvertisement>(
-            Builders<TransportAdvertisement>
-                .IndexKeys.Text("Address")
-                .Text("Description")
-                .Text("Title")
-                .Text("Characteristics.attribute_name")
-                .Text("Characteristics.attribute_value")
-                .Text("OwnerInformation.owner_description"),
-            new CreateIndexOptions()
-            {
-                Name = "Address_Description_Title_Characteristics_OwnerInformation_Text",
-            }
-        );
+        try
+        {
+            var textIndexModel = new CreateIndexModel<TransportAdvertisement>(
+                Builders<TransportAdvertisement>
+                    .IndexKeys.Text("Address")
+                    .Text("Description")
+                    .Text("Title")
+                    .Text("CharacteristicsSearch.attribute_name")
+                    .Text("CharacteristicsSearch.attribute_value")
+                    .Text("OwnerInformation.owner_description"),
+                new CreateIndexOptions()
+                {
+                    Name = "Address_Description_Title_Characteristics_OwnerInformation_Text",
+                }
+            );
 
-        var advertisementIdIndexModel = new CreateIndexModel<TransportAdvertisement>(
-            Builders<TransportAdvertisement>.IndexKeys.Ascending("AdvertisementId"),
-            new CreateIndexOptions() { Name = "AdvertisementId_Index", Unique = true }
-        );
+            var advertisementIdIndexModel = new CreateIndexModel<TransportAdvertisement>(
+                Builders<TransportAdvertisement>.IndexKeys.Ascending("AdvertisementId"),
+                new CreateIndexOptions() { Name = "AdvertisementId_Index", Unique = true }
+            );
 
-        var priceIndexModel = new CreateIndexModel<TransportAdvertisement>(
-            Builders<TransportAdvertisement>
-                .IndexKeys.Ascending("Price.price_value")
-                .Ascending("Price.price_currency")
-                .Ascending("Price.price_extra"),
-            new CreateIndexOptions { Name = "Price_Value_Currency_Extra" }
-        );
+            var priceIndexModel = new CreateIndexModel<TransportAdvertisement>(
+                Builders<TransportAdvertisement>
+                    .IndexKeys.Ascending("Price.price_value")
+                    .Ascending("Price.price_currency")
+                    .Ascending("Price.price_extra"),
+                new CreateIndexOptions { Name = "Price_Value_Currency_Extra" }
+            );
 
-        var dateIndexModel = new CreateIndexModel<TransportAdvertisement>(
-            Builders<TransportAdvertisement>.IndexKeys.Ascending("CreatedOn"),
-            new CreateIndexOptions { Name = "CreatedOn_Index" }
-        );
+            var dateIndexModel = new CreateIndexModel<TransportAdvertisement>(
+                Builders<TransportAdvertisement>.IndexKeys.Ascending("CreatedOn"),
+                new CreateIndexOptions { Name = "CreatedOn_Index" }
+            );
 
-        var characteristicsIndexModel = new CreateIndexModel<TransportAdvertisement>(
-            Builders<TransportAdvertisement>
-                .IndexKeys.Ascending("Characteristics.attribute_name")
-                .Ascending("Characteristics.attribute_value"),
-            new CreateIndexOptions { Name = "Characteristics_Name_Value" }
-        );
+            var characteristicsIndexModel = new CreateIndexModel<TransportAdvertisement>(
+                Builders<TransportAdvertisement>
+                    .IndexKeys.Ascending("CharacteristicsSearch.attribute_name")
+                    .Ascending("CharacteristicsSearch.attribute_value"),
+                new CreateIndexOptions { Name = "Characteristics_Name_Value" }
+            );
 
-        var ownerIndexModel = new CreateIndexModel<TransportAdvertisement>(
-            Builders<TransportAdvertisement>
-                .IndexKeys.Ascending("OwnerInformation.owner_description")
-                .Ascending("OwnerInformation.owner_status")
-                .Ascending("OwnerInformation.owner_contacts"),
-            new CreateIndexOptions { Name = "OwnerInformation_Description_Status_Contacts" }
-        );
+            var ownerIndexModel = new CreateIndexModel<TransportAdvertisement>(
+                Builders<TransportAdvertisement>
+                    .IndexKeys.Ascending("OwnerInformation.owner_description")
+                    .Ascending("OwnerInformation.owner_status")
+                    .Ascending("OwnerInformation.owner_contacts"),
+                new CreateIndexOptions { Name = "OwnerInformation_Description_Status_Contacts" }
+            );
 
-        var db = client.GetDatabase(DbName);
-        var collection = db.GetCollection<TransportAdvertisement>(CollectionName);
+            var db = client.GetDatabase(DbName);
+            var collection = db.GetCollection<TransportAdvertisement>(CollectionName);
 
-        await collection.Indexes.CreateManyAsync(
-            [
-                textIndexModel,
-                priceIndexModel,
-                dateIndexModel,
-                ownerIndexModel,
-                characteristicsIndexModel,
-                advertisementIdIndexModel,
-            ],
-            ct
-        );
+            await collection.Indexes.CreateManyAsync(
+                [
+                    textIndexModel,
+                    priceIndexModel,
+                    dateIndexModel,
+                    ownerIndexModel,
+                    characteristicsIndexModel,
+                    advertisementIdIndexModel,
+                ],
+                ct
+            );
+        }
+        catch { }
     }
 }
