@@ -39,4 +39,6 @@ public sealed class SingleCommunicationPublisher : IMessagePublisher
         ContractActionResult response = await context.Send(request, _queueName, ct);
         return response;
     }
+
+    public void Dispose() { }
 }

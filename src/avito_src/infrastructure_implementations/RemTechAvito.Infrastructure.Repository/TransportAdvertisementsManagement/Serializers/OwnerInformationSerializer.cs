@@ -5,7 +5,7 @@ using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement.ValueObje
 
 namespace RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Serializers;
 
-public sealed class OwnerInformationSerializer : IBsonSerializer<OwnerInformation>
+internal sealed class OwnerInformationSerializer : IBsonSerializer<OwnerInformation>
 {
     object IBsonSerializer.Deserialize(
         BsonDeserializationContext context,

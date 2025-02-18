@@ -3,7 +3,7 @@ using RemTechAvito.Core.Common.ValueObjects;
 
 namespace RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Serializers;
 
-public sealed class DescriptionSerializer : IBsonSerializer<Description>
+internal sealed class DescriptionSerializer : IBsonSerializer<Description>
 {
     object IBsonSerializer.Deserialize(
         BsonDeserializationContext context,

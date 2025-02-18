@@ -11,7 +11,7 @@ public sealed record ParseTransportAdvertisementCatalogueCommand(string Catalogu
     : IAvitoCommand;
 
 public sealed class ParseTransportAdvertisementsCatalogueCommandHandler(
-    ITransportAdvertisementsRepository repository,
+    ITransportAdvertisementsCommandRepository commandRepository,
     IAdvertisementCatalogueParser parser,
     ILogger logger
 ) : IAvitoCommandHandler<ParseTransportAdvertisementCatalogueCommand>
@@ -33,18 +33,17 @@ public sealed class ParseTransportAdvertisementsCatalogueCommandHandler(
         {
             Result<TransportAdvertisement> advertisement = item.ToTransportAdvertisement();
             if (advertisement.IsFailure)
+            {
                 logger.Warning(
                     "Skipped advertisement. Error: {Error}",
                     advertisement.Error.Description
                 );
-            else
-            {
-                Guid id = await repository.Add(advertisement);
-                if (id == Guid.Empty)
-                    continue;
-                logger.Information("Added parsed advertisement ({Id})", id);
-                addedData++;
+                continue;
             }
+            Guid id = await commandRepository.Add(advertisement, ct);
+            if (id == Guid.Empty)
+                continue;
+            addedData++;
         }
 
         logger.Information(

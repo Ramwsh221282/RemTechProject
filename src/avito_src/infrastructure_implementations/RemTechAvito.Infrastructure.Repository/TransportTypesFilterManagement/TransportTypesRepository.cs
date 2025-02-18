@@ -1,16 +1,14 @@
-﻿using MongoDB.Bson.Serialization;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using RemTechAvito.Core.FiltersManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement;
-using RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement.Serializers;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using Exception = System.Exception;
 
 namespace RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement;
 
-public sealed class TransportTypesRepository(MongoClient client, ILogger logger)
+internal sealed class TransportTypesRepository(MongoClient client, ILogger logger)
     : ITransportTypesRepository
 {
     private const string CollectionName = "Transport_Types";
@@ -36,10 +34,5 @@ public sealed class TransportTypesRepository(MongoClient client, ILogger logger)
             );
             return new Error("Unable to save transport type collection. Internal error.");
         }
-    }
-
-    public static void RegisterSerializers()
-    {
-        BsonSerializer.RegisterSerializer(new TransportTypeSerializer());
     }
 }

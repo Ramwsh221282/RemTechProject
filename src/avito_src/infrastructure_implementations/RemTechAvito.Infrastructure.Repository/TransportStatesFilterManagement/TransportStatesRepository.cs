@@ -4,14 +4,13 @@ using RemTechAvito.Core.FiltersManagement.TransportStates;
 using RemTechAvito.Core.FiltersManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement;
-using RemTechAvito.Infrastructure.Repository.TransportStatesFilterManagement.Serializers;
 using RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 
 namespace RemTechAvito.Infrastructure.Repository.TransportStatesFilterManagement;
 
-public sealed class TransportStatesRepository(MongoClient client, ILogger logger)
+internal sealed class TransportStatesRepository(MongoClient client, ILogger logger)
     : ITransportStatesRepository
 {
     private const string CollectionName = "Transport_States";
@@ -41,10 +40,5 @@ public sealed class TransportStatesRepository(MongoClient client, ILogger logger
             );
             return new Error("Internal error. Cannot save transport state.");
         }
-    }
-
-    public static void RegisterSerializer()
-    {
-        BsonSerializer.RegisterSerializer(new TransportStateSerializer());
     }
 }

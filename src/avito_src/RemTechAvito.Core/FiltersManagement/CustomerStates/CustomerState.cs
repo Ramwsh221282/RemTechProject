@@ -4,9 +4,8 @@ namespace RemTechAvito.Core.FiltersManagement.CustomerStates;
 
 public sealed record CustomerState
 {
-    public string State { get; }
-
-    public DateOnly CreatedOn { get; }
+    public string State { get; private set; }
+    public DateOnly CreatedOn { get; private set; }
 
     private CustomerState(string state, DateOnly createdOn)
     {

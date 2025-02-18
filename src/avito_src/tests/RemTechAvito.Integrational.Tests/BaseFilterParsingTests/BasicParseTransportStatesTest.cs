@@ -1,14 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Driver;
 using Rabbit.RPC.Client.Abstractions;
+using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Application.FiltersManagement.TransportStates.Commands.ParseTransportStates;
-using RemTechAvito.Infrastructure.Contracts.Parser;
-using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
-using RemTechAvito.Infrastructure.Contracts.Repository;
-using RemTechAvito.Infrastructure.Parser;
-using RemTechAvito.Infrastructure.Repository;
-using RemTechAvito.Infrastructure.Repository.TransportStatesFilterManagement;
-using RemTechCommon.Utils.ResultPattern;
 using WebDriver.Worker.Service;
 using WebDriver.Worker.Service.Contracts.BaseContracts;
 
@@ -27,20 +20,11 @@ public sealed class BasicParseTransportStatesTest : BasicParserTests
 
         try
         {
-            MongoDbOptions options = new MongoDbOptions();
-            options.ConnectionString = "mongodb://root:example@localhost:27017/?authSource=admin";
-            MongoClient client = new MongoClient(options.ConnectionString);
-            IMessagePublisher publisher = new MultiCommunicationPublisher(
-                queue,
-                host,
-                user,
-                password
-            );
-            ITransportStatesParser parser = new TransportStatesParser(publisher, _logger);
-            TransportStatesRepository.RegisterSerializer();
-            ITransportStatesRepository repository = new TransportStatesRepository(client, _logger);
             ParseTransportStatesCommand command = new();
-            ParseTransportStatesCommandHandler handler = new(parser, repository, _logger);
+            IAvitoCommandHandler<ParseTransportStatesCommand> handler =
+                _serviceProvider.GetRequiredService<
+                    IAvitoCommandHandler<ParseTransportStatesCommand>
+                >();
             await handler.Handle(command, ct);
         }
         catch (Exception ex)

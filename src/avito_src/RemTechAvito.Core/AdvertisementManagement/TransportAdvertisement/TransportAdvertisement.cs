@@ -5,18 +5,17 @@ namespace RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
 
 public sealed class TransportAdvertisement
 {
-    public const string CollectionName = "Спецтехника";
-    public AdvertisementID AdvertisementId { get; }
-    public EntityID EntityId { get; }
-    public Characteristics Characteristics { get; }
-    public Address Address { get; }
-    public OwnerInformation OwnerInformation { get; }
-    public PhotoAttachments PhotoAttachments { get; }
-    public Price Price { get; }
-    public Title Title { get; }
-    public Description Description { get; }
-    public AdvertisementUrl Url { get; }
-    public DateOnly CreatedOn { get; }
+    public AdvertisementID AdvertisementId { get; private set; }
+    public EntityID EntityId { get; private set; }
+    public Characteristics Characteristics { get; private set; }
+    public Address Address { get; private set; }
+    public OwnerInformation OwnerInformation { get; private set; }
+    public PhotoAttachments PhotoAttachments { get; private set; }
+    public Price Price { get; private set; }
+    public Title Title { get; private set; }
+    public Description Description { get; private set; }
+    public AdvertisementUrl Url { get; private set; }
+    public DateOnly CreatedOn { get; private set; }
 
     public TransportAdvertisement(
         AdvertisementID advertisementId,

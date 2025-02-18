@@ -3,7 +3,7 @@ using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement.ValueObje
 
 namespace RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Serializers;
 
-public sealed class AdvertisementUrlSerializer : IBsonSerializer<AdvertisementUrl>
+internal sealed class AdvertisementUrlSerializer : IBsonSerializer<AdvertisementUrl>
 {
     object IBsonSerializer.Deserialize(
         BsonDeserializationContext context,

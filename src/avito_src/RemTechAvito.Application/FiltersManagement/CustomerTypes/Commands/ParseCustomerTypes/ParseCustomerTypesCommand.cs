@@ -9,7 +9,7 @@ namespace RemTechAvito.Application.FiltersManagement.CustomerTypes.Commands.Pars
 
 public record ParseCustomerTypesCommand : IAvitoCommand;
 
-public sealed class ParseCustomerTypesCommandHandler(
+internal sealed class ParseCustomerTypesCommandHandler(
     ICustomerTypesParser parser,
     ICustomerTypesRepository repository,
     ILogger logger

@@ -1,12 +1,10 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.IO;
-using MongoDB.Bson.Serialization;
+﻿using MongoDB.Bson.Serialization;
 using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement.ValueObjects;
 using RemTechCommon.Utils.Converters;
 
 namespace RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Serializers;
 
-public sealed class DateCreatedSerializer : IBsonSerializer<DateCreated>
+internal sealed class DateCreatedSerializer : IBsonSerializer<DateCreated>
 {
     object IBsonSerializer.Deserialize(
         BsonDeserializationContext context,

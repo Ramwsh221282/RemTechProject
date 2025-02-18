@@ -9,7 +9,7 @@ using Serilog;
 
 namespace RemTechAvito.Infrastructure.Repository.CustomerTypesFilterManagement;
 
-public sealed class CustomerTypesRepository(MongoClient client, ILogger logger)
+internal sealed class CustomerTypesRepository(MongoClient client, ILogger logger)
     : ICustomerTypesRepository
 {
     private const string CollectionName = "Customer_Types";
@@ -35,10 +35,5 @@ public sealed class CustomerTypesRepository(MongoClient client, ILogger logger)
             );
             return new Error("Cannot save customer type. Internal Error");
         }
-    }
-
-    public static void RegisterSerializer()
-    {
-        BsonSerializer.RegisterSerializer(new CustomerTypeSerializer());
     }
 }

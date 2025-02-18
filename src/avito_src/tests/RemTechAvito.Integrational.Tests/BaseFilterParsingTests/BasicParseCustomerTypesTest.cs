@@ -1,12 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Driver;
 using Rabbit.RPC.Client.Abstractions;
+using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Application.FiltersManagement.CustomerTypes.Commands.ParseCustomerTypes;
-using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
-using RemTechAvito.Infrastructure.Contracts.Repository;
-using RemTechAvito.Infrastructure.Parser;
-using RemTechAvito.Infrastructure.Repository;
-using RemTechAvito.Infrastructure.Repository.CustomerTypesFilterManagement;
 using WebDriver.Worker.Service;
 using WebDriver.Worker.Service.Contracts.BaseContracts;
 
@@ -25,20 +20,11 @@ public sealed class BasicParseCustomerTypesTest : BasicParserTests
 
         try
         {
-            CustomerTypesRepository.RegisterSerializer();
-            MongoDbOptions options = new MongoDbOptions();
-            options.ConnectionString = "mongodb://root:example@localhost:27017/?authSource=admin";
-            MongoClient client = new MongoClient(options.ConnectionString);
-            IMessagePublisher publisher = new MultiCommunicationPublisher(
-                queue,
-                host,
-                user,
-                password
-            );
-            ICustomerTypesParser parser = new CustomerTypesParser(publisher, _logger);
-            ICustomerTypesRepository repository = new CustomerTypesRepository(client, _logger);
             ParseCustomerTypesCommand command = new();
-            ParseCustomerTypesCommandHandler handler = new(parser, repository, _logger);
+            IAvitoCommandHandler<ParseCustomerTypesCommand> handler =
+                _serviceProvider.GetRequiredService<
+                    IAvitoCommandHandler<ParseCustomerTypesCommand>
+                >();
             await handler.Handle(command, ct);
         }
         catch (Exception ex)

@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\RemTechAvito.Contracts.Common\RemTechAvito.Contracts.Common.csproj" />
       <ProjectReference Include="..\..\RemTechAvito.Core\RemTechAvito.Core.csproj" />
     </ItemGroup>
 

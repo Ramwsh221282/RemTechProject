@@ -5,7 +5,7 @@ using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement.ValueObje
 
 namespace RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Serializers;
 
-public sealed class PriceSerializer : IBsonSerializer<Price>
+internal sealed class PriceSerializer : IBsonSerializer<Price>
 {
     object IBsonSerializer.Deserialize(
         BsonDeserializationContext context,
@@ -61,6 +61,7 @@ public sealed class PriceSerializer : IBsonSerializer<Price>
             }
         }
 
+        reader.ReadEndDocument();
         return Price.Create(value, currency, extra);
     }
 

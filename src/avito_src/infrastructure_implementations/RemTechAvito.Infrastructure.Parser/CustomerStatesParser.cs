@@ -9,7 +9,7 @@ using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implemen
 
 namespace RemTechAvito.Infrastructure.Parser;
 
-public sealed class CustomerStatesParser : BaseParser, ICustomerStatesParser
+internal sealed class CustomerStatesParser : BaseParser, ICustomerStatesParser
 {
     private const string pathType = "xpath";
 

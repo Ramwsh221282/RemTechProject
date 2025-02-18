@@ -9,7 +9,7 @@ namespace RemTechAvito.Application.FiltersManagement.TransportStates.Commands.Pa
 
 public sealed record ParseTransportStatesCommand : IAvitoCommand;
 
-public sealed class ParseTransportStatesCommandHandler(
+internal sealed class ParseTransportStatesCommandHandler(
     ITransportStatesParser parser,
     ITransportStatesRepository repository,
     ILogger logger
