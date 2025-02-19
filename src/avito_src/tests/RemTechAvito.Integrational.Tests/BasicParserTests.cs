@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using RemTechAvito.DependencyInjection;
 using Serilog;
 using WebDriver.Worker.Service;
 
@@ -12,12 +13,12 @@ public abstract class BasicParserTests
     protected const string queue = "web-driver-service";
 
     protected readonly ILogger _logger;
-
     protected readonly IServiceProvider _serviceProvider;
 
     protected BasicParserTests()
     {
         IServiceCollection collection = new ServiceCollection();
+        collection.RegisterServices();
         collection.AddLogging();
         collection.InitializeWorkerDependencies(queue, host, user, password);
         collection.AddSingleton<Worker>();

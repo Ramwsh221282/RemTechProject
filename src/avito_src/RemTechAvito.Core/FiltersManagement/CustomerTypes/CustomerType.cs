@@ -4,9 +4,9 @@ namespace RemTechAvito.Core.FiltersManagement.CustomerTypes;
 
 public sealed record CustomerType
 {
-    public string Type { get; }
+    public string Type { get; private set; }
 
-    public DateOnly CreatedOn { get; }
+    public DateOnly CreatedOn { get; private set; }
 
     private CustomerType(string type, DateOnly createdOn)
     {

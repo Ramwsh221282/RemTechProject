@@ -37,7 +37,7 @@ internal sealed class PersonParsingNode(
             }
 
             item.SellerInfo.Name = sellerNameNode.InnerText.CleanString();
-            item.SellerInfo.Status = sellerStatusNode.InnerText.CleanString();
+            item.SellerInfo.Status = "Частное лицо";
         }
         catch (Exception ex)
         {

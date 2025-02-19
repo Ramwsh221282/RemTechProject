@@ -10,14 +10,15 @@ using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implemen
 
 namespace RemTechAvito.Infrastructure.Parser;
 
-public sealed class CustomerTypesParser(IMessagePublisher publisher, ILogger logger)
-    : BaseParser(publisher, logger),
-        ICustomerTypesParser
+internal sealed class CustomerTypesParser : BaseParser, ICustomerTypesParser
 {
     private const string pathType = "xpath";
     private const string containerPath = ".//div[@data-marker='user' and @role='group']";
     private const string containerName = "customers-type";
     private const string radioButtonPath = ".//label";
+
+    public CustomerTypesParser(IMessagePublisher publisher, ILogger logger)
+        : base(publisher, logger) { }
 
     public async IAsyncEnumerable<Result<CustomerType>> Parse(
         [EnumeratorCancellation] CancellationToken ct = default

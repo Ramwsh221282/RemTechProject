@@ -6,7 +6,7 @@ using RemTechCommon.Utils.Converters;
 
 namespace RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement.Serializers;
 
-public sealed class TransportTypeSerializer : IBsonSerializer<TransportType>
+internal sealed class TransportTypeSerializer : IBsonSerializer<TransportType>
 {
     object IBsonSerializer.Deserialize(
         BsonDeserializationContext context,
@@ -48,7 +48,7 @@ public sealed class TransportTypeSerializer : IBsonSerializer<TransportType>
 
         string name = string.Empty;
         string link = string.Empty;
-        DateOnly date = DateOnly.MinValue;
+        DateOnly date = default;
 
         while (reader.ReadBsonType() != BsonType.EndOfDocument)
         {

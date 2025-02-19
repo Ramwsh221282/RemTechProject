@@ -3,7 +3,7 @@ using Serilog;
 
 namespace RemTechAvito.Infrastructure.Parser;
 
-public abstract class BaseParser
+internal abstract class BaseParser
 {
     protected const string Url =
         "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki-ASgBAgICAURU4E0";

@@ -4,9 +4,9 @@ namespace RemTechAvito.Core.FiltersManagement.TransportTypes;
 
 public sealed record TransportType
 {
-    public string Name { get; }
-    public string Link { get; }
-    public DateOnly CreatedOn { get; }
+    public string Name { get; private set; }
+    public string Link { get; private set; }
+    public DateOnly CreatedOn { get; private set; }
 
     private TransportType(string name, string link, DateOnly dateCreated)
     {

@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\infrastructure_contracts\RemTechAvito.Infrastructure.Contracts.Repository\RemTechAvito.Infrastructure.Contracts.Repository.csproj" />
+      <ProjectReference Include="..\..\RemTechAvito.Contracts.Common\RemTechAvito.Contracts.Common.csproj" />
     </ItemGroup>
 
     <ItemGroup>

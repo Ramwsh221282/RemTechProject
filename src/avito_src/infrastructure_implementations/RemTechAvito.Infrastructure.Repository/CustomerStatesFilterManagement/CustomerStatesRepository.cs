@@ -9,7 +9,7 @@ using Serilog;
 
 namespace RemTechAvito.Infrastructure.Repository.CustomerStatesFilterManagement;
 
-public sealed class CustomerStatesRepository(MongoClient client, ILogger logger)
+internal sealed class CustomerStatesRepository(MongoClient client, ILogger logger)
     : ICustomerStatesRepository
 {
     private const string CollectionName = "Customer_States";
@@ -35,10 +35,5 @@ public sealed class CustomerStatesRepository(MongoClient client, ILogger logger)
             );
             return new Error("Cannot add customer state. Internal error.");
         }
-    }
-
-    public static void RegisterSerializer()
-    {
-        BsonSerializer.RegisterSerializer(new CustomerStateSerializer());
     }
 }

@@ -2,5 +2,6 @@
 
 public sealed class MongoDbOptions
 {
-    public string ConnectionString { get; set; } = string.Empty;
+    public string ConnectionString { get; set; } =
+        "mongodb://root:example@localhost:27017/?authSource=admin";
 }

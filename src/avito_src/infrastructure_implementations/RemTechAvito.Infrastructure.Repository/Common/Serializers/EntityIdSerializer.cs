@@ -1,9 +1,10 @@
-﻿using MongoDB.Bson.Serialization;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using RemTechAvito.Core.Common.ValueObjects;
 
-namespace RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Serializers;
+namespace RemTechAvito.Infrastructure.Repository.Common.Serializers;
 
-public sealed class EntityIDSerializer : IBsonSerializer<EntityID>
+internal sealed class EntityIdSerializer : IBsonSerializer<EntityID>
 {
     object IBsonSerializer.Deserialize(
         BsonDeserializationContext context,
@@ -34,7 +35,10 @@ public sealed class EntityIDSerializer : IBsonSerializer<EntityID>
         BsonSerializationContext context,
         BsonSerializationArgs args,
         object value
-    ) => Serialize(context, args, (EntityID)value);
+    )
+    {
+        Serialize(context, args, (EntityID)value);
+    }
 
     public Type ValueType => typeof(EntityID);
 }

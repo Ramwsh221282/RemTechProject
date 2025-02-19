@@ -9,9 +9,7 @@ using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implemen
 
 namespace RemTechAvito.Infrastructure.Parser;
 
-public sealed class TransportStatesParser(IMessagePublisher publisher, ILogger logger)
-    : BaseParser(publisher, logger),
-        ITransportStatesParser
+internal sealed class TransportStatesParser : BaseParser, ITransportStatesParser
 {
     private const string pathType = "xpath";
 
@@ -24,12 +22,15 @@ public sealed class TransportStatesParser(IMessagePublisher publisher, ILogger l
     private const string stateBUXpath = ".//label[@data-marker='params[110276]/426647']";
     private const string stateBU = "Б/у";
 
+    public TransportStatesParser(IMessagePublisher publisher, ILogger logger)
+        : base(publisher, logger) { }
+
     public async IAsyncEnumerable<Result<TransportState>> Parse(
         [EnumeratorCancellation] CancellationToken ct = default
     )
     {
         StartRetriable start = new("none", 10);
-        Result starting = await start.Execute(publisher, ct);
+        Result starting = await start.Execute(_publisher, ct);
         if (starting.IsFailure)
         {
             _logger.Error(
@@ -51,7 +52,7 @@ public sealed class TransportStatesParser(IMessagePublisher publisher, ILogger l
         GetNewElementRetriable stateBuContainer = new(pool, stateBUXpath, pathType, stateBU, 10);
         StopBehavior stop = new();
 
-        Result opening = await open.Execute(publisher, ct);
+        Result opening = await open.Execute(_publisher, ct);
         if (opening.IsFailure)
         {
             _logger.Error(
@@ -63,12 +64,12 @@ public sealed class TransportStatesParser(IMessagePublisher publisher, ILogger l
             yield break;
         }
 
-        await bottom.Execute(publisher, ct);
-        await top.Execute(publisher, ct);
-        await statesAllContainer.Execute(publisher, ct);
-        await stateNewContainer.Execute(publisher, ct);
-        await stateBuContainer.Execute(publisher, ct);
-        await stop.Execute(publisher, ct);
+        await bottom.Execute(_publisher, ct);
+        await top.Execute(_publisher, ct);
+        await statesAllContainer.Execute(_publisher, ct);
+        await stateNewContainer.Execute(_publisher, ct);
+        await stateBuContainer.Execute(_publisher, ct);
+        await stop.Execute(_publisher, ct);
 
         DateOnly date = DateOnly.FromDateTime(DateTime.Now);
         foreach (WebElement element in pool)

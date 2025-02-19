@@ -19,7 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\infrastructure_implementations\RemTechAvito.Infrastructure.Repository\RemTechAvito.Infrastructure.Repository.csproj" />
+      <ProjectReference Include="..\..\RemTechAvito.DependencyInjection\RemTechAvito.DependencyInjection.csproj" />
     </ItemGroup>
 
 </Project>

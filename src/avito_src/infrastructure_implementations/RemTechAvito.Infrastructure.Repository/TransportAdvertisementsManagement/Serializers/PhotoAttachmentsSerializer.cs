@@ -4,7 +4,7 @@ using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement.ValueObje
 
 namespace RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Serializers;
 
-public sealed class PhotoAttachmentsSerializer : IBsonSerializer<PhotoAttachments>
+internal sealed class PhotoAttachmentsSerializer : IBsonSerializer<PhotoAttachments>
 {
     object IBsonSerializer.Deserialize(
         BsonDeserializationContext context,

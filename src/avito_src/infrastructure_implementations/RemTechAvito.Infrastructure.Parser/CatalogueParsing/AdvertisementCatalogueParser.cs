@@ -10,7 +10,7 @@ using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implemen
 
 namespace RemTechAvito.Infrastructure.Parser.CatalogueParsing;
 
-public sealed class AdvertisementCatalogueParser : BaseParser, IAdvertisementCatalogueParser
+internal sealed class AdvertisementCatalogueParser : BaseParser, IAdvertisementCatalogueParser
 {
     public AdvertisementCatalogueParser(IMessagePublisher publisher, ILogger logger)
         : base(publisher, logger) { }

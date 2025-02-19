@@ -2,7 +2,7 @@
 
 namespace RemTechAvito.Infrastructure.Contracts.Repository;
 
-public interface ITransportAdvertisementsRepository
+public interface ITransportAdvertisementsCommandRepository
 {
     Task<Guid> Add(TransportAdvertisement advertisement, CancellationToken ct = default);
 }

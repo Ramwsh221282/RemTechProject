@@ -3,7 +3,7 @@ using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement.ValueObje
 
 namespace RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Serializers;
 
-public class AdvertisementIDSerializer : IBsonSerializer<AdvertisementID>
+internal class AdvertisementIDSerializer : IBsonSerializer<AdvertisementID>
 {
     object IBsonSerializer.Deserialize(
         BsonDeserializationContext context,

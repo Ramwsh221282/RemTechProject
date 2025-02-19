@@ -1,15 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Driver;
 using Rabbit.RPC.Client.Abstractions;
+using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Application.FiltersManagement.CustomerStates.Commands.ParseCustomerStates;
-using RemTechAvito.Application.FiltersManagement.CustomerTypes.Commands.ParseCustomerTypes;
-using RemTechAvito.Infrastructure.Contracts.Parser;
-using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
-using RemTechAvito.Infrastructure.Contracts.Repository;
-using RemTechAvito.Infrastructure.Parser;
-using RemTechAvito.Infrastructure.Repository;
-using RemTechAvito.Infrastructure.Repository.CustomerStatesFilterManagement;
-using RemTechCommon.Utils.ResultPattern;
 using WebDriver.Worker.Service;
 using WebDriver.Worker.Service.Contracts.BaseContracts;
 
@@ -28,20 +20,11 @@ public sealed class BasicParseCustomerStatesTest : BasicParserTests
 
         try
         {
-            MongoDbOptions options = new MongoDbOptions();
-            options.ConnectionString = "mongodb://root:example@localhost:27017/?authSource=admin";
-            MongoClient client = new MongoClient(options.ConnectionString);
-            CustomerStatesRepository.RegisterSerializer();
-            IMessagePublisher publisher = new MultiCommunicationPublisher(
-                queue,
-                host,
-                user,
-                password
-            );
-            ICustomerStatesParser parser = new CustomerStatesParser(publisher, _logger);
-            ICustomerStatesRepository repository = new CustomerStatesRepository(client, _logger);
             ParseCustomerStatesCommand command = new();
-            ParseCustomerStatesCommandHandler handler = new(parser, repository, _logger);
+            IAvitoCommandHandler<ParseCustomerStatesCommand> handler =
+                _serviceProvider.GetRequiredService<
+                    IAvitoCommandHandler<ParseCustomerStatesCommand>
+                >();
             await handler.Handle(command, ct);
         }
         catch (Exception ex)

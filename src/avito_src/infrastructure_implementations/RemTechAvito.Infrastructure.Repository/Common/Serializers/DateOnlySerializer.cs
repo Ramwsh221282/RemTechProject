@@ -1,9 +1,9 @@
 ﻿using MongoDB.Bson.Serialization;
-using RemTechAvito.Core.Common.ValueObjects;
+using RemTechCommon.Utils.Converters;
 
-namespace RemTechAvito.MongoDb.Tests.BasicCrudTests.Serializers.TransportAdvertisementManagement;
+namespace RemTechAvito.Infrastructure.Repository.Common.Serializers;
 
-public sealed class EntityIDSerializer : IBsonSerializer<EntityID>
+internal sealed class DateOnlySerializer : IBsonSerializer<DateOnly>
 {
     object IBsonSerializer.Deserialize(
         BsonDeserializationContext context,
@@ -16,25 +16,27 @@ public sealed class EntityIDSerializer : IBsonSerializer<EntityID>
     public void Serialize(
         BsonSerializationContext context,
         BsonSerializationArgs args,
-        EntityID value
+        DateOnly value
     )
     {
         var writer = context.Writer;
-        writer.WriteGuid(value.Id);
+        writer.WriteDateTime(value.ToUnix());
     }
 
-    public EntityID Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+    public DateOnly Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
     {
         var reader = context.Reader;
-        Guid id = reader.ReadGuid();
-        return EntityID.Existing(id);
+        return reader.ReadDateTime().FromUnix();
     }
 
     public void Serialize(
         BsonSerializationContext context,
         BsonSerializationArgs args,
         object value
-    ) => Serialize(context, args, (EntityID)value);
+    )
+    {
+        Serialize(context, args, (DateOnly)value);
+    }
 
-    public Type ValueType => typeof(EntityID);
+    public Type ValueType => typeof(DateOnly);
 }

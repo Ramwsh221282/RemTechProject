@@ -6,7 +6,7 @@ using RemTechCommon.Utils.Converters;
 
 namespace RemTechAvito.Infrastructure.Repository.CustomerTypesFilterManagement.Serializers;
 
-public sealed class CustomerTypeSerializer : IBsonSerializer<CustomerType>
+internal sealed class CustomerTypeSerializer : IBsonSerializer<CustomerType>
 {
     object IBsonSerializer.Deserialize(
         BsonDeserializationContext context,
@@ -42,7 +42,7 @@ public sealed class CustomerTypeSerializer : IBsonSerializer<CustomerType>
         var reader = context.Reader;
 
         string type = string.Empty;
-        DateOnly date = DateOnly.MinValue;
+        DateOnly date = default;
 
         reader.ReadStartDocument();
         while (reader.CurrentBsonType != BsonType.EndOfDocument)

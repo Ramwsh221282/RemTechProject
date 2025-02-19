@@ -4,8 +4,8 @@ namespace RemTechAvito.Core.FiltersManagement.TransportStates;
 
 public sealed record TransportState
 {
-    public string State { get; }
-    public DateOnly DateCreated { get; }
+    public string State { get; private set; }
+    public DateOnly DateCreated { get; private set; }
 
     private TransportState(string state, DateOnly dateCreated)
     {

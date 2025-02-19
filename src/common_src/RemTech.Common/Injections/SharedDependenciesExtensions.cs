@@ -3,9 +3,9 @@ using Serilog;
 
 namespace RemTechCommon.Injections;
 
-public static class LoadSharedKernel
+public static class SharedDependenciesExtensions
 {
-    public static IServiceCollection AddSharedKernel(this IServiceCollection services)
+    public static IServiceCollection RegisterSharedDependencies(this IServiceCollection services)
     {
         ILogger logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
         services.AddSingleton(logger);

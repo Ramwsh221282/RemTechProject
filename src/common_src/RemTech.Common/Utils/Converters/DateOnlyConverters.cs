@@ -8,12 +8,12 @@ public static class DateOnlyConverters
             date.ToDateTime(TimeOnly.MinValue),
             DateTimeKind.Utc
         );
-        return new DateTimeOffset(dateTimeUtc).ToUnixTimeSeconds();
+        return new DateTimeOffset(dateTimeUtc).ToUnixTimeMilliseconds();
     }
 
     public static DateOnly FromUnix(this long unixDate)
     {
-        DateTimeOffset dto = DateTimeOffset.FromUnixTimeSeconds(unixDate);
+        DateTimeOffset dto = DateTimeOffset.FromUnixTimeMilliseconds(unixDate);
         return DateOnly.FromDateTime(dto.UtcDateTime);
     }
 }

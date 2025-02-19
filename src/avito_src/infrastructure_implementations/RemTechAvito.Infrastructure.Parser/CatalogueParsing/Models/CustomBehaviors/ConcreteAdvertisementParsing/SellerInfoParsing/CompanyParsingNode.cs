@@ -33,7 +33,7 @@ internal sealed class CompanyParsingNode(
             HtmlNode statusContainer = companyAttributesWrapper.LastChild;
 
             item.SellerInfo.Name = nameContainer.InnerText.CleanString();
-            item.SellerInfo.Status = statusContainer.InnerText.CleanString();
+            item.SellerInfo.Status = "Организация";
         }
         catch (Exception ex)
         {

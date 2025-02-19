@@ -11,7 +11,7 @@ using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implemen
 
 namespace RemTechAvito.Infrastructure.Parser;
 
-public sealed class TransportTypesParser : BaseParser, ITransportTypesParser
+internal sealed class TransportTypesParser : BaseParser, ITransportTypesParser
 {
     private const string pathType = "xpath";
 
