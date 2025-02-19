@@ -1,0 +1,17 @@
+@import "colors.scss";
+
+:host {
+  font-family: "Consolas", Helvetica, Arial, sans-serif;
+}
+
+html, body, #app {
+  font-family: "Arial", Helvetica, Arial, sans-serif;
+  height: 99.5%;
+}
+
+//@font-face {
+//  font-family: 'PrimeIcons';
+//  src: url('/fonts/primeicons.ttf') format('truetype'); /* Убедитесь, что путь правильный */
+//  font-weight: normal;
+//  font-style: normal;
+//}
