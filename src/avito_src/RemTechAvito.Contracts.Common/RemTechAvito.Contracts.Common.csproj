@@ -10,8 +10,4 @@
       <Folder Include="Dto\" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\RemTechAvito.Core\RemTechAvito.Core.csproj" />
-    </ItemGroup>
-
 </Project>

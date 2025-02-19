@@ -1,5 +1,4 @@
 ﻿using RemTechCommon.Utils.ResultPattern;
-using Serilog;
 using WebDriverManager;
 
 namespace WebDriver.Core.Models;
