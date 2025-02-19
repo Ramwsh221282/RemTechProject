@@ -10,7 +10,6 @@
       <ProjectReference Include="..\infrastructure_implementations\RemTechAvito.Infrastructure.Parser\RemTechAvito.Infrastructure.Parser.csproj" />
       <ProjectReference Include="..\infrastructure_implementations\RemTechAvito.Infrastructure.Repository\RemTechAvito.Infrastructure.Repository.csproj" />
       <ProjectReference Include="..\RemTechAvito.Application\RemTechAvito.Application.csproj" />
-      <ProjectReference Include="..\RemTechAvito.Contracts.Common\RemTechAvito.Contracts.Common.csproj" />
     </ItemGroup>
 
 </Project>

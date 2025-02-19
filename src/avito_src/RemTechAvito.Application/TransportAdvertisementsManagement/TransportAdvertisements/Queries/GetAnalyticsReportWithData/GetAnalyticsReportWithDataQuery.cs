@@ -1,6 +1,0 @@
-﻿using RemTechAvito.Contracts.Common.Dto.TransportAdvertisementsManagement;
-using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
-
-namespace RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Queries.GetAnalyticsReportWithData;
-
-internal sealed class GetAnalyticsReportWithDataQueryHandler { }

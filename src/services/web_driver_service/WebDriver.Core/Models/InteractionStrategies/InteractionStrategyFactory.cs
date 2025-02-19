@@ -1,5 +1,4 @@
-﻿using Serilog;
-using WebDriver.Core.Models.InteractionStrategies.Implementations;
+﻿using WebDriver.Core.Models.InteractionStrategies.Implementations;
 
 namespace WebDriver.Core.Models.InteractionStrategies;
 
