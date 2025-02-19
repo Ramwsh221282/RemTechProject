@@ -52,16 +52,11 @@ internal static class TransportAdvertisementsRepository
         {
             var textIndexModel = new CreateIndexModel<TransportAdvertisement>(
                 Builders<TransportAdvertisement>
-                    .IndexKeys.Text("Address")
-                    .Text("Description")
+                    .IndexKeys.Text("Description")
                     .Text("Title")
                     .Text("CharacteristicsSearch.attribute_name")
-                    .Text("CharacteristicsSearch.attribute_value")
-                    .Text("OwnerInformation.owner_description"),
-                new CreateIndexOptions()
-                {
-                    Name = "Address_Description_Title_Characteristics_OwnerInformation_Text",
-                }
+                    .Text("CharacteristicsSearch.attribute_value"),
+                new CreateIndexOptions() { Name = "Description_Title_Characteristics_Text" }
             );
 
             var advertisementIdIndexModel = new CreateIndexModel<TransportAdvertisement>(
@@ -91,10 +86,15 @@ internal static class TransportAdvertisementsRepository
 
             var ownerIndexModel = new CreateIndexModel<TransportAdvertisement>(
                 Builders<TransportAdvertisement>
-                    .IndexKeys.Ascending("OwnerInformation.owner_description")
-                    .Ascending("OwnerInformation.owner_status")
-                    .Ascending("OwnerInformation.owner_contacts"),
+                    .IndexKeys.Ascending("Owner.owner_description")
+                    .Ascending("Owner.owner_status")
+                    .Ascending("Owner.owner_contacts"),
                 new CreateIndexOptions { Name = "OwnerInformation_Description_Status_Contacts" }
+            );
+
+            var addressIndexModel = new CreateIndexModel<TransportAdvertisement>(
+                Builders<TransportAdvertisement>.IndexKeys.Ascending("Address"),
+                new CreateIndexOptions() { Name = "Address_Index" }
             );
 
             var db = client.GetDatabase(DbName);
@@ -108,6 +108,7 @@ internal static class TransportAdvertisementsRepository
                     ownerIndexModel,
                     characteristicsIndexModel,
                     advertisementIdIndexModel,
+                    addressIndexModel,
                 ],
                 ct
             );

@@ -1,11 +1,12 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using RemTechAvito.Contracts.Common.Dto.TransportAdvertisementsManagement;
 using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
 using RemTechAvito.Infrastructure.Repository.Specifications;
 
 namespace RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Queries;
 
-internal sealed class MongoPriceFilterQuery
+public sealed class AdvertisementPriceRangeFilterQuery
     : IMongoFilterQuery<FilterAdvertisementsDto, TransportAdvertisement>
 {
     public void AddFilter(
@@ -13,20 +14,24 @@ internal sealed class MongoPriceFilterQuery
         List<FilterDefinition<TransportAdvertisement>> filters
     )
     {
-        PriceFilterDto? price = dto.Price;
+        PriceRangeDto? price = dto.PriceRange;
         if (price == null)
             return;
 
-        var builder = Builders<TransportAdvertisement>.Filter;
-        var filter = price.Predicate switch
-        {
-            "LESS" => builder.Lt(ad => ad.Price.Value, price.Price.Value),
-            "MORE" => builder.Gt(ad => ad.Price.Value, price.Price.Value),
-            "EQUAL" => builder.Eq(ad => ad.Price.Value, price.Price.Value),
-            _ => null,
-        };
+        if (price.ValueMin == 0)
+            return;
 
-        if (filter != null)
-            filters.Add(filter);
+        if (price.ValueMax == 0)
+            return;
+
+        if (price.ValueMax < price.ValueMin)
+            return;
+
+        var filter = new BsonDocument(
+            "Price.price_value",
+            new BsonDocument() { { "$gte", price.ValueMin }, { "$lte", price.ValueMax } }
+        );
+
+        filters.Add(filter);
     }
 }

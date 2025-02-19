@@ -1,11 +1,13 @@
-﻿using MongoDB.Driver;
+﻿using System.Text.RegularExpressions;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using RemTechAvito.Contracts.Common.Dto.TransportAdvertisementsManagement;
 using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
 using RemTechAvito.Infrastructure.Repository.Specifications;
 
 namespace RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Queries;
 
-internal sealed class MongoAddressFilterQuery
+internal sealed class AdvertisementAddressFilterQuery
     : IMongoFilterQuery<FilterAdvertisementsDto, TransportAdvertisement>
 {
     public void AddFilter(
@@ -17,7 +19,17 @@ internal sealed class MongoAddressFilterQuery
         if (address == null)
             return;
 
-        var builder = Builders<TransportAdvertisement>.Filter;
-        filters.Add(builder.Text(address.Text));
+        if (string.IsNullOrWhiteSpace(address.Text))
+            return;
+
+        string input = address.Text;
+        string regExp = $".*{Regex.Escape(input)}.*";
+
+        var filter = new BsonDocument(
+            "Address",
+            new BsonDocument() { { "$regex", regExp }, { "$options", "i" } }
+        );
+
+        filters.Add(filter);
     }
 }

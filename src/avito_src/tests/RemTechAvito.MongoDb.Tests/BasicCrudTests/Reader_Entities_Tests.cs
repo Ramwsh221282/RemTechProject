@@ -22,7 +22,7 @@ public sealed class Reader_Entities_Tests
     }
 
     [Fact]
-    public async Task Read_With_Characteristics_Set_Test()
+    public async Task Test_Get_Analytics_Items_With_Filter_Sample_1()
     {
         using CancellationTokenSource cts = new CancellationTokenSource();
         CancellationToken ct = cts.Token;
@@ -30,52 +30,140 @@ public sealed class Reader_Entities_Tests
 
         try
         {
-            CharacteristicsListDto listDto = new CharacteristicsListDto(
-                [new CharacteristicDto("Марка", "Merlo")]
-            );
-            FilterAdvertisementsDto dto = new FilterAdvertisementsDto(
-                CharacteristicsSearch: listDto
-            );
-            IEnumerable<TransportAdvertisement> data = await _repository.Query(dto);
-            foreach (var item in data)
-            {
-                bool containsMark = item.Characteristics.Data.Any(d =>
-                    d.Name.Contains("Марка") && d.Value.Contains("Merlo")
-                );
-                Assert.True(containsMark);
-            }
-
-            listDto = new CharacteristicsListDto(
-                [new CharacteristicDto("Другой Текст", "Другой текст")]
-            );
-
-            dto = new FilterAdvertisementsDto(CharacteristicsSearch: listDto);
-            data = await _repository.Query(dto);
-            Assert.Empty(data);
-
-            listDto = new CharacteristicsListDto([new CharacteristicDto("Модель", "P 50.18 HM")]);
-            dto = new FilterAdvertisementsDto(CharacteristicsSearch: listDto);
-            data = await _repository.Query(dto);
-
-            listDto = new CharacteristicsListDto(
-                [new CharacteristicDto("Тип техники", "Телескопический погрузчик")]
-            );
-            dto = new FilterAdvertisementsDto(CharacteristicsSearch: listDto);
-            data = await _repository.Query(dto);
-
-            listDto = new CharacteristicsListDto([new CharacteristicDto("", "2008")]);
-            dto = new FilterAdvertisementsDto(CharacteristicsSearch: listDto);
-            data = await _repository.Query(dto);
+            PriceRangeDto dto = new PriceRangeDto(3000000, 6000000);
+            FilterAdvertisementsDto filter = new FilterAdvertisementsDto(PriceRange: dto);
+            GetAnalyticsStatsRequest request = new GetAnalyticsStatsRequest(filter);
+            AnalyticsStatsResponse response = await _repository.Query(request, ct);
+            _logger.Information("Analytics: {Analytics}", response);
         }
         catch (Exception ex)
         {
             noExceptions = false;
             _logger.Fatal(
-                "{Test} failed. Error: {Ex}",
-                nameof(Read_With_Characteristics_Set_Test),
+                "{Test} failed. Exception: {Ex}",
+                nameof(Test_Get_Analytics_Items_With_Filter_Sample_1),
                 ex.Message
             );
         }
+
+        Assert.True(noExceptions);
+    }
+
+    [Fact]
+    public async Task Test_Get_Analytics_Items_Without_Filter_Sample_1()
+    {
+        using CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationToken ct = cts.Token;
+        bool noExceptions = true;
+
+        try
+        {
+            GetAnalyticsStatsRequest request = new GetAnalyticsStatsRequest();
+            AnalyticsStatsResponse response = await _repository.Query(request, ct);
+            _logger.Information("Analytics: {Analytics}", response);
+        }
+        catch (Exception ex)
+        {
+            noExceptions = false;
+            _logger.Fatal(
+                "{Test} failed. Exception: {Ex}",
+                nameof(Test_Get_Analytics_Items_Without_Filter_Sample_1),
+                ex.Message
+            );
+        }
+
+        Assert.True(noExceptions);
+    }
+
+    [Fact]
+    public async Task Test_Get_Items_With_Filter_Sample_1()
+    {
+        using CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationToken ct = cts.Token;
+        bool noExceptions = true;
+
+        try
+        {
+            PriceRangeDto dto = new PriceRangeDto(3000000, 6000000);
+            FilterAdvertisementsDto filter = new FilterAdvertisementsDto(PriceRange: dto);
+            GetAnalyticsItemsRequest request = new GetAnalyticsItemsRequest(1, 5, filter);
+            AdvertisementItemResponse[] response = await _repository.Query(request, ct);
+            _logger.Information("Count: {Count}", response.Length);
+        }
+        catch (Exception ex)
+        {
+            noExceptions = false;
+            _logger.Fatal(
+                "{Test} failed. Exception: {Ex}",
+                nameof(Test_Get_Items_With_Filter_Sample_1),
+                ex.Message
+            );
+        }
+
+        Assert.True(noExceptions);
+    }
+
+    [Fact]
+    public async Task Test_Get_Items_Without_Filter_Sample_1()
+    {
+        using CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationToken ct = cts.Token;
+        bool noExceptions = true;
+
+        try
+        {
+            GetAnalyticsItemsRequest request = new GetAnalyticsItemsRequest(1, 5);
+            AdvertisementItemResponse[] response = await _repository.Query(request, ct);
+            _logger.Information("Count: {Count}", response.Length);
+        }
+        catch (Exception ex)
+        {
+            noExceptions = false;
+            _logger.Fatal(
+                "{Test} failed. Exception: {Ex}",
+                nameof(Test_Get_Items_Without_Filter_Sample_1),
+                ex.Message
+            );
+        }
+
+        Assert.True(noExceptions);
+    }
+
+    [Fact]
+    public async Task Test_Get_Items_With_Filter_Sample_1_Asc()
+    {
+        using CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationToken ct = cts.Token;
+        bool noExceptions = true;
+
+        try
+        {
+            PriceRangeDto dto = new PriceRangeDto(3000000, 6000000);
+            FilterAdvertisementsDto filter = new FilterAdvertisementsDto(PriceRange: dto);
+            GetAnalyticsItemsRequest request = new GetAnalyticsItemsRequest(
+                1,
+                5,
+                filter,
+                SortOrder: "ASC"
+            );
+
+            AdvertisementItemResponse[] response = await _repository.Query(request, ct);
+            _logger.Information("Count: {Count}", response.Length);
+            foreach (var item in response)
+            {
+                _logger.Information("{Price}", item.Price.Value);
+            }
+        }
+        catch (Exception ex)
+        {
+            noExceptions = false;
+            _logger.Fatal(
+                "{Test} failed. Exception: {Ex}",
+                nameof(Test_Get_Items_With_Filter_Sample_1),
+                ex.Message
+            );
+        }
+
         Assert.True(noExceptions);
     }
 }

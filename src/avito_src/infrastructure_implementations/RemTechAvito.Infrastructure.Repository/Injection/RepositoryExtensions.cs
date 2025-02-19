@@ -27,19 +27,19 @@ public static class RepositoryExtensions
             TransportAdvertisementsRepository.RegisterIndexes(client).Wait();
             return client;
         });
-        services.AddScoped<
+        services.AddSingleton<
             ITransportAdvertisementsCommandRepository,
             TransportAdvertisementsCommandRepository
         >();
-        services.AddScoped<
+        services.AddSingleton<
             ITransportAdvertisementsQueryRepository,
             TransportAdvertisementsQueryRepository
         >();
-        services.AddScoped<ITransportStatesRepository, TransportStatesRepository>();
-        services.AddScoped<ITransportTypesRepository, TransportTypesRepository>();
-        services.AddScoped<ICustomerStatesRepository, CustomerStatesRepository>();
-        services.AddScoped<ICustomerTypesRepository, CustomerTypesRepository>();
-        services.AddScoped<TransportAdvertisementsQueryResolver>();
+        services.AddSingleton<ITransportStatesRepository, TransportStatesRepository>();
+        services.AddSingleton<ITransportTypesRepository, TransportTypesRepository>();
+        services.AddSingleton<ICustomerStatesRepository, CustomerStatesRepository>();
+        services.AddSingleton<ICustomerTypesRepository, CustomerTypesRepository>();
+        services.AddSingleton<TransportAdvertisementsQueryResolver>();
         services.RegisterTransportAdvertisementQueries();
         return services;
     }
@@ -48,29 +48,29 @@ public static class RepositoryExtensions
         this IServiceCollection services
     )
     {
-        services.AddScoped<
+        services.AddSingleton<
             IMongoFilterQuery<FilterAdvertisementsDto, TransportAdvertisement>,
-            MongoAddressFilterQuery
+            AdvertisementAddressFilterQuery
         >();
-        services.AddScoped<
+        services.AddSingleton<
             IMongoFilterQuery<FilterAdvertisementsDto, TransportAdvertisement>,
-            MongoCharacteristicsSearchQuery
+            AdvertisementTextSearchQuery
         >();
-        services.AddScoped<
+        services.AddSingleton<
             IMongoFilterQuery<FilterAdvertisementsDto, TransportAdvertisement>,
-            MongoDateFilterQuery
+            AdvertisementPriceFilterQuery
         >();
-        services.AddScoped<
+        services.AddSingleton<
             IMongoFilterQuery<FilterAdvertisementsDto, TransportAdvertisement>,
-            MongoDescriptionFilterQuery
+            AdvertisementCharacteristicsFilterQuery
         >();
-        services.AddScoped<
+        services.AddSingleton<
             IMongoFilterQuery<FilterAdvertisementsDto, TransportAdvertisement>,
-            MongoOwnerFilterQuery
+            AdvertisementTextSearchQuery
         >();
-        services.AddScoped<
+        services.AddSingleton<
             IMongoFilterQuery<FilterAdvertisementsDto, TransportAdvertisement>,
-            MongoPriceFilterQuery
+            AdvertisementPriceRangeFilterQuery
         >();
         return services;
     }
