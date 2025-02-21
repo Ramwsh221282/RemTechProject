@@ -4,6 +4,7 @@ import AddIcon from "@mui/icons-material/Add";
 import BallotIcon from '@mui/icons-material/Ballot';
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
 import {Modal, useModal} from "../../../components/Modal.tsx";
+import {NotificationAlert, useNotification} from "../../../components/Notification.tsx";
 
 export type Characteristic = {
     characteristicsName: string;
@@ -20,6 +21,7 @@ export function CharacteristicsBar({onCharacteristicsChange}: CharacteristicsBar
     const createModal = useModal();
     const removeModal = useModal();
     const placeHolder = "Добавить характеристику";
+    const {showNotification, notification, hideNotification} = useNotification();
 
     function confirmDelete(characteristic: Characteristic): void {
         const newCharacteristics = characteristics.filter(ctx =>
@@ -27,6 +29,7 @@ export function CharacteristicsBar({onCharacteristicsChange}: CharacteristicsBar
             ctx.characteristicsValue !== characteristic.characteristicsValue);
         setNewCharacteristics(newCharacteristics);
         onCharacteristicsChange(newCharacteristics);
+        showNotification({severity: "info", message: "Характеристика удалена"});
     }
 
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -42,6 +45,7 @@ export function CharacteristicsBar({onCharacteristicsChange}: CharacteristicsBar
         setNewCharacteristics(newCharacteristics);
         onCharacteristicsChange(newCharacteristics);
         createModal.close();
+        showNotification({severity: "info", message: "Характеристика добавлена"});
     }
 
     return (
@@ -67,6 +71,7 @@ export function CharacteristicsBar({onCharacteristicsChange}: CharacteristicsBar
                 handleOpen={createModal.open}
                 placeHolder={placeHolder}
             />
+            <NotificationAlert notification={notification} hideNotification={hideNotification}/>
         </div>
     );
 }

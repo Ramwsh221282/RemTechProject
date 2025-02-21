@@ -78,8 +78,8 @@ export function FilterBar() {
     return (
         <div
             className="flex flex-col py-3 px-3 bg-amber-950 border-amber-900 border-2 shadow-neutral-800 shadow-md rounded-md text-amber-50 gap-3">
-            <h3 className="text-3xl underline">Фильтры</h3>
-            <form onSubmit={onFilterSubmit} className="flex flex-col py-3 px-3 gap-3">
+            <h3 className="text-2xl underline">Фильтры</h3>
+            <form onSubmit={onFilterSubmit} className="flex flex-col gap-3">
                 <FilterInput type={"text"} fullWidth={true} name={"address-input"} id={"address-input"} label={"Адрес"}
                              variant={"filled"}/>
                 <FilterRow>

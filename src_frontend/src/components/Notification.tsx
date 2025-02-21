@@ -1,35 +1,59 @@
-// function notification() {
-//     return (
-//         <Snackbar open={true} autoHideDuration={5000}>
-//             <Alert severity="info" variant={"filled"} sx={{width: '100%'}}>
-//                 This is information message
-//             </Alert>
-//         </Snackbar>
-//     )
-// }
+import {useCallback, useEffect, useState} from "react";
+import {Alert, Snackbar} from "@mui/material";
 
-// TODO: Implement notifications.
+type NotificationProps = {
+    severity: "info" | "warning" | "error" | "success";
+    message: string;
+    duration?: number;
+};
 
-// type ContainerProps = {
-//     child: () => React.ReactElement;
-// }
-//
-// function Container({child}: ContainerProps) {
-//     return (
-//         <Snackbar open={true} autoHideDuration={5000}>
-//             {child()}  {/* Invoke the child function here */}
-//         </Snackbar>
-//     );
-// }
-//
-// export function InformationNotification(message: string) {
-//     const child = () => (
-//         <Alert severity="info" variant="filled">
-//             {message}
-//         </Alert>
-//     );
-//
-//     return (
-//         <Container child={child}/>  {/* Pass the function directly */}
-// );
-// }
+export function useNotification() {
+    const [notification, setNotification] = useState<NotificationProps | null>(null);
+
+    const hideNotification = useCallback(() => {
+        setNotification(null);
+    }, []);
+
+    useEffect(() => {
+        if (notification) {
+            const timer = setTimeout(() => {
+                setNotification(null);
+            }, notification.duration ?? 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [notification]);
+
+    const showNotification = useCallback(
+        (
+            props: Omit<NotificationProps, "duration">,
+            duration?: number
+        ) => {
+            setNotification({...props, duration: duration ?? 5000});
+        },
+        []
+    );
+
+    return {notification, showNotification, hideNotification};
+}
+
+type NotificationAlertProps = {
+    notification: NotificationProps | null;
+    hideNotification: () => void;
+};
+
+export function NotificationAlert({notification, hideNotification}: NotificationAlertProps) {
+    if (!notification) return null;
+
+    return (
+        <Snackbar
+            open={true}
+            autoHideDuration={notification.duration}
+            onClose={hideNotification}
+            anchorOrigin={{vertical: "bottom", horizontal: "right"}}
+        >
+            <Alert severity={notification.severity} onClose={hideNotification}>
+                {notification.message}
+            </Alert>
+        </Snackbar>
+    );
+}
