@@ -22,7 +22,7 @@ internal sealed class TransportAdvertisementsQueryRepository(
         {
             "ASC" => Builders<TransportAdvertisement>.Sort.Ascending("Price.price_value"),
             "DESC" => Builders<TransportAdvertisement>.Sort.Descending("Price.price_value"),
-            null => null,
+            _ => null,
         };
 
         var filter = resolver.Resolve(query.FilterData);

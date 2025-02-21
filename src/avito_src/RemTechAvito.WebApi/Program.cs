@@ -11,6 +11,14 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+app.UseCors(config =>
+{
+    config
+        .WithOrigins("http://localhost:5174", "http://localhost:5173")
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+});
+
 app.MapControllers();
 if (app.Environment.IsDevelopment())
 {
