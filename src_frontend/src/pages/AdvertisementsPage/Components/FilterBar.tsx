@@ -94,6 +94,7 @@ export function FilterBar() {
                                  variant={"outlined"}/>
                     <div className="order-2 w-full">
                         <Select
+                            size={"small"}
                             name={"price-predicate-input"}
                             fullWidth={true}
                             value={currentFilterState.pricePredicate}
@@ -115,8 +116,8 @@ export function FilterBar() {
                     </div>
                 </FilterRow>
                 <CharacteristicsBar onCharacteristicsChange={onCharacteristicsChange}/>
-                <Button type={"submit"} variant={"contained"}>Применить фильтр</Button>
-                <Button onClick={onFilterClean} variant={"contained"}>Очистить фильтры</Button>
+                <Button size={"small"} type={"submit"} variant={"contained"}>Применить фильтр</Button>
+                <Button size={"small"} onClick={onFilterClean} variant={"contained"}>Очистить фильтры</Button>
             </form>
         </div>
     )

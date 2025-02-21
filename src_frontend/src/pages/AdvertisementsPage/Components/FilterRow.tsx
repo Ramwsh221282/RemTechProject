@@ -25,7 +25,8 @@ type FilterInputProps = {
 export function FilterInput({name, id, label, variant, fullWidth}: FilterInputProps) {
     return (
         <div className="flex flex-row gap-3 w-full">
-            <TextField type={"type"} autoComplete={"off"} name={name} fullWidth={fullWidth ? fullWidth : false} id={id}
+            <TextField size={"small"} type={"type"} autoComplete={"off"} name={name}
+                       fullWidth={fullWidth ? fullWidth : false} id={id}
                        label={label}
                        variant={variant}/>
         </div>

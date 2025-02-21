@@ -80,6 +80,7 @@ type CharacteristicsSelectProps = {
 function CharacteristicsList({characteristics, handleOpen, placeHolder}: CharacteristicsSelectProps) {
     return (
         <Select
+            size={"small"}
             fullWidth={true}
             value={""}
             displayEmpty={true}
