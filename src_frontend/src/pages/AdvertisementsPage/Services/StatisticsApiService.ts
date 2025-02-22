@@ -1,7 +1,8 @@
-import {useCallback, useMemo, useState} from "react";
+import {useCallback, useState} from "react";
 import {Statistics} from "../Types/AdvertisementsPageTypes.ts";
 import axios, {AxiosError} from "axios";
 import {Envelope, getResult} from "../../../app/models/Envelope.ts";
+import {FilterDto} from "./FilterAdvertismentsService.ts";
 
 const statisticsApiUrl: string = "http://localhost:5256/statistics";
 
@@ -9,7 +10,7 @@ export type StatisticsService = {
     error: string
     statistics: Statistics;
     isLoading: boolean;
-    fetchStatistics(): Promise<void>
+    fetchStatistics(filtersDto?: FilterDto | null): Promise<void>
 }
 
 export function useStatisticsService() {
@@ -17,17 +18,18 @@ export function useStatisticsService() {
         minPrice: 0,
         maxPrice: 0,
         averagePrice: 0,
-        count: 0
+        count: 0,
     });
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
 
-    const fetchStatistics = useCallback(async () => {
+    const fetchStatistics = useCallback(async (filtersDto: FilterDto | null = null) => {
+        if (isLoading) return;
         setIsLoading(true);
         try {
-            const response = await axios.get<Envelope<Statistics>>(statisticsApiUrl);
+            const response = await axios.post<Envelope<Statistics>>(statisticsApiUrl, filtersDto);
             if (response.data.error.trim().length > 0) {
-                setError(response.data.error)
+                setError(response.data.error);
                 setIsLoading(false);
                 return;
             }
@@ -40,13 +42,14 @@ export function useStatisticsService() {
             setError(axiosError.message);
             setIsLoading(false);
         }
-    }, [])
+    }, [isLoading]);
 
-    const service: StatisticsService = useMemo(() => ({
-        error: error,
+    const service: StatisticsService = {
+        error,
         statistics: currentStatistics,
-        isLoading: isLoading,
-        fetchStatistics: fetchStatistics
-    }), [currentStatistics, isLoading, error])
+        isLoading,
+        fetchStatistics,
+    };
+
     return service;
 }

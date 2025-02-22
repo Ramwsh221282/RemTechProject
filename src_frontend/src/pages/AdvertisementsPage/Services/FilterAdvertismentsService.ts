@@ -1,6 +1,71 @@
 import {Characteristic} from "../Components/FilterBar/CharacteristicsBar/CharacteristicsBar.tsx";
 import {useCallback, useState} from "react";
 
+export type FilterDto = {
+    characteristics: CharacteristicsListDto | null;
+    address: AddressDto | null;
+    price: PriceFilterDto | null;
+    priceRange: PriceRangeDto | null;
+    text: TextSearchDto | null;
+}
+
+export type CharacteristicsListDto = {
+    characteristics: CharacteristicsDto[];
+}
+
+export type CharacteristicsDto = {
+    name: string;
+    value: string;
+}
+
+export type AddressDto = {
+    text: string;
+}
+
+export type PriceFilterDto = {
+    price: PriceDto;
+    predicate: string;
+}
+
+export type PriceDto = {
+    value: number;
+}
+
+export type PriceRangeDto = {
+    valueMin: number;
+    valueMax: number;
+}
+
+export type TextSearchDto = {
+    text: string;
+}
+
+export function createFilterDto(filter: FilterState): FilterDto {
+    const characteristics: CharacteristicsListDto | null = filter.characteristics.length > 0 ? {
+        characteristics: filter.characteristics.map((ctx): CharacteristicsDto => ({
+            name: ctx.characteristicsName.trim(),
+            value: ctx.characteristicsValue.trim()
+        }))
+    } : null;
+    const address: AddressDto | null = filter.address.trim().length > 0 ? {text: filter.address.trim()} : null;
+    const priceFilter: PriceFilterDto | null = filter.pricePredicate.trim().length > 0 && filter.priceExact > 0 ? {
+        predicate: filter.pricePredicate.trim(),
+        price: {value: filter.priceExact}
+    } : null;
+    const priceRange: PriceRangeDto | null = filter.priceMinRange > 0 && filter.priceMaxRange > 0 ? {
+        valueMax: filter.priceMaxRange,
+        valueMin: filter.priceMinRange
+    } : null;
+    const textSearch: TextSearchDto | null = null;
+    return {
+        characteristics: characteristics,
+        address: address,
+        price: priceFilter,
+        priceRange: priceRange,
+        text: textSearch
+    };
+}
+
 export type FilterService = {
     filter: FilterState;
     error: string;
@@ -71,6 +136,7 @@ export function useAdvertisementsFilterService() {
             characteristics: filters.characteristics
         }));
         setError("");
+        return createFilterDto(filters);
     }, []);
 
     const service: FilterService = {

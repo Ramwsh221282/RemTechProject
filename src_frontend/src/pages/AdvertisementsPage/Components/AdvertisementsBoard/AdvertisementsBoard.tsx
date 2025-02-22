@@ -1,26 +1,18 @@
-import {useAdvertisementsApiService} from "../../Services/AdvertisementsApiService.ts";
+import {AdvertisementsService} from "../../Services/AdvertisementsApiService.ts";
 import {NotificationAlert, useNotification} from "../../../../components/Notification.tsx";
 import {useEffect} from "react";
-import {PaginationService} from "../../Services/PaginationService.ts";
 import {CircularProgress} from "@mui/material";
 import {AdvertisementCardRowProps} from "./AdvertisementCardRow.tsx";
 import {AdvertisementCardCol} from "./AdvertisementCardCol.tsx";
 
-export function AdvertisementsBoard({paginationService}: { paginationService: PaginationService }) {
-    const service = useAdvertisementsApiService();
+export function AdvertisementsBoard({service}: { service: AdvertisementsService }) {
     const notifications = useNotification();
 
     useEffect(() => {
-        service.fetchAdvertisements(paginationService.pagination);
-    }, []);
-
-    if (service.error.trim().length > 0) {
-        notifications.showNotification({severity: "error", message: service.error})
-        return (
-            <NotificationAlert notification={notifications.notification}
-                               hideNotification={notifications.hideNotification}/>
-        )
-    }
+        if (service.error.trim().length > 0) {
+            notifications.showNotification({severity: "error", message: service.error});
+        }
+    }, [service.error]);
 
     if (service.isLoading) {
         return (
@@ -47,6 +39,8 @@ export function AdvertisementsBoard({paginationService}: { paginationService: Pa
         <>
             <div className="flex flex-col gap-3 w-full h-178 overflow-auto">
                 <AdvertisementCardCol rows={rows}/>
+                <NotificationAlert notification={notifications.notification}
+                                   hideNotification={notifications.hideNotification}/>
             </div>
         </>
     )

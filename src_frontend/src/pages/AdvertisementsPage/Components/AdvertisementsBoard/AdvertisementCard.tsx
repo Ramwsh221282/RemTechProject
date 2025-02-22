@@ -39,7 +39,7 @@ export function AdvertisementCard(advertisement: Advertisement) {
                                 color={"error"}><span className="text-sm">Удалить</span>
                         </Button>
                         <Button fullWidth={false} size={"small"} variant={"outlined"}>
-                            <span className="text-sm">Характеристики</span>
+                            <span className="text-sm">Подробнее</span>
                         </Button>
                     </div>
                 </CardContent>
