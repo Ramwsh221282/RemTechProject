@@ -1,83 +1,71 @@
 import {Button, MenuItem, OutlinedInput, Select, SelectChangeEvent} from "@mui/material";
-import {FormEvent, useEffect, useState} from "react";
-import {FilterInput, FilterRow} from "./FilterRow.tsx";
-import {Characteristic, CharacteristicsBar} from "./CharacteristicsBar.tsx";
+import {FormEvent, useEffect} from "react";
+import {FilterRow} from "./FilterRow.tsx";
+import {Characteristic, CharacteristicsBar} from "./CharacteristicsBar/CharacteristicsBar.tsx";
+import {FilterInput} from "./FilterInput.tsx";
+import {FilterService, FilterState} from "../../Services/FilterAdvertismentsService.ts";
+import {NotificationAlert, useNotification} from "../../../../components/Notification.tsx";
 
-type FilterState = {
-    address: string;
-    priceMinRange: number;
-    priceMaxRange: number;
-    priceExact: number;
-    pricePredicate: string;
-    characteristics: Characteristic[];
-}
-
-function createEmptyFilterState(): FilterState {
-    return {
-        address: '',
-        priceMinRange: 0,
-        priceMaxRange: 0,
-        priceExact: 0,
-        pricePredicate: '',
-        characteristics: []
-    }
-}
-
-export function FilterBar() {
+export function FilterBar({filterService}: { filterService: FilterService }) {
     const pricePredicates: string[] = ['Больше', 'Меньше', 'Равно'];
     const placeHolder: string = "Метод сравнения";
-    const [currentFilterState, setCurrentFilterState] = useState<FilterState>(createEmptyFilterState())
+    const notifications = useNotification();
 
     useEffect(() => {
-        console.log(currentFilterState)
-    }, [currentFilterState]);
+        if (filterService.error.trim().length > 0) {
+            notifications.showNotification({severity: "error", message: filterService.error});
+            filterService.clearError();
+        }
+    }, [filterService.error]);
 
     function onCharacteristicsChange(characteristics: Characteristic[]): void {
-        const newFilterState = {...currentFilterState}
-        newFilterState.characteristics = [...characteristics];
-        setCurrentFilterState(newFilterState);
+        const stateCopy: FilterState = {...filterService.filter};
+        stateCopy.characteristics = [...characteristics];
+        filterService.handleSetFilters(stateCopy);
     }
 
     function onPricePredicateChange(event: SelectChangeEvent) {
         const {target: {value}} = event;
         const nextValue = "" + value;
-        const newFilterState = {...currentFilterState}
-        newFilterState.pricePredicate = nextValue;
-        setCurrentFilterState(newFilterState);
-    }
-
-    function initializeFilterStateFromForm(formData: FormData): void {
-        const address = formData.get("address-input") as string;
-        const pricePredicate = formData.get("price-predicate-input") as string;
-        const priceMinRange = Number(formData.get("price-min-input"));
-        const priceMaxRange = Number(formData.get("price-max-input"));
-        const priceExact = Number(formData.get("price-exact-input"));
-
-        const newFilterState = {...currentFilterState}
-        newFilterState.address = address;
-        newFilterState.pricePredicate = pricePredicate;
-        newFilterState.priceMinRange = priceMinRange;
-        newFilterState.priceMaxRange = priceMaxRange;
-        newFilterState.priceExact = priceExact;
-
-        setCurrentFilterState(newFilterState);
+        const stateCopy: FilterState = {...filterService.filter};
+        stateCopy.pricePredicate = nextValue;
+        filterService.handleSetFilters(stateCopy);
+        if (filterService.error.trim().length === 0) {
+            notifications.showNotification({severity: "success", message: `Выбран метод сравнения цены: ${nextValue}`});
+        }
     }
 
     function onFilterSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         event.stopPropagation();
         const formData = new FormData(event.currentTarget);
-        initializeFilterStateFromForm(formData);
+        const address = formData.get("address-input") as string;
+        const pricePredicate = formData.get("price-predicate-input") as string;
+        const priceMinRange = Number(formData.get("price-min-input"));
+        const priceMaxRange = Number(formData.get("price-max-input"));
+        const priceExact = Number(formData.get("price-exact-input"));
+        const stateCopy: FilterState = {...filterService.filter};
+        stateCopy.address = address;
+        stateCopy.pricePredicate = pricePredicate;
+        stateCopy.priceMinRange = priceMinRange;
+        stateCopy.priceMaxRange = priceMaxRange;
+        stateCopy.priceExact = priceExact;
+        filterService.handleSetFilters(stateCopy);
+        if (filterService.error.trim().length === 0) {
+            notifications.showNotification({severity: "success", message: "Фильтры применены"});
+        }
     }
 
     function onFilterClean() {
-        const newState = createEmptyFilterState();
-        setCurrentFilterState(newState);
+        filterService.cleanFilters();
+        if (filterService.error.trim().length === 0) {
+            notifications.showNotification({severity: "success", message: "Фильтры очищены"});
+        }
     }
 
     return (
         <div
-            className="flex flex-col py-3 px-3 bg-amber-950 border-amber-900 border-2 shadow-neutral-800 shadow-md rounded-md text-amber-50 gap-3">
+            className="w-100 flex flex-col py-3 px-3 bg-amber-950 border-amber-900 border-2 shadow-neutral-800 shadow-md rounded-md text-amber-50 gap-3">
             <h3 className="text-2xl underline">Фильтры</h3>
             <form onSubmit={onFilterSubmit} className="flex flex-col gap-3">
                 <FilterInput type={"text"} fullWidth={true} name={"address-input"} id={"address-input"} label={"Адрес"}
@@ -97,7 +85,7 @@ export function FilterBar() {
                             size={"small"}
                             name={"price-predicate-input"}
                             fullWidth={true}
-                            value={currentFilterState.pricePredicate}
+                            value={filterService.filter.pricePredicate}
                             onChange={onPricePredicateChange}
                             displayEmpty={true}
                             renderValue={(selected) => {
@@ -119,6 +107,8 @@ export function FilterBar() {
                 <Button size={"small"} type={"submit"} variant={"contained"}>Применить фильтр</Button>
                 <Button size={"small"} onClick={onFilterClean} variant={"contained"}>Очистить фильтры</Button>
             </form>
+            <NotificationAlert notification={notifications.notification}
+                               hideNotification={notifications.hideNotification}/>
         </div>
     )
 }

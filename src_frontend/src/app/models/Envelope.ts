@@ -3,3 +3,7 @@ export interface Envelope<T> {
     result: T;
     code: number;
 }
+
+export function getResult<T>(envelope: Envelope<T>): T {
+    return envelope.result;
+}
