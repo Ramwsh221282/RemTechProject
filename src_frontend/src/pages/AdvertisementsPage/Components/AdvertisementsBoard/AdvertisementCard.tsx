@@ -3,8 +3,8 @@ import {Button, Card, CardContent, Divider, Typography} from "@mui/material";
 
 export function AdvertisementCard(advertisement: Advertisement) {
     return (
-        <div className="max-h-24 max-w-52">
-            <Card>
+        <div className="max-h-22 max-w-52">
+            <Card sx={{boxShadow: '0 0 5px 1px #000'}}>
                 <CardContent>
                     <Typography fontSize={"medium"} gutterBottom={true}>
                         <span className="line-clamp-3">
@@ -20,11 +20,14 @@ export function AdvertisementCard(advertisement: Advertisement) {
                             {advertisement.price.value}
                         </Typography>
                     </div>
-                    <div className="flex flex-row underline justify-between  gap-5">
-                        <Typography fontSize={"medium"} gutterBottom={true} variant={"h5"} component={"div"}>
+                    <Divider orientation={"horizontal"} flexItem={true}/>
+                    <div className="flex flex-col underline items-center">
+                        <Typography fontSize={"smaller"} noWrap={true} component={"span"}>
                             {"Адрес:"}
                         </Typography>
-                        <Typography fontSize={"medium"} gutterBottom={true} variant={"h5"} component={"div"}>
+                        <Typography fontSize={"medium"} textOverflow={"ellipsis"}
+                                    noWrap={true}
+                                    component={"span"}>
                             {advertisement.address.split(',')[0]}
                         </Typography>
                     </div>

@@ -56,7 +56,7 @@ export function createFilterDto(filter: FilterState): FilterDto {
         valueMax: filter.priceMaxRange,
         valueMin: filter.priceMinRange
     } : null;
-    const textSearch: TextSearchDto | null = null;
+    const textSearch: TextSearchDto | null = filter.textSearch.trim().length > 0 ? {text: filter.textSearch.trim()} : null;
     return {
         characteristics: characteristics,
         address: address,
@@ -81,6 +81,7 @@ export type FilterState = {
     priceExact: number;
     pricePredicate: string;
     characteristics: Characteristic[];
+    textSearch: string;
 }
 
 function createEmptyState(): FilterState {
@@ -91,6 +92,7 @@ function createEmptyState(): FilterState {
         priceExact: 0,
         pricePredicate: '',
         characteristics: [],
+        textSearch: '',
     }
 }
 
@@ -100,7 +102,8 @@ function isFiltersEmpty(filter: FilterState) {
         filter.address.trim().length === 0 &&
         filter.priceMinRange === 0 &&
         filter.priceMaxRange === 0 &&
-        filter.priceExact === 0;
+        filter.priceExact === 0 &&
+        filter.textSearch.trim().length === 0
 }
 
 export function useAdvertisementsFilterService() {

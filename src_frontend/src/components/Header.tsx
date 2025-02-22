@@ -23,10 +23,10 @@ export function Header() {
 
     return (
         <AppBar position="static">
-            <div className="flex flex-row items-center py-2 px-3">
-                <div className="flex flex-row gap-4 py-2 px-3">
-                    <span className="text-3xl">App Name</span>
-                    <div className="flex flex-row gap-4 pl-20 text-2xl">
+            <div className="flex flex-row items-center py-1 px-3">
+                <div className="flex flex-row gap-4">
+                    <span className="text-2xl">App Name</span>
+                    <div className="flex flex-row gap-4 pl-20">
                         {navigationButtons}
                     </div>
                 </div>

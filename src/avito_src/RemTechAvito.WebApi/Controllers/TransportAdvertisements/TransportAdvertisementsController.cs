@@ -11,7 +11,7 @@ public sealed class TransportAdvertisementsController : ApplicationController
     [EndpointDescription("Retreives paginated advertisements. Can be sorted and filtered.")]
     [EndpointSummary("List Advertisements")]
     [EndpointName("Advertisements")]
-    [HttpPost(Name = "Advertisements")]
+    [HttpPost("/advertisements")]
     public async Task<IActionResult> GetAdvertisements(
         [FromServices] ITransportAdvertisementsQueryRepository repository,
         [FromQuery] int page,

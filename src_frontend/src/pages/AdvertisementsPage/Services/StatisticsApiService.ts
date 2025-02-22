@@ -35,7 +35,6 @@ export function useStatisticsService() {
             }
             const statistics = getResult<Statistics>(response.data);
             setCurrentStatistics(statistics);
-            await new Promise(resolve => setTimeout(resolve, 3000));
             setIsLoading(false);
         } catch (error) {
             const axiosError = error as AxiosError;

@@ -4,7 +4,7 @@ import axios, {AxiosError} from "axios";
 import {Envelope, getResult} from "../../../app/models/Envelope.ts";
 import {FilterDto} from "./FilterAdvertismentsService.ts";
 
-const advertisementsApiUrl: string = "http://localhost:5256/TransportAdvertisements";
+const advertisementsApiUrl: string = "http://localhost:5256/advertisements";
 
 export type AdvertisementsService = {
     error: string,
@@ -36,7 +36,6 @@ export function useAdvertisementsApiService() {
             }
             const advertisements = getResult<Advertisement[]>(response.data);
             setCurrentAdvertisements(advertisements);
-            await new Promise(resolve => setTimeout(resolve, 3000));
             setIsLoading(false);
         } catch (error) {
             const axiosError = error as AxiosError;

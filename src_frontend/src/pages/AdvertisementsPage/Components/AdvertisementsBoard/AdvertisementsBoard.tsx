@@ -1,7 +1,6 @@
 import {AdvertisementsService} from "../../Services/AdvertisementsApiService.ts";
 import {NotificationAlert, useNotification} from "../../../../components/Notification.tsx";
 import {useEffect} from "react";
-import {CircularProgress} from "@mui/material";
 import {AdvertisementCardRowProps} from "./AdvertisementCardRow.tsx";
 import {AdvertisementCardCol} from "./AdvertisementCardCol.tsx";
 
@@ -13,15 +12,6 @@ export function AdvertisementsBoard({service}: { service: AdvertisementsService 
             notifications.showNotification({severity: "error", message: service.error});
         }
     }, [service.error]);
-
-    if (service.isLoading) {
-        return (
-            <div className="flex flex-col w-full h-full justify-center items-center m-auto">
-                <CircularProgress size={128}/>
-                <span className="text-2xl">{"Загрузка..."}</span>
-            </div>
-        )
-    }
 
     let rows: AdvertisementCardRowProps[] = [];
     const advertisements = service.advertisements.slice();
@@ -37,7 +27,7 @@ export function AdvertisementsBoard({service}: { service: AdvertisementsService 
 
     return (
         <>
-            <div className="flex flex-col gap-3 w-full h-178 overflow-auto">
+            <div className="h-164">
                 <AdvertisementCardCol rows={rows}/>
                 <NotificationAlert notification={notifications.notification}
                                    hideNotification={notifications.hideNotification}/>
