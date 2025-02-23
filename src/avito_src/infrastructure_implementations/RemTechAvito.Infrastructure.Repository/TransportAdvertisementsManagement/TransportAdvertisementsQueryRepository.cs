@@ -1,6 +1,5 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
-using RemTechAvito.Contracts.Common.Dto.TransportAdvertisementsManagement;
 using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Queries;
@@ -123,7 +122,7 @@ internal static class TransportAdvertisementConvertExtensions
     internal static AdvertisementItemResponse ToResponse(this TransportAdvertisement advertisement)
     {
         AdvertisementItemResponse response = new AdvertisementItemResponse();
-        response.Id = advertisement.EntityId.Id;
+        response.Id = advertisement.TransportAdvertisementId.Id;
         response.AdvertisementId = advertisement.AdvertisementId.Id;
         response.Title = advertisement.Title.Text;
         response.Description = advertisement.Description.Text;

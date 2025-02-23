@@ -12,6 +12,11 @@ public class Envelope
 
 public static class EnvelopeExtensions
 {
+    public static IActionResult ToOkResult(this ControllerBase controller)
+    {
+        return controller.StatusCode(StatusCodes.Status204NoContent);
+    }
+
     public static IActionResult ToOkResult<T>(this ControllerBase contoller, T result)
     {
         Envelope envelope = new Envelope();

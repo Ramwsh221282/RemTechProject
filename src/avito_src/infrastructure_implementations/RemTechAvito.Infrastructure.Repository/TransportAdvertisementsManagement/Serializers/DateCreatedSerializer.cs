@@ -1,5 +1,5 @@
 ﻿using MongoDB.Bson.Serialization;
-using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement.ValueObjects;
+using RemTechAvito.Core.Common.ValueObjects;
 using RemTechCommon.Utils.Converters;
 
 namespace RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Serializers;

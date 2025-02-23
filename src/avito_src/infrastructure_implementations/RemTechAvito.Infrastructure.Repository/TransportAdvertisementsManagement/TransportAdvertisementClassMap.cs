@@ -11,7 +11,7 @@ internal sealed class TransportAdvertisementClassMap : BsonClassMap<TransportAdv
     {
         AutoMap();
         SetIgnoreExtraElements(true);
-        MapIdProperty(x => x.EntityId).SetSerializer(new EntityIdSerializer());
+        MapIdProperty(x => x.TransportAdvertisementId).SetSerializer(new EntityIdSerializer());
         MapMember(x => x.AdvertisementId).SetSerializer(new AdvertisementIDSerializer());
         MapMember(x => x.Characteristics).SetSerializer(new CharacteristicsSerializer());
         MapMember(x => x.Address).SetSerializer(new AddressSerializer());

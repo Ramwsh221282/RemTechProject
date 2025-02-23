@@ -4,18 +4,25 @@ using RemTechAvito.Application.FiltersManagement.CustomerStates.Commands.ParseCu
 using RemTechAvito.Application.FiltersManagement.CustomerTypes.Commands.ParseCustomerTypes;
 using RemTechAvito.Application.FiltersManagement.TransportStates.Commands.ParseTransportStates;
 using RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.ParseTransportTypes;
+using RemTechAvito.Application.ParserProfileManagement.CreateProfile;
+using RemTechAvito.Application.ParserProfileManagement.DeleteProfile;
+using RemTechAvito.Application.ParserProfileManagement.UpdateParserProfileLinks;
 using RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.ParseTransportAdvertisementsCatalogue;
+using RemTechAvito.Contracts.Common.Responses.ParserProfileManagement;
 
 namespace RemTechAvito.Application.Injection;
 
 public static class ApplicationServicesExtensions
 {
-    public static IServiceCollection RegisterApplicationServices(this IServiceCollection services)
+    public static void RegisterApplicationServices(this IServiceCollection services)
     {
-        services.AddScoped<
-            IAvitoCommandHandler<ParseTransportAdvertisementCatalogueCommand>,
-            ParseTransportAdvertisementsCatalogueCommandHandler
-        >();
+        services.RegisterTransportAdvertisementsManagement();
+        services.RegisterFilterManagement();
+        services.RegisterParserProfileManagement();
+    }
+
+    private static void RegisterFilterManagement(this IServiceCollection services)
+    {
         services.AddScoped<
             IAvitoCommandHandler<ParseCustomerStatesCommand>,
             ParseCustomerStatesCommandHandler
@@ -32,6 +39,29 @@ public static class ApplicationServicesExtensions
             IAvitoCommandHandler<ParseTransportTypesCommand>,
             ParseTransportTypesCommandHandler
         >();
-        return services;
+    }
+
+    private static void RegisterTransportAdvertisementsManagement(this IServiceCollection services)
+    {
+        services.AddScoped<
+            IAvitoCommandHandler<ParseTransportAdvertisementCatalogueCommand>,
+            ParseTransportAdvertisementsCatalogueCommandHandler
+        >();
+    }
+
+    private static void RegisterParserProfileManagement(this IServiceCollection services)
+    {
+        services.AddScoped<
+            IAvitoCommandHandler<CreateProfileCommand, ParserProfileResponse>,
+            CreateProfileCommandHandler
+        >();
+        services.AddScoped<
+            IAvitoCommandHandler<UpdateParserProfileLinksCommand>,
+            UpdateParserProfileLinksCommandHandler
+        >();
+        services.AddScoped<
+            IAvitoCommandHandler<DeleteParserProfileCommand>,
+            DeleteParserProfileCommandHandler
+        >();
     }
 }
