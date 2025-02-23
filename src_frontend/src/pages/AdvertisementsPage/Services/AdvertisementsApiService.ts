@@ -27,6 +27,7 @@ export function useAdvertisementsApiService() {
                     params: {
                         page: pagination.page,
                         size: pagination.size,
+                        sort: pagination.sort,
                     },
                 })
             if (response.data.error.trim().length > 0) {

@@ -9,12 +9,13 @@ export type PaginationService = {
 export function usePaginationService(initialPagination: Pagination) {
     const [currentPagination, setCurrentPagination] = useState<Pagination>({
         page: initialPagination.page,
-        size: initialPagination.size
+        size: initialPagination.size,
+        sort: null
     });
 
     const setPagination = useCallback((newPagination: Pagination) => {
         setCurrentPagination((prev) =>
-            ({...prev, page: newPagination.page, size: newPagination.size}));
+            ({...prev, page: newPagination.page, size: newPagination.size, sort: newPagination.sort}));
     }, [])
 
 
@@ -22,7 +23,7 @@ export function usePaginationService(initialPagination: Pagination) {
         pagination: currentPagination,
         setPagination: setPagination
     }), [currentPagination, setPagination]);
-    
+
 
     return service;
 }

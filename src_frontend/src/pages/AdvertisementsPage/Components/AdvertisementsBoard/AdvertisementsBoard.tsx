@@ -13,17 +13,14 @@ export function AdvertisementsBoard({service}: { service: AdvertisementsService 
         }
     }, [service.error]);
 
-    let rows: AdvertisementCardRowProps[] = [];
-    const advertisements = service.advertisements.slice();
-    while (advertisements.length !== 0) {
-        const rowSize = 6;
-        const row: AdvertisementCardRowProps = {cards: []};
-        while (row.cards.length !== rowSize && advertisements.length !== 0) {
-            row.cards.push(advertisements.pop()!)
-        }
-        rows.push(row);
+    const rowSize = 6;
+    const rows: AdvertisementCardRowProps[] = [];
+    const advertisements = service.advertisements;
+
+    for (let i = 0; i < advertisements.length; i += rowSize) {
+        const rowAdvertisements = advertisements.slice(i, i + rowSize);
+        rows.push({cards: rowAdvertisements});
     }
-    rows = rows.reverse();
 
     return (
         <>
@@ -35,14 +32,3 @@ export function AdvertisementsBoard({service}: { service: AdvertisementsService 
         </>
     )
 }
-
-
-
-
-
-
-
-
-
-
-
