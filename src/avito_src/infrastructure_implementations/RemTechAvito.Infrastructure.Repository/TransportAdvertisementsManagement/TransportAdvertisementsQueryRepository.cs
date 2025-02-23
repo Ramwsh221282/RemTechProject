@@ -22,7 +22,7 @@ internal sealed class TransportAdvertisementsQueryRepository(
         {
             "ASC" => Builders<TransportAdvertisement>.Sort.Ascending("Price.price_value"),
             "DESC" => Builders<TransportAdvertisement>.Sort.Descending("Price.price_value"),
-            null => null,
+            _ => null,
         };
 
         var filter = resolver.Resolve(query.FilterData);
@@ -83,6 +83,9 @@ internal sealed class TransportAdvertisementsQueryRepository(
         );
 
         var aggregation = await collection.Aggregate().Match(filter).Facet(facet).ToListAsync(ct);
+        if (aggregation == null)
+            return new AnalyticsStatsResponse(0, 0, 0, 0);
+
         var facetResults = aggregation.FirstOrDefault();
         if (facetResults == null)
             return new AnalyticsStatsResponse(0, 0, 0, 0);
@@ -97,6 +100,9 @@ internal sealed class TransportAdvertisementsQueryRepository(
 
         var documents = aggregates.Output<BsonDocument>();
         if (documents == null)
+            return new AnalyticsStatsResponse(0, 0, 0, 0);
+
+        if (!documents.Any())
             return new AnalyticsStatsResponse(0, 0, 0, 0);
 
         var aggregateDocumentResults = documents.First();

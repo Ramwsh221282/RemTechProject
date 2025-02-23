@@ -27,19 +27,19 @@ public static class RepositoryExtensions
             TransportAdvertisementsRepository.RegisterIndexes(client).Wait();
             return client;
         });
-        services.AddSingleton<
+        services.AddScoped<
             ITransportAdvertisementsCommandRepository,
             TransportAdvertisementsCommandRepository
         >();
-        services.AddSingleton<
+        services.AddScoped<
             ITransportAdvertisementsQueryRepository,
             TransportAdvertisementsQueryRepository
         >();
-        services.AddSingleton<ITransportStatesRepository, TransportStatesRepository>();
-        services.AddSingleton<ITransportTypesRepository, TransportTypesRepository>();
-        services.AddSingleton<ICustomerStatesRepository, CustomerStatesRepository>();
-        services.AddSingleton<ICustomerTypesRepository, CustomerTypesRepository>();
-        services.AddSingleton<TransportAdvertisementsQueryResolver>();
+        services.AddScoped<ITransportStatesRepository, TransportStatesRepository>();
+        services.AddScoped<ITransportTypesRepository, TransportTypesRepository>();
+        services.AddScoped<ICustomerStatesRepository, CustomerStatesRepository>();
+        services.AddScoped<ICustomerTypesRepository, CustomerTypesRepository>();
+        services.AddScoped<TransportAdvertisementsQueryResolver>();
         services.RegisterTransportAdvertisementQueries();
         return services;
     }
@@ -54,7 +54,7 @@ public static class RepositoryExtensions
         >();
         services.AddSingleton<
             IMongoFilterQuery<FilterAdvertisementsDto, TransportAdvertisement>,
-            AdvertisementTextSearchQuery
+            AdvertisementCharacteristicsFilterQuery
         >();
         services.AddSingleton<
             IMongoFilterQuery<FilterAdvertisementsDto, TransportAdvertisement>,
@@ -62,15 +62,11 @@ public static class RepositoryExtensions
         >();
         services.AddSingleton<
             IMongoFilterQuery<FilterAdvertisementsDto, TransportAdvertisement>,
-            AdvertisementCharacteristicsFilterQuery
+            AdvertisementPriceRangeFilterQuery
         >();
         services.AddSingleton<
             IMongoFilterQuery<FilterAdvertisementsDto, TransportAdvertisement>,
             AdvertisementTextSearchQuery
-        >();
-        services.AddSingleton<
-            IMongoFilterQuery<FilterAdvertisementsDto, TransportAdvertisement>,
-            AdvertisementPriceRangeFilterQuery
         >();
         return services;
     }

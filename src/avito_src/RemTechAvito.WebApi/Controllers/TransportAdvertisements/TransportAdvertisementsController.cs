@@ -11,13 +11,13 @@ public sealed class TransportAdvertisementsController : ApplicationController
     [EndpointDescription("Retreives paginated advertisements. Can be sorted and filtered.")]
     [EndpointSummary("List Advertisements")]
     [EndpointName("Advertisements")]
-    [HttpGet(Name = "Advertisements")]
-    public async Task<IActionResult> Get(
+    [HttpPost("/advertisements")]
+    public async Task<IActionResult> GetAdvertisements(
         [FromServices] ITransportAdvertisementsQueryRepository repository,
         [FromQuery] int page,
         [FromQuery] int size,
         [FromQuery] string? sort,
-        [FromQuery] FilterAdvertisementsDto? filters
+        [FromBody] FilterAdvertisementsDto? filters
     )
     {
         if (page == 0 || size == 0)
@@ -34,10 +34,10 @@ public sealed class TransportAdvertisementsController : ApplicationController
     [EndpointDescription("Retreives advertisement aggregation statistics. (Count, Max, Min, Avg).")]
     [EndpointSummary("Advertisement aggregation statistics")]
     [EndpointName("Aggregation statistics")]
-    [HttpGet("/statistics")]
-    public async Task<IActionResult> Get(
+    [HttpPost("/statistics")]
+    public async Task<IActionResult> GetStatistics(
         [FromServices] ITransportAdvertisementsQueryRepository repository,
-        [FromQuery] FilterAdvertisementsDto filters
+        [FromBody] FilterAdvertisementsDto? filters
     )
     {
         GetAnalyticsStatsRequest request = new GetAnalyticsStatsRequest(filters);
