@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Bson;
 using MongoDB.Driver;
+using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
 using RemTechAvito.Infrastructure.Repository.Specifications;
 
 namespace RemTechAvito.Infrastructure.Repository.Common.Queries;
@@ -9,10 +11,7 @@ public abstract class QueryResolver<TDto, TEntity>
     private readonly List<FilterDefinition<TEntity>> _filters = [];
     private readonly IServiceScopeFactory _factory;
 
-    protected QueryResolver(IServiceScopeFactory factory)
-    {
-        _factory = factory;
-    }
+    protected QueryResolver(IServiceScopeFactory factory) => _factory = factory;
 
     public FilterDefinition<TEntity> Resolve(TDto? dto)
     {

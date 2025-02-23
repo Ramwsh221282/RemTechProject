@@ -5,10 +5,7 @@ import {FilterService} from "../Services/FilterAdvertismentsService.ts";
 
 
 // TODO Fix Search Bar.
-export function AdvertisementsTextSearchBar({service, textSearchTurn}: {
-    service: FilterService,
-    textSearchTurn: () => void;
-}) {
+export function AdvertisementsTextSearchBar({service}: { service: FilterService }) {
     const [text, setText] = useState("");
 
     // @ts-ignore
@@ -16,6 +13,7 @@ export function AdvertisementsTextSearchBar({service, textSearchTurn}: {
         if (event.key === "Enter") {
             const copy = {...service.filter}
             copy.textSearch = text;
+            service.handleSetFilters(copy);
         }
     }
 
@@ -26,6 +24,7 @@ export function AdvertisementsTextSearchBar({service, textSearchTurn}: {
     function onSearchPress(): void {
         const copy = {...service.filter}
         copy.textSearch = text;
+        service.handleSetFilters(copy);
     }
 
 

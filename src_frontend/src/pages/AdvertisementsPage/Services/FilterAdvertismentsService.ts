@@ -1,5 +1,5 @@
 import {Characteristic} from "../Components/FilterBar/CharacteristicsBar/CharacteristicsBar.tsx";
-import {useCallback, useState} from "react";
+import {useCallback, useMemo, useState} from "react";
 
 export type FilterDto = {
     characteristics: CharacteristicsListDto | null;
@@ -112,21 +112,43 @@ export function useAdvertisementsFilterService() {
 
     const cleanFilters = useCallback(() => {
         if (isFiltersEmpty(filter)) {
-            setError("Фильтры уже очищены");
+            setError((prev) => {
+                prev = "Фильтры уже очищены";
+                return prev;
+            });
             return;
         }
-        setFilter({...createEmptyState()});
-        setError("");
+        const emptyState = createEmptyState();
+        setFilter((prev) => ({
+            ...prev,
+            address: emptyState.address,
+            pricePredicate: emptyState.pricePredicate,
+            priceExact: emptyState.priceExact,
+            priceMinRange: emptyState.priceMinRange,
+            priceMaxRange: emptyState.priceMaxRange,
+            textSearch: emptyState.textSearch,
+            characteristics: emptyState.characteristics
+        }));
+        setError((prev) => {
+            prev = "";
+            return prev;
+        });
     }, [filter]);
 
     const clearError = useCallback(() => {
-        setError("");
+        setError((prev) => {
+            prev = "";
+            return prev;
+        });
     }, []);
 
     const handleSetFilters = useCallback((filters: FilterState) => {
         const isEmpty: boolean = isFiltersEmpty(filters);
         if (isEmpty) {
-            setError("Фильтры пустые");
+            setError((prev) => {
+                prev = "Фильтры пустые";
+                return prev;
+            });
             return;
         }
         setFilter((prev) => ({
@@ -136,19 +158,23 @@ export function useAdvertisementsFilterService() {
             priceMaxRange: filters.priceMaxRange,
             priceExact: filters.priceExact,
             pricePredicate: filters.pricePredicate,
-            characteristics: filters.characteristics
+            characteristics: filters.characteristics,
+            textSearch: filters.textSearch,
         }));
-        setError("");
+        setError((prev) => {
+            prev = "";
+            return prev;
+        });
         return createFilterDto(filters);
     }, []);
 
-    const service: FilterService = {
+    const service: FilterService = useMemo(() => ({
         filter: filter,
         error: error,
         handleSetFilters: handleSetFilters,
         cleanFilters: cleanFilters,
         clearError: clearError,
-    }
+    }), [filter, error, handleSetFilters, cleanFilters, clearError])
 
     return service;
 }

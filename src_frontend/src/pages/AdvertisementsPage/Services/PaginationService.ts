@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useCallback, useMemo, useState} from "react";
 import {Pagination} from "../Types/AdvertisementsPageTypes.ts";
 
 export type PaginationService = {
@@ -12,10 +12,17 @@ export function usePaginationService(initialPagination: Pagination) {
         size: initialPagination.size
     });
 
-    function setPagination(newPagination: Pagination) {
-        setCurrentPagination((prev) => ({...prev, ...newPagination}));
-    }
+    const setPagination = useCallback((newPagination: Pagination) => {
+        setCurrentPagination((prev) =>
+            ({...prev, page: newPagination.page, size: newPagination.size}));
+    }, [])
 
-    const service: PaginationService = {pagination: currentPagination, setPagination: setPagination}
+
+    const service: PaginationService = useMemo(() => ({
+        pagination: currentPagination,
+        setPagination: setPagination
+    }), [currentPagination, setPagination]);
+    
+
     return service;
 }

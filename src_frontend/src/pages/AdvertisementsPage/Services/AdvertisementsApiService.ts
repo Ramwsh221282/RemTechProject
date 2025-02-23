@@ -1,6 +1,6 @@
-import {useCallback, useState} from "react";
+import {useCallback, useMemo, useState} from "react";
 import {Advertisement, Pagination} from "../Types/AdvertisementsPageTypes.ts";
-import axios, {AxiosError} from "axios";
+import axios from "axios";
 import {Envelope, getResult} from "../../../app/models/Envelope.ts";
 import {FilterDto} from "./FilterAdvertismentsService.ts";
 
@@ -38,20 +38,20 @@ export function useAdvertisementsApiService() {
             setCurrentAdvertisements(advertisements);
             setIsLoading(false);
         } catch (error) {
-            const axiosError = error as AxiosError;
-            // @ts-ignore
-            const message = axiosError.response!.data["error"]! as string;
-            setError(message);
+            setError((prev) => {
+                prev = "Что-то пошло не так";
+                return prev;
+            });
             setIsLoading(false);
         }
     }, [isLoading])
 
-    const service: AdvertisementsService = {
+    const service: AdvertisementsService = useMemo(() => ({
         error: error,
         isLoading: isLoading,
         advertisements: currentAdvertisements,
         fetchAdvertisements: fetchAdvertisements
-    }
+    }), [currentAdvertisements, fetchAdvertisements, isLoading, error])
 
     return service;
 }
