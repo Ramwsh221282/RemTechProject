@@ -5,6 +5,7 @@ using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechAvito.Infrastructure.Repository.CustomerStatesFilterManagement;
 using RemTechAvito.Infrastructure.Repository.CustomerTypesFilterManagement;
+using RemTechAvito.Infrastructure.Repository.ParserProfileManagement;
 using RemTechAvito.Infrastructure.Repository.Specifications;
 using RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement;
 using RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Queries;
@@ -19,6 +20,7 @@ public static class RepositoryExtensions
     {
         TransportAdvertisementsRepository.RegisterSerializers();
         TransportAdvertisementsRepository.RegisterBsonClassMap();
+        ParserProfileMetadata.RegisterParserProfileMetadata();
         services.AddSingleton<MongoDbOptions>();
         services.AddSingleton<MongoClient>(p =>
         {
@@ -39,7 +41,9 @@ public static class RepositoryExtensions
         services.AddScoped<ITransportTypesRepository, TransportTypesRepository>();
         services.AddScoped<ICustomerStatesRepository, CustomerStatesRepository>();
         services.AddScoped<ICustomerTypesRepository, CustomerTypesRepository>();
+        services.AddScoped<IParserProfileCommandRepository, ParserProfileCommandRepository>();
         services.AddScoped<TransportAdvertisementsQueryResolver>();
+        services.AddScoped<IParserProfileReadRepository, ParserProfileReadRepository>();
         services.RegisterTransportAdvertisementQueries();
         return services;
     }

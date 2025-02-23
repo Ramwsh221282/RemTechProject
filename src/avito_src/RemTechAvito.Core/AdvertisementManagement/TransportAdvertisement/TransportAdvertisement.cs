@@ -1,12 +1,13 @@
 ﻿using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement.ValueObjects;
 using RemTechAvito.Core.Common.ValueObjects;
+using RemTechCommon.Utils.Extensions;
 
 namespace RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
 
 public sealed class TransportAdvertisement
 {
     public AdvertisementID AdvertisementId { get; private set; }
-    public EntityID EntityId { get; private set; }
+    public TransportAdvertisementID TransportAdvertisementId { get; private set; }
     public Characteristics Characteristics { get; private set; }
     public Address Address { get; private set; }
     public OwnerInformation OwnerInformation { get; private set; }
@@ -31,7 +32,7 @@ public sealed class TransportAdvertisement
     )
     {
         AdvertisementId = advertisementId;
-        EntityId = EntityID.New();
+        TransportAdvertisementId = new TransportAdvertisementID(GuidUtils.New());
         Characteristics = characteristics;
         Address = address;
         OwnerInformation = ownerInformation;

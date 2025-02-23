@@ -38,9 +38,9 @@ internal sealed class TransportAdvertisementsCommandRepository
             _logger.Information(
                 "{Repository} inserted advertisement ({Id})",
                 nameof(TransportAdvertisementsCommandRepository),
-                advertisement.EntityId.Id
+                advertisement.TransportAdvertisementId.Id
             );
-            return advertisement.EntityId.Id;
+            return advertisement.TransportAdvertisementId.Id;
         }
         catch (Exception ex)
         {

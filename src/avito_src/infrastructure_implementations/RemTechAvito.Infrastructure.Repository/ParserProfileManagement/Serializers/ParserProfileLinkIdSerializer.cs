@@ -1,10 +1,9 @@
 ﻿using MongoDB.Bson.Serialization;
-using RemTechAvito.Core.Common.ValueObjects;
-using RemTechCommon.Utils.Extensions;
+using RemTechAvito.Core.ParserProfileManagement.Entities.ParserProfileLinks.ValueObjects;
 
-namespace RemTechAvito.Infrastructure.Repository.Common.Serializers;
+namespace RemTechAvito.Infrastructure.Repository.ParserProfileManagement.Serializers;
 
-internal sealed class EntityIdSerializer : IBsonSerializer<TransportAdvertisementID>
+internal sealed class ParserProfileLinkIdSerializer : IBsonSerializer<ParserProfileLinkId>
 {
     object IBsonSerializer.Deserialize(
         BsonDeserializationContext context,
@@ -17,21 +16,21 @@ internal sealed class EntityIdSerializer : IBsonSerializer<TransportAdvertisemen
     public void Serialize(
         BsonSerializationContext context,
         BsonSerializationArgs args,
-        TransportAdvertisementID value
+        ParserProfileLinkId value
     )
     {
         var writer = context.Writer;
         writer.WriteGuid(value.Id);
     }
 
-    public TransportAdvertisementID Deserialize(
+    public ParserProfileLinkId Deserialize(
         BsonDeserializationContext context,
         BsonDeserializationArgs args
     )
     {
         var reader = context.Reader;
         Guid id = reader.ReadGuid();
-        return new TransportAdvertisementID(GuidUtils.Existing(id));
+        return new ParserProfileLinkId(id);
     }
 
     public void Serialize(
@@ -40,8 +39,8 @@ internal sealed class EntityIdSerializer : IBsonSerializer<TransportAdvertisemen
         object value
     )
     {
-        Serialize(context, args, (TransportAdvertisementID)value);
+        Serialize(context, args, (ParserProfileLinkId)value);
     }
 
-    public Type ValueType => typeof(TransportAdvertisementID);
+    public Type ValueType => typeof(ParserProfileLinkId);
 }
