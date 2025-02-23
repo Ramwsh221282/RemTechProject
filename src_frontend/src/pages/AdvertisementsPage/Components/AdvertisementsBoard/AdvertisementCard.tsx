@@ -1,7 +1,11 @@
+import {useModal} from "../../../../components/Modal.tsx";
 import {Advertisement} from "../../Types/AdvertisementsPageTypes.ts";
 import {Button, Card, CardContent, Divider, Typography} from "@mui/material";
+import {AdvertisementCardModal} from "./AdvertisementCardModal.tsx";
 
 export function AdvertisementCard(advertisement: Advertisement) {
+    const modal = useModal();
+
     return (
         <div className="max-h-22 max-w-52">
             <Card sx={{boxShadow: '0 0 5px 1px #000'}}>
@@ -41,12 +45,13 @@ export function AdvertisementCard(advertisement: Advertisement) {
                         <Button fullWidth={false} size={"small"} variant={"outlined"}
                                 color={"error"}><span className="text-sm">Удалить</span>
                         </Button>
-                        <Button fullWidth={false} size={"small"} variant={"outlined"}>
+                        <Button fullWidth={false} onClick={modal.open} size={"small"} variant={"outlined"}>
                             <span className="text-sm">Подробнее</span>
                         </Button>
                     </div>
                 </CardContent>
             </Card>
+            <AdvertisementCardModal isOpen={modal.isOpen} handleClose={modal.close} card={advertisement}/>
         </div>
     )
 }
