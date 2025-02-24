@@ -33,8 +33,6 @@ internal static class TransportAdvertisementsRepository
         BsonSerializer.RegisterSerializer(new AdvertisementUrlSerializer());
         BsonSerializer.RegisterSerializer(new CustomerStateSerializer());
         BsonSerializer.RegisterSerializer(new CustomerTypeSerializer());
-        BsonSerializer.RegisterSerializer(new TransportStateSerializer());
-        BsonSerializer.RegisterSerializer(new TransportTypeSerializer());
     }
 
     public static void RegisterBsonClassMap()
@@ -43,7 +41,6 @@ internal static class TransportAdvertisementsRepository
         BsonClassMap.RegisterClassMap(new CustomerStatesBsonClassMap());
         BsonClassMap.RegisterClassMap(new CustomerTypesBsonClassMap());
         BsonClassMap.RegisterClassMap(new TransportStatesBsonClassMap());
-        BsonClassMap.RegisterClassMap(new TransportTypesBsonClassMap());
     }
 
     public static async Task RegisterIndexes(MongoClient client, CancellationToken ct = default)

@@ -4,11 +4,11 @@ using RemTechAvito.Infrastructure.Repository.ParserProfileManagement.Serializers
 
 namespace RemTechAvito.Infrastructure.Repository.ParserProfileManagement;
 
-internal sealed class ParserProfileMetadata
+internal static class ParserProfileMetadata
 {
     internal const string CollectionName = "parser_profile";
 
-    public static void RegisterParserProfileMetadata()
+    public static void RegisterMetadata()
     {
         RegisterSerializers();
         RegisterClassMaps();

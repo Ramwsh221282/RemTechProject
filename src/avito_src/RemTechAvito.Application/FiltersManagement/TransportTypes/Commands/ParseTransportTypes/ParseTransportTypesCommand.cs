@@ -11,7 +11,7 @@ public sealed record ParseTransportTypesCommand : IAvitoCommand;
 
 internal sealed class ParseTransportTypesCommandHandler(
     ITransportTypesParser parser,
-    ITransportTypesRepository repository,
+    ITransportTypesCommandRepository commandRepository,
     ILogger logger
 ) : IAvitoCommandHandler<ParseTransportTypesCommand>
 {
@@ -22,8 +22,8 @@ internal sealed class ParseTransportTypesCommandHandler(
     {
         logger.Information("{Command} invoked.", nameof(ParseTransportTypesCommand));
 
-        IAsyncEnumerable<Result<TransportType>> types = parser.Parse(ct);
-        int count = 0;
+        var types = parser.Parse(ct);
+        var count = 0;
         await foreach (var type in types)
         {
             if (type.IsFailure)
@@ -36,7 +36,7 @@ internal sealed class ParseTransportTypesCommandHandler(
                 continue;
             }
 
-            Result saving = await repository.Add(type);
+            var saving = await commandRepository.Add(type);
             if (saving.IsFailure)
                 continue;
             count++;

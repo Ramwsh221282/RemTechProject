@@ -8,29 +8,34 @@ using Exception = System.Exception;
 
 namespace RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement;
 
-internal sealed class TransportTypesRepository(MongoClient client, ILogger logger)
-    : ITransportTypesRepository
+internal sealed class TransportTypesCommandCommandRepository(MongoClient client, ILogger logger)
+    : ITransportTypesCommandRepository
 {
-    private const string CollectionName = "Transport_Types";
-
     public async Task<Result> Add(TransportType type, CancellationToken ct = default)
     {
         try
         {
             var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
-            await db.CreateCollectionAsync(CollectionName, cancellationToken: ct);
-            var dbCollection = db.GetCollection<TransportType>(CollectionName);
+            await db.CreateCollectionAsync(
+                TransportTypesMetadata.Collection,
+                cancellationToken: ct
+            );
+            var dbCollection = db.GetCollection<TransportType>(TransportTypesMetadata.Collection);
             await dbCollection.InsertOneAsync(type, cancellationToken: ct);
-            logger.Information("{Class} saved {Type}", nameof(TransportTypesRepository), type);
+            logger.Information(
+                "{Class} saved {Type}",
+                nameof(TransportTypesCommandCommandRepository),
+                type
+            );
             return Result.Success();
         }
         catch (Exception ex)
         {
             logger.Fatal(
-                "{Class} cannot save {Type} exception: {Ex}",
-                nameof(TransportTypesRepository),
-                nameof(type),
-                ex.Message
+                "{Class} exception {Ex} on method {Method}",
+                nameof(TransportTypesCommandCommandRepository),
+                ex.Message,
+                nameof(Add)
             );
             return new Error("Unable to save transport type collection. Internal error.");
         }
