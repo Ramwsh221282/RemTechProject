@@ -2,7 +2,7 @@ import {Button, OutlinedInput, Select} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import {Characteristic} from "./CharacteristicsBar.tsx";
 import {CharacteristicComponent} from "./CharacteristicComponent.tsx";
-import {useVisibility} from "../../../../../common/hooks/VisibilityHook.ts";
+import {useVisibility} from "../../../../../common/Hooks/VisibilityHook.ts";
 
 type CharacteristicsSelectProps = {
     characteristics: Characteristic[],
