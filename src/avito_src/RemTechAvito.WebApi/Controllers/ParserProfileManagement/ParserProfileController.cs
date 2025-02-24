@@ -23,6 +23,7 @@ public sealed class ParserProfileController : ApplicationController
         CancellationToken ct = default
     )
     {
+        Console.WriteLine();
         CreateProfileCommand command = new CreateProfileCommand();
         Result<ParserProfileResponse> result = await handler.Handle(command, ct);
         return result.IsSuccess
