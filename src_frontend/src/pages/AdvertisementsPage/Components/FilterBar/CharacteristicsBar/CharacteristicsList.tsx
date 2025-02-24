@@ -2,26 +2,26 @@ import {Button, OutlinedInput, Select} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import {Characteristic} from "./CharacteristicsBar.tsx";
 import {CharacteristicComponent} from "./CharacteristicComponent.tsx";
+import {useVisibility} from "../../../../../common/hooks/VisibilityHook.ts";
 
 type CharacteristicsSelectProps = {
     characteristics: Characteristic[],
     handleOpen: () => void,
     placeHolder: string,
-    visibility: boolean;
-    onVisibilityChange: () => void;
 }
 
 export function CharacteristicsList({
                                         characteristics,
                                         handleOpen,
                                         placeHolder,
-                                        visibility,
-                                        onVisibilityChange
                                     }: CharacteristicsSelectProps) {
+
+    const visibility = useVisibility(false);
+
     return (
         <Select
-            onClick={onVisibilityChange}
-            open={visibility}
+            onClick={visibility.toggleVisibility}
+            open={visibility.visible}
             size={"small"}
             fullWidth={true}
             value={""}
