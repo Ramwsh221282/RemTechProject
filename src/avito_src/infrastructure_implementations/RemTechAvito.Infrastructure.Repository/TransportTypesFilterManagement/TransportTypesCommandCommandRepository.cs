@@ -11,22 +11,29 @@ namespace RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement;
 internal sealed class TransportTypesCommandCommandRepository(MongoClient client, ILogger logger)
     : ITransportTypesCommandRepository
 {
-    public async Task<Result> Add(TransportType type, CancellationToken ct = default)
+    public async Task<Result> Add(IEnumerable<TransportType> types, CancellationToken ct = default)
     {
         try
         {
             var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
-            await db.CreateCollectionAsync(
-                TransportTypesMetadata.Collection,
-                cancellationToken: ct
-            );
+
             var dbCollection = db.GetCollection<TransportType>(TransportTypesMetadata.Collection);
-            await dbCollection.InsertOneAsync(type, cancellationToken: ct);
+            if (dbCollection != null)
+            {
+                await db.DropCollectionAsync(TransportTypesMetadata.Collection, ct);
+                await db.CreateCollectionAsync(
+                    TransportTypesMetadata.Collection,
+                    cancellationToken: ct
+                );
+            }
+
+            dbCollection = db.GetCollection<TransportType>(TransportTypesMetadata.Collection);
+            await dbCollection.InsertManyAsync(types, cancellationToken: ct);
             logger.Information(
-                "{Class} saved {Type}",
-                nameof(TransportTypesCommandCommandRepository),
-                type
+                "{Class} saved transport types",
+                nameof(TransportTypesCommandCommandRepository)
             );
+            await TransportTypesMetadata.RegisterIndexes(client);
             return Result.Success();
         }
         catch (Exception ex)

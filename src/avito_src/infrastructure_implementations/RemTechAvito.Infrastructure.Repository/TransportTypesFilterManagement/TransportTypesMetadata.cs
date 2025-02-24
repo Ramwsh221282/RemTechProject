@@ -12,11 +12,10 @@ internal static class TransportTypesMetadata
 {
     internal const string Collection = "Transport_Types";
 
-    public static async Task RegisterMetadata(MongoClient client)
+    public static void RegisterMetadata()
     {
         RegisterSerializers();
         RegisterClassMaps();
-        await RegisterIndexes(client);
     }
 
     private static void RegisterSerializers()
@@ -31,7 +30,7 @@ internal static class TransportTypesMetadata
         BsonClassMap.RegisterClassMap(new TransportTypesBsonClassMap());
     }
 
-    private static async Task RegisterIndexes(MongoClient client)
+    public static async Task RegisterIndexes(MongoClient client)
     {
         try
         {

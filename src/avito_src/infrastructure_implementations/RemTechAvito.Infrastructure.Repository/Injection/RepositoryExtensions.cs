@@ -21,13 +21,13 @@ public static class RepositoryExtensions
         TransportAdvertisementsRepository.RegisterSerializers();
         TransportAdvertisementsRepository.RegisterBsonClassMap();
         ParserProfileMetadata.RegisterMetadata();
+        TransportTypesMetadata.RegisterMetadata();
         services.AddSingleton<MongoDbOptions>();
         services.AddSingleton<MongoClient>(p =>
         {
             var options = p.GetRequiredService<MongoDbOptions>();
             var client = new MongoClient(options.ConnectionString);
             TransportAdvertisementsRepository.RegisterIndexes(client).Wait();
-            TransportTypesMetadata.RegisterMetadata(client).Wait();
             return client;
         });
         services.AddScoped<
