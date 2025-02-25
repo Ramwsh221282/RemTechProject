@@ -1,7 +1,7 @@
 import {useCallback, useMemo, useState} from "react";
 import {Statistics} from "../Types/AdvertisementsPageTypes.ts";
 import axios from "axios";
-import {Envelope, getResult} from "../../../app/models/Envelope.ts";
+import {Envelope, getResult} from "../../../common/Types/Envelope.ts";
 import {FilterDto} from "./FilterAdvertismentsService.ts";
 
 const statisticsApiUrl: string = "http://localhost:5256/statistics";

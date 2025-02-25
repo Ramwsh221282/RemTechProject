@@ -1,5 +1,5 @@
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import {Fab, TextField} from "@mui/material";
+import {Fab, Grow, TextField} from "@mui/material";
 import {ChangeEvent, useState} from "react";
 import {FilterService} from "../Services/FilterAdvertismentsService.ts";
 
@@ -29,20 +29,22 @@ export function AdvertisementsTextSearchBar({service}: { service: FilterService 
 
 
     return (
-        <div className="inline-flex flex-row gap-1 bg-amber-950 py-2 px-1 rounded-md items-center">
-            <TextField
-                value={text}
-                onChange={onChange}
-                onKeyDown={onEnterPress}
-                autoComplete={"off"}
-                size={"small"}
-                fullWidth={true}
-                label={"Текстовый поиск"}
-                variant={"outlined"}>
-            </TextField>
-            <Fab size={"small"} onClick={onSearchPress}>
-                <SearchOutlinedIcon fontSize={"small"}/>
-            </Fab>
-        </div>
+        <Grow in={true} timeout={500}>
+            <div className="inline-flex flex-row gap-1 bg-amber-950 py-2 px-1 rounded-md items-center">
+                <TextField
+                    value={text}
+                    onChange={onChange}
+                    onKeyDown={onEnterPress}
+                    autoComplete={"off"}
+                    size={"small"}
+                    fullWidth={true}
+                    label={"Текстовый поиск"}
+                    variant={"outlined"}>
+                </TextField>
+                <Fab size={"small"} onClick={onSearchPress}>
+                    <SearchOutlinedIcon fontSize={"small"}/>
+                </Fab>
+            </div>
+        </Grow>
     )
 }

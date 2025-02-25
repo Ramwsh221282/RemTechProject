@@ -1,4 +1,5 @@
 ﻿using RemTechAvito.Application.Abstractions.Handlers;
+using RemTechAvito.Contracts.Common.Responses.TransportTypesManagement;
 using RemTechAvito.Core.FiltersManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
 using RemTechAvito.Infrastructure.Contracts.Repository;
@@ -7,23 +8,23 @@ using Serilog;
 
 namespace RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.ParseTransportTypes;
 
-public sealed record ParseTransportTypesCommand : IAvitoCommand;
+public sealed record ParseTransportTypesCommand : IAvitoCommand<TransportTypeResponse>;
 
 internal sealed class ParseTransportTypesCommandHandler(
     ITransportTypesParser parser,
-    ITransportTypesRepository repository,
+    ITransportTypesCommandRepository repository,
     ILogger logger
-) : IAvitoCommandHandler<ParseTransportTypesCommand>
+) : IAvitoCommandHandler<ParseTransportTypesCommand, TransportTypeResponse>
 {
-    public async Task<Result> Handle(
+    public async Task<Result<TransportTypeResponse>> Handle(
         ParseTransportTypesCommand command,
         CancellationToken ct = default
     )
     {
         logger.Information("{Command} invoked.", nameof(ParseTransportTypesCommand));
 
-        IAsyncEnumerable<Result<TransportType>> types = parser.Parse(ct);
-        int count = 0;
+        var types = parser.Parse(ct);
+        List<TransportType> results = [];
         await foreach (var type in types)
         {
             if (type.IsFailure)
@@ -36,18 +37,20 @@ internal sealed class ParseTransportTypesCommandHandler(
                 continue;
             }
 
-            Result saving = await repository.Add(type);
-            if (saving.IsFailure)
-                continue;
-            count++;
+            results.Add(type);
         }
+
+        var insertion = await repository.Add(results, ct);
+        if (insertion.IsFailure)
+            return insertion.Error;
 
         logger.Information(
             "{Command} parsing completed. Parsed results: {Count}.",
             nameof(ParseTransportTypesCommand),
-            count
+            results.Count
         );
 
-        return Result.Success();
+        var items = results.Select(t => new TransportTypeDto(t.Name, t.Link));
+        return new TransportTypeResponse(items, results.Count);
     }
 }

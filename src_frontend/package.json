@@ -17,6 +17,7 @@
     "@reduxjs/toolkit": "^2.5.1",
     "@tailwindcss/cli": "^4.0.7",
     "@tailwindcss/vite": "^4.0.7",
+    "@toolpad/core": "^0.12.0",
     "@types/react-redux": "^7.1.34",
     "axios": "^1.7.9",
     "react": "^19.0.0",

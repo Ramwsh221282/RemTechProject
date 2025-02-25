@@ -20,12 +20,13 @@ public static class RepositoryExtensions
     {
         TransportAdvertisementsRepository.RegisterSerializers();
         TransportAdvertisementsRepository.RegisterBsonClassMap();
-        ParserProfileMetadata.RegisterParserProfileMetadata();
+        ParserProfileMetadata.RegisterMetadata();
+        TransportTypesMetadata.RegisterMetadata();
         services.AddSingleton<MongoDbOptions>();
         services.AddSingleton<MongoClient>(p =>
         {
-            MongoDbOptions options = p.GetRequiredService<MongoDbOptions>();
-            MongoClient client = new MongoClient(options.ConnectionString);
+            var options = p.GetRequiredService<MongoDbOptions>();
+            var client = new MongoClient(options.ConnectionString);
             TransportAdvertisementsRepository.RegisterIndexes(client).Wait();
             return client;
         });
@@ -38,7 +39,11 @@ public static class RepositoryExtensions
             TransportAdvertisementsQueryRepository
         >();
         services.AddScoped<ITransportStatesRepository, TransportStatesRepository>();
-        services.AddScoped<ITransportTypesRepository, TransportTypesRepository>();
+        services.AddScoped<
+            ITransportTypesCommandRepository,
+            TransportTypesCommandCommandRepository
+        >();
+        services.AddScoped<ITransportTypesQueryRepository, TransportTypesQueryRepository>();
         services.AddScoped<ICustomerStatesRepository, CustomerStatesRepository>();
         services.AddScoped<ICustomerTypesRepository, CustomerTypesRepository>();
         services.AddScoped<IParserProfileCommandRepository, ParserProfileCommandRepository>();

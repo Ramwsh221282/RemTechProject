@@ -8,7 +8,6 @@ using RemTechAvito.Contracts.Common.Dto.ParserProfileManagement;
 using RemTechAvito.Contracts.Common.Responses.ParserProfileManagement;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechAvito.WebApi.Responses;
-using RemTechCommon.Utils.ResultPattern;
 
 namespace RemTechAvito.WebApi.Controllers.ParserProfileManagement;
 
@@ -24,8 +23,8 @@ public sealed class ParserProfileController : ApplicationController
     )
     {
         Console.WriteLine();
-        CreateProfileCommand command = new CreateProfileCommand();
-        Result<ParserProfileResponse> result = await handler.Handle(command, ct);
+        var command = new CreateProfileCommand();
+        var result = await handler.Handle(command, ct);
         return result.IsSuccess
             ? this.ToOkResult(result.Value)
             : this.ToErrorResult(HttpStatusCode.BadRequest, result.Error.Description);
@@ -37,12 +36,12 @@ public sealed class ParserProfileController : ApplicationController
     [HttpPut("/parser-profile/{id}")]
     public async Task<IActionResult> Update(
         [FromServices] IAvitoCommandHandler<UpdateParserProfileLinksCommand> handler,
-        [FromBody] ParserProfileLinkDto[] links,
+        [FromBody] ParserProfileDto dto,
         [FromRoute] string id,
         CancellationToken ct = default
     )
     {
-        UpdateParserProfileLinksCommand command = new UpdateParserProfileLinksCommand(id, links);
+        var command = new UpdateParserProfileLinksCommand(dto);
         var result = await handler.Handle(command, ct);
         return result.IsSuccess
             ? this.ToOkResult()
@@ -59,14 +58,14 @@ public sealed class ParserProfileController : ApplicationController
         CancellationToken ct = default
     )
     {
-        DeleteParserProfileCommand command = new DeleteParserProfileCommand(id);
+        var command = new DeleteParserProfileCommand(id);
         var result = await handler.Handle(command, ct);
         return result.IsSuccess
             ? this.ToOkResult()
             : this.ToErrorResult(HttpStatusCode.BadRequest, result.Error.Description);
     }
 
-    [EndpointDescription(("Returns parser profiles collection."))]
+    [EndpointDescription("Returns parser profiles collection.")]
     [EndpointSummary("Returns all parser profiles.")]
     [EndpointName("Parser Profile Get")]
     [HttpGet("/parser-profile")]
@@ -75,7 +74,7 @@ public sealed class ParserProfileController : ApplicationController
         CancellationToken ct = default
     )
     {
-        IReadOnlyCollection<ParserProfileResponse> result = await repository.Get(ct);
+        var result = await repository.Get(ct);
         return this.ToOkResult(result);
     }
 }

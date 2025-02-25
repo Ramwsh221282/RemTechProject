@@ -31,7 +31,9 @@ public sealed class ParserProfile
         State = ParserProfileState.CreateInactive();
     }
 
-    public void UpdateProfileLinks(List<ParserProfileLink> links) => Links = links;
-
-    public void UpdateState(ParserProfileState state) => State = state;
+    public void UpdateProfile(List<ParserProfileLink> links, bool state)
+    {
+        Links = links;
+        State = state ? ParserProfileState.CreateActive() : ParserProfileState.CreateInactive();
+    }
 }

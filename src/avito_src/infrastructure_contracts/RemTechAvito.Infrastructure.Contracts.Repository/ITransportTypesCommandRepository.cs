@@ -3,7 +3,7 @@ using RemTechCommon.Utils.ResultPattern;
 
 namespace RemTechAvito.Infrastructure.Contracts.Repository;
 
-public interface ITransportTypesRepository
+public interface ITransportTypesCommandRepository
 {
-    Task<Result> Add(TransportType type, CancellationToken ct = default);
+    Task<Result> Add(IEnumerable<TransportType> types, CancellationToken ct = default);
 }

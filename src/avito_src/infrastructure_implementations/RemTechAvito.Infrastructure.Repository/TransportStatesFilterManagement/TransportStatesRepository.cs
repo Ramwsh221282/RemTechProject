@@ -25,7 +25,7 @@ internal sealed class TransportStatesRepository(MongoClient client, ILogger logg
             await collection.InsertOneAsync(state, cancellationToken: ct);
             logger.Information(
                 "{Repository} method saved {State}.",
-                nameof(TransportTypesRepository),
+                nameof(TransportTypesCommandCommandRepository),
                 state
             );
             return Result.Success();
@@ -34,7 +34,7 @@ internal sealed class TransportStatesRepository(MongoClient client, ILogger logg
         {
             logger.Error(
                 "{Repository} cannot save {State} exception: {Ex}.",
-                nameof(TransportTypesRepository),
+                nameof(TransportTypesCommandCommandRepository),
                 state,
                 ex.Message
             );

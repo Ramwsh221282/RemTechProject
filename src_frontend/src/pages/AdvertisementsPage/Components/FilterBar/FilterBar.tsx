@@ -1,4 +1,4 @@
-import {Button, MenuItem, OutlinedInput, Select, SelectChangeEvent} from "@mui/material";
+import {Button, Grow, MenuItem, OutlinedInput, Select, SelectChangeEvent} from "@mui/material";
 import {FormEvent, useEffect} from "react";
 import {FilterRow} from "./FilterRow.tsx";
 import {CharacteristicsBar} from "./CharacteristicsBar/CharacteristicsBar.tsx";
@@ -61,51 +61,55 @@ export function FilterBar({filterService}: { filterService: FilterService }) {
     }
 
     return (
-        <div
-            className="w-100 flex flex-col py-3 px-3 bg-amber-950 border-amber-900 border-2 shadow-neutral-800 shadow-md rounded-md text-amber-50 gap-3">
-            <h3 className="text-2xl underline">Фильтры</h3>
-            <form onSubmit={onFilterSubmit} className="flex flex-col gap-3">
-                <FilterInput type={"text"} fullWidth={true} name={"address-input"} id={"address-input"} label={"Адрес"}
-                             variant={"filled"}/>
-                <FilterRow>
-                    <FilterInput type={"number"} name={"price-min-input"} id={"price-min-input"} label={"Цена от"}
-                                 variant={"outlined"}/>
-                    <FilterInput type={"number"} name={"price-max-input"} id={"price-max-input"} label={"Цена до"}
-                                 variant={"outlined"}/>
-                </FilterRow>
-                <FilterRow>
-                    <FilterInput type={"number"} name={"price-exact-input"} fullWidth={true} id={"price-exact-input"}
-                                 label={"Цена"}
-                                 variant={"outlined"}/>
-                    <div className="order-2 w-full">
-                        <Select
-                            size={"small"}
-                            name={"price-predicate-input"}
-                            fullWidth={true}
-                            value={internalFilterService.filter.pricePredicate}
-                            onChange={onPricePredicateChange}
-                            displayEmpty={true}
-                            renderValue={(selected) => {
-                                if (!selected)
-                                    return <em className="w-full">{placeHolder}</em>
-                                return <em className="w-full">{selected}</em>;
-                            }}
-                            input={<OutlinedInput/>}>
-                            <MenuItem disabled>{placeHolder}</MenuItem>
-                            {pricePredicates.map((item, index) => (
-                                <MenuItem key={index} value={item}>
-                                    {item}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </div>
-                </FilterRow>
-                <CharacteristicsBar service={internalFilterService}/>
-                <Button size={"small"} type={"submit"} variant={"contained"}>Применить фильтр</Button>
-                <Button size={"small"} onClick={onFilterClean} variant={"contained"}>Очистить фильтры</Button>
-            </form>
-            <NotificationAlert notification={notifications.notification}
-                               hideNotification={notifications.hideNotification}/>
-        </div>
+        <Grow in={true} timeout={500}>
+            <div
+                className="w-100 flex flex-col py-3 px-3 bg-amber-950 border-amber-900 border-2 shadow-neutral-800 shadow-md rounded-md text-amber-50 gap-3">
+                <h3 className="text-2xl underline">Фильтры</h3>
+                <form onSubmit={onFilterSubmit} className="flex flex-col gap-3">
+                    <FilterInput type={"text"} fullWidth={true} name={"address-input"} id={"address-input"}
+                                 label={"Адрес"}
+                                 variant={"filled"}/>
+                    <FilterRow>
+                        <FilterInput type={"number"} name={"price-min-input"} id={"price-min-input"} label={"Цена от"}
+                                     variant={"outlined"}/>
+                        <FilterInput type={"number"} name={"price-max-input"} id={"price-max-input"} label={"Цена до"}
+                                     variant={"outlined"}/>
+                    </FilterRow>
+                    <FilterRow>
+                        <FilterInput type={"number"} name={"price-exact-input"} fullWidth={true}
+                                     id={"price-exact-input"}
+                                     label={"Цена"}
+                                     variant={"outlined"}/>
+                        <div className="order-2 w-full">
+                            <Select
+                                size={"small"}
+                                name={"price-predicate-input"}
+                                fullWidth={true}
+                                value={internalFilterService.filter.pricePredicate}
+                                onChange={onPricePredicateChange}
+                                displayEmpty={true}
+                                renderValue={(selected) => {
+                                    if (!selected)
+                                        return <em className="w-full">{placeHolder}</em>
+                                    return <em className="w-full">{selected}</em>;
+                                }}
+                                input={<OutlinedInput/>}>
+                                <MenuItem disabled>{placeHolder}</MenuItem>
+                                {pricePredicates.map((item, index) => (
+                                    <MenuItem key={index} value={item}>
+                                        {item}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </div>
+                    </FilterRow>
+                    <CharacteristicsBar service={internalFilterService}/>
+                    <Button size={"small"} type={"submit"} variant={"contained"}>Применить фильтр</Button>
+                    <Button size={"small"} onClick={onFilterClean} variant={"contained"}>Очистить фильтры</Button>
+                </form>
+                <NotificationAlert notification={notifications.notification}
+                                   hideNotification={notifications.hideNotification}/>
+            </div>
+        </Grow>
     )
 }
