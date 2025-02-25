@@ -1,4 +1,5 @@
 ﻿using RemTechAvito.Application.Abstractions.Handlers;
+using RemTechAvito.Contracts.Common.Responses.TransportTypesManagement;
 using RemTechAvito.Core.FiltersManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
 using RemTechAvito.Infrastructure.Contracts.Repository;
@@ -7,15 +8,15 @@ using Serilog;
 
 namespace RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.ParseTransportTypes;
 
-public sealed record ParseTransportTypesCommand : IAvitoCommand;
+public sealed record ParseTransportTypesCommand : IAvitoCommand<TransportTypeResponse>;
 
 internal sealed class ParseTransportTypesCommandHandler(
     ITransportTypesParser parser,
     ITransportTypesCommandRepository repository,
     ILogger logger
-) : IAvitoCommandHandler<ParseTransportTypesCommand>
+) : IAvitoCommandHandler<ParseTransportTypesCommand, TransportTypeResponse>
 {
-    public async Task<Result> Handle(
+    public async Task<Result<TransportTypeResponse>> Handle(
         ParseTransportTypesCommand command,
         CancellationToken ct = default
     )
@@ -49,6 +50,7 @@ internal sealed class ParseTransportTypesCommandHandler(
             results.Count
         );
 
-        return Result.Success();
+        var items = results.Select(t => new TransportTypeDto(t.Name, t.Link));
+        return new TransportTypeResponse(items, results.Count);
     }
 }

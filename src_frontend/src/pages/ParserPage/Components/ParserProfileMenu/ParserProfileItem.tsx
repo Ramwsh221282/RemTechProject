@@ -7,7 +7,7 @@ import {ParserProfileLinksSection} from "./ParserProfileLinksSection.tsx";
 export function ParserProfileItem({profile, orderedNumber}: { profile: ParserProfile, orderedNumber: number }) {
     return (
         <Accordion>
-            <AccordionSummary expandIcon={<ArrowDropDownIcon/>} id={'profile-0'}>
+            <AccordionSummary expandIcon={<ArrowDropDownIcon/>} id={`profile-${profile.id}`}>
                 <ParserProfileItemHeadPanel profile={profile} orderedNumber={orderedNumber}/>
             </AccordionSummary>
             <AccordionDetails

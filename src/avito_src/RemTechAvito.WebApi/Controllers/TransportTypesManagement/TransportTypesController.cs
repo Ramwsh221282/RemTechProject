@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.ParseTransportTypes;
 using RemTechAvito.Contracts.Common.Dto.TransportTypesManagement;
+using RemTechAvito.Contracts.Common.Responses.TransportTypesManagement;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechAvito.WebApi.Responses;
-using RemTechCommon.Utils.ResultPattern;
 
 namespace RemTechAvito.WebApi.Controllers.TransportTypesManagement;
 
@@ -37,7 +37,8 @@ public sealed class TransportTypesController : ApplicationController
     [EndpointName("Transport Types Create")]
     [HttpPost("/transport-types")]
     public async Task<IActionResult> Create(
-        [FromServices] IAvitoCommandHandler<ParseTransportTypesCommand> handler,
+        [FromServices]
+            IAvitoCommandHandler<ParseTransportTypesCommand, TransportTypeResponse> handler,
         CancellationToken ct = default
     )
     {
@@ -45,6 +46,6 @@ public sealed class TransportTypesController : ApplicationController
         var result = await handler.Handle(command, ct);
         return result.IsFailure
             ? this.ToErrorResult(HttpStatusCode.InternalServerError, result.Error.Description)
-            : this.ToOkResult();
+            : this.ToOkResult(result.Value);
     }
 }

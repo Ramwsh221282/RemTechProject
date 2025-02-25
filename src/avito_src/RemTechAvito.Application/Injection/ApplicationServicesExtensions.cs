@@ -9,6 +9,7 @@ using RemTechAvito.Application.ParserProfileManagement.DeleteProfile;
 using RemTechAvito.Application.ParserProfileManagement.UpdateParserProfileLinks;
 using RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.ParseTransportAdvertisementsCatalogue;
 using RemTechAvito.Contracts.Common.Responses.ParserProfileManagement;
+using RemTechAvito.Contracts.Common.Responses.TransportTypesManagement;
 
 namespace RemTechAvito.Application.Injection;
 
@@ -36,7 +37,7 @@ public static class ApplicationServicesExtensions
             ParseTransportStatesCommandHandler
         >();
         services.AddScoped<
-            IAvitoCommandHandler<ParseTransportTypesCommand>,
+            IAvitoCommandHandler<ParseTransportTypesCommand, TransportTypeResponse>,
             ParseTransportTypesCommandHandler
         >();
     }
