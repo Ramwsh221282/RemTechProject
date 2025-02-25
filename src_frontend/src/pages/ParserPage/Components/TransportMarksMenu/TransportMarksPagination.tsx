@@ -1,5 +1,5 @@
 import {Pagination} from "@mui/material";
-import {ChangeEvent, memo, useState} from "react";
+import {ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {parserPageTransportTypesActions} from "../../Store/Slices/ParserPageTransportTypesState.ts";
 import {useDispatch, useSelector} from "react-redux";
 import {RootParserPageDispatch, RootParserPageState} from "../../Store/ParserPageStore.ts";
@@ -10,19 +10,27 @@ type Props = {
 }
 
 function TransportMarksPagination({totalCount, pageSize}: Props) {
-    const pagesCount = Math.ceil(totalCount / pageSize);
     const [page, setPage] = useState(totalCount === 0 ? 0 : 1);
+    const pagesCount = useMemo(() => Math.ceil(totalCount / pageSize), [totalCount, pageSize])
+    const isFirstRender = useRef(true);
+    const fetchPayload = useSelector((state: RootParserPageState) => state.parserPageTransportTypesReducer.fetchingPayload);
     const actions = parserPageTransportTypesActions;
     const dispatch = useDispatch<RootParserPageDispatch>();
-    const state = useSelector((state: RootParserPageState) => state.parserPageTransportTypesReducer);
 
-    function handlePageChange(_: ChangeEvent<unknown>, newPage: number) {
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+        const copy = {...fetchPayload, page: page};
+        dispatch(actions.setFetchingPayload(copy))
+        dispatch(actions.fetchTypesAsync(copy))
+    }, [page]);
+
+    const handlePageChange = useCallback((_: ChangeEvent<unknown>, newPage: number) => {
         if (page === newPage) return;
         setPage(newPage);
-        const newPayload = {...state.fetchingPayload, page: newPage};
-        dispatch(actions.setFetchingPayload(newPayload))
-        dispatch(actions.fetchTypesAsync(newPayload))
-    }
+    }, [page])
 
     return (
         <>

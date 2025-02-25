@@ -1,4 +1,4 @@
-import {FormEvent, useState} from "react";
+import {FormEvent, useEffect, useRef, useState} from "react";
 import {Fab, TextField, Typography} from "@mui/material";
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
@@ -10,35 +10,34 @@ import ClearIcon from '@mui/icons-material/Clear';
 
 
 export function TransportMarksMenuBar() {
-    const state = useSelector((state: RootParserPageState) => state.parserPageTransportTypesReducer);
-    const actions = parserPageTransportTypesActions;
+    const fetchPayload = useSelector((state: RootParserPageState) => state.parserPageTransportTypesReducer.fetchingPayload);
     const dispatch = useDispatch<RootParserPageDispatch>();
     const [sort, setSort] = useState<string>('ASC');
     const [mark, setMark] = useState<string>('')
+    const [isSubmit, setIsSubmit] = useState<boolean>(false);
+    const isFirstRender = useRef<boolean>(true);
+    const actions = parserPageTransportTypesActions;
+
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+        const newPayload = {...fetchPayload, sort: sort, mark: mark.trim().length > 0 ? mark.trim() : null}
+        dispatch(actions.setFetchingPayload(newPayload));
+        dispatch(actions.fetchTypesAsync(newPayload));
+    }, [sort, isSubmit]);
 
     function onSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         event.stopPropagation();
-        const markSearch = mark?.trim().length > 0 ? mark : null
-        const payloadCopy = {...state.fetchingPayload, sort: sort, mark: markSearch};
-        dispatch(actions.setFetchingPayload(payloadCopy));
-        dispatch(actions.fetchTypesAsync(payloadCopy));
-    }
-
-    function onSortClick(order: string) {
-        const payloadCopy = {...state.fetchingPayload, sort: order};
-        dispatch(actions.setFetchingPayload(payloadCopy));
-        dispatch(actions.fetchTypesAsync(payloadCopy));
+        setIsSubmit(!isSubmit);
     }
 
     function onClearClick() {
-        const payloadCopy = {...state.fetchingPayload, mark: null};
-        dispatch(actions.setFetchingPayload(payloadCopy));
-        dispatch(actions.fetchTypesAsync(payloadCopy));
-        setMark((prev) => {
-            prev = '';
-            return prev;
-        });
+        setMark('');
+        setSort((prev) => prev);
+        setIsSubmit(!isSubmit);
     }
 
     return (
@@ -47,14 +46,12 @@ export function TransportMarksMenuBar() {
             <Fab disabled={sort === 'ASC'} onClick={() => {
                 const order = 'ASC';
                 setSort(order);
-                onSortClick(order);
             }} size={"small"}>
                 <NorthIcon/>
             </Fab>
             <Fab disabled={sort === 'DESC'} onClick={() => {
                 const order = 'DESC'
                 setSort(order)
-                onSortClick(order);
             }} size={"small"}>
                 <SouthIcon/>
             </Fab>

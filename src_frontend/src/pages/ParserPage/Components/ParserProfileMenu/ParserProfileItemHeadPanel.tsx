@@ -4,12 +4,14 @@ import {useState} from "react";
 
 export function ParserProfileItemHeadPanel({profile, orderedNumber}: {
     profile: ParserProfile,
-    orderedNumber: number
+    orderedNumber: number,
 }) {
-    const [headStateProfile, updateHeadStateProfile] = useState<ParserProfile>({...profile});
+    const [isEditing, setIsEditing] = useState(false);
 
     return (
-        <div className="flex flex-row gap-10">
+        <div className="flex flex-row gap-10 w-full" onClick={() => {
+            setIsEditing(!isEditing);
+        }}>
             <Typography
                 sx={{
                     borderRadius: '10px',
@@ -18,13 +20,24 @@ export function ParserProfileItemHeadPanel({profile, orderedNumber}: {
                 }}>
                 {`Профиль ${orderedNumber + 1}`}
             </Typography>
-            <Typography
+            {profile.state ? <Typography
+                sx={{backgroundColor: 'green', borderRadius: '10px', padding: '4px'}}>
+                {profile.stateDescription}
+            </Typography> : <Typography
                 sx={{backgroundColor: 'red', borderRadius: '10px', padding: '4px'}}>
-                {headStateProfile.stateDescription}
-            </Typography>
+                {profile.stateDescription}
+            </Typography>}
             <Typography
                 sx={{borderRadius: '10px', padding: '4px'}}>
-                {`Дата создания: ${headStateProfile.createdOn}`}
+                {`Дата создания: ${profile.createdOn}`}
+            </Typography>
+            <Typography
+                sx={{
+                    borderRadius: '10px',
+                    padding: '4px',
+                    textDecoration: 'underline'
+                }}>
+                {isEditing ? "Нажмите для сохранения" : "Нажмите для редактирования"}
             </Typography>
         </div>
     )

@@ -27,24 +27,23 @@ public sealed class Parser_Profile_CRUD_Tests
     [Fact]
     public async Task Create_New_Profile()
     {
-        using CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken token = cts.Token;
-        CreateProfileCommand command = new CreateProfileCommand();
+        using var cts = new CancellationTokenSource();
+        var token = cts.Token;
+        var command = new CreateProfileCommand();
         var handler = _provider.GetRequiredService<
             IAvitoCommandHandler<CreateProfileCommand, ParserProfileResponse>
         >();
-        Result<ParserProfileResponse> creation = await handler.Handle(command, token);
+        var creation = await handler.Handle(command, token);
         Assert.True(creation.IsSuccess);
     }
 
     [Fact]
     public async Task Get_Profile_By_ID()
     {
-        using CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken token = cts.Token;
-        IParserProfileReadRepository repository =
-            _provider.GetRequiredService<IParserProfileReadRepository>();
-        Result<ParserProfile> profile = await repository.GetById(temporaryId, token);
+        using var cts = new CancellationTokenSource();
+        var token = cts.Token;
+        var repository = _provider.GetRequiredService<IParserProfileReadRepository>();
+        var profile = await repository.GetById(temporaryId, token);
         Assert.True(profile.IsSuccess);
     }
 
@@ -54,16 +53,14 @@ public sealed class Parser_Profile_CRUD_Tests
         const string link =
             "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki/liugong-ASgBAgICAkRU4E3cxg3urj8?cd=1";
         const string mark = "liugong";
-        using CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken token = cts.Token;
+        using var cts = new CancellationTokenSource();
+        var token = cts.Token;
         var handler = _provider.GetRequiredService<
             IAvitoCommandHandler<UpdateParserProfileLinksCommand>
         >();
-        var command = new UpdateParserProfileLinksCommand(
-            temporaryId,
-            [new ParserProfileLinkDto(mark, link)]
-        );
-        Result update = await handler.Handle(command, token);
+        var dto = new ParserProfileDto(temporaryId, false, [new ParserProfileLinkDto(mark, link)]);
+        var command = new UpdateParserProfileLinksCommand(dto);
+        var update = await handler.Handle(command, token);
         Assert.True(update.IsSuccess);
     }
 
@@ -78,29 +75,30 @@ public sealed class Parser_Profile_CRUD_Tests
         const string link =
             "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki/newmark-ASgBAgICAkRU4E3cxg3urj8?cd=1";
         const string mark = "newmark";
-        using CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken token = cts.Token;
+        using var cts = new CancellationTokenSource();
+        var token = cts.Token;
         var handler = _provider.GetRequiredService<
             IAvitoCommandHandler<UpdateParserProfileLinksCommand>
         >();
-        var command = new UpdateParserProfileLinksCommand(
+        var dto = new ParserProfileDto(
             temporaryId,
+            false,
             [
                 new ParserProfileLinkDto(existingMark, existingLink, existingId),
                 new ParserProfileLinkDto(mark, link),
             ]
         );
-        Result update = await handler.Handle(command, token);
+        var command = new UpdateParserProfileLinksCommand(dto);
+        var update = await handler.Handle(command, token);
         Assert.True(update.IsSuccess);
     }
 
     [Fact]
     public async Task Get_Profiles()
     {
-        using CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken token = cts.Token;
-        IParserProfileReadRepository repository =
-            _provider.GetRequiredService<IParserProfileReadRepository>();
+        using var cts = new CancellationTokenSource();
+        var token = cts.Token;
+        var repository = _provider.GetRequiredService<IParserProfileReadRepository>();
         var data = await repository.Get(token);
         Assert.NotEmpty(data);
     }
@@ -108,26 +106,26 @@ public sealed class Parser_Profile_CRUD_Tests
     [Fact]
     public async Task Delete_Profile_Fake_ID()
     {
-        using CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken token = cts.Token;
+        using var cts = new CancellationTokenSource();
+        var token = cts.Token;
         var handler = _provider.GetRequiredService<
             IAvitoCommandHandler<DeleteParserProfileCommand>
         >();
         var command = new DeleteParserProfileCommand("7748e966-a548-4e8c-a031-b929636314bf");
-        Result update = await handler.Handle(command, token);
+        var update = await handler.Handle(command, token);
         Assert.False(update.IsSuccess);
     }
 
     [Fact]
     public async Task Delete_Profile_Real_ID()
     {
-        using CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken token = cts.Token;
+        using var cts = new CancellationTokenSource();
+        var token = cts.Token;
         var handler = _provider.GetRequiredService<
             IAvitoCommandHandler<DeleteParserProfileCommand>
         >();
         var command = new DeleteParserProfileCommand(temporaryId);
-        Result update = await handler.Handle(command, token);
+        var update = await handler.Handle(command, token);
         Assert.True(update.IsSuccess);
     }
 }

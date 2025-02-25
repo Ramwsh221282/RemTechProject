@@ -10,8 +10,7 @@ using Serilog;
 
 namespace RemTechAvito.Application.ParserProfileManagement.UpdateParserProfileLinks;
 
-public sealed record UpdateParserProfileLinksCommand(string ProfileId, ParserProfileLinkDto[] Links)
-    : IAvitoCommand;
+public sealed record UpdateParserProfileLinksCommand(ParserProfileDto Dto) : IAvitoCommand;
 
 internal sealed class UpdateParserProfileLinksCommandHandler
     : IAvitoCommandHandler<UpdateParserProfileLinksCommand>
@@ -42,18 +41,7 @@ internal sealed class UpdateParserProfileLinksCommandHandler
             command
         );
 
-        if (command.Links.Length == 0)
-        {
-            string error = "New parser profile links are empty";
-            _logger.Error(
-                "{Command} error: {Error}",
-                nameof(UpdateParserProfileLinksCommand),
-                error
-            );
-            return new Error(error);
-        }
-
-        Result<ParserProfile> profile = await _readRepository.GetById(command.ProfileId, ct);
+        var profile = await _readRepository.GetById(command.Dto.Id, ct);
         if (profile.IsFailure)
         {
             _logger.Error(
@@ -65,9 +53,9 @@ internal sealed class UpdateParserProfileLinksCommandHandler
         }
 
         List<ParserProfileLink> links = [];
-        foreach (var link in command.Links)
+        foreach (var link in command.Dto.Links)
         {
-            Result<ParserProfileLinkBody> body = ParserProfileLinkBody.Create(link.Mark, link.Link);
+            var body = ParserProfileLinkBody.Create(link.Mark, link.Link);
             if (body.IsFailure)
             {
                 _logger.Error(
@@ -78,14 +66,14 @@ internal sealed class UpdateParserProfileLinksCommandHandler
                 return body.Error;
             }
 
-            ParserProfileLinkId? profileLinkId = string.IsNullOrWhiteSpace(link.Id)
+            var profileLinkId = string.IsNullOrWhiteSpace(link.Id)
                 ? null
-                : new(GuidUtils.FromString(link.Id));
+                : new ParserProfileLinkId(GuidUtils.FromString(link.Id));
             links.Add(new ParserProfileLink(body, profileLinkId));
         }
 
-        profile.Value.UpdateProfileLinks(links);
-        Result<Guid> update = await _commandRepository.Update(profile, ct);
+        profile.Value.UpdateProfile(links, command.Dto.State);
+        var update = await _commandRepository.Update(profile, ct);
         return update;
     }
 }

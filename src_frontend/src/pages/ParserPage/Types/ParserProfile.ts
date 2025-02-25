@@ -7,7 +7,7 @@ export type ParserProfile = {
 }
 
 export type ParserProfileLinks = {
-    id: string;
+    id: string | null;
     link: string;
     mark: string;
 }
