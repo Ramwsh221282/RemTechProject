@@ -1,4 +1,4 @@
-import {Grow, LinearProgress, Skeleton, TextField} from "@mui/material";
+import {Fade, LinearProgress, Skeleton, TextField} from "@mui/material";
 import {NotificationAlert, useNotification} from "../../../components/Notification.tsx";
 import {StatisticsService} from "../Services/StatisticsApiService.ts";
 import {useEffect} from "react";
@@ -15,7 +15,7 @@ export function StatisticsInfo({service}: { service: StatisticsService }) {
     if (service.isLoading) {
         return (
             <div
-                className="flex flex-col gap-3 py-3 px-3 bg-amber-950 border-2 border-amber-900 rounded-md shadow-neutral-800 shadow-md">
+                className="flex flex-col gap-3 py-3 px-3 bg-[#1E1E1E] rounded-md shadow-neutral-800 shadow-md">
                 <h3 className="text-2xl text-amber-50 underline">Статистическая информация</h3>
                 <LinearProgress color="primary"/>
                 <Skeleton variant="rectangular" width="maxWidth" height={40}/>
@@ -28,9 +28,9 @@ export function StatisticsInfo({service}: { service: StatisticsService }) {
     }
 
     return (
-        <Grow in={true} timeout={500}>
+        <Fade in={true} timeout={500}>
             <div
-                className="flex flex-col gap-3 py-3 px-3 bg-amber-950 border-2 border-amber-900 rounded-md shadow-neutral-800 shadow-md">
+                className="flex flex-col gap-3 py-3 px-3 bg-[#1E1E1E] rounded-md shadow-neutral-800 shadow-md">
                 <h3 className="text-2xl text-amber-50 underline">Статистическая информация</h3>
                 <TextField size="small" value={service.statistics.count} aria-readonly={true} label="Количество"/>
                 <TextField size="small" value={service.statistics.averagePrice} aria-readonly={true}
@@ -42,6 +42,6 @@ export function StatisticsInfo({service}: { service: StatisticsService }) {
                 <NotificationAlert notification={notifications.notification}
                                    hideNotification={notifications.hideNotification}/>
             </div>
-        </Grow>
+        </Fade>
     );
 }

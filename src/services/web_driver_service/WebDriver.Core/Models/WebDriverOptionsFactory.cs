@@ -58,10 +58,8 @@ internal sealed class WebDriverOptionsFactory
         CreateUniqueProfileFromExisting(out var sessionProfilePath);
         if (string.IsNullOrWhiteSpace(sessionProfilePath))
             return options;
-        Console.WriteLine(sessionProfilePath);
         options.AddArgument($"--user-data-dir={sessionProfilePath}");
         uniqueProfilePath = sessionProfilePath;
-
         return options;
     }
 

@@ -1,4 +1,4 @@
-import {Button, Grow, MenuItem, OutlinedInput, Select, SelectChangeEvent} from "@mui/material";
+import {Button, Fade, MenuItem, OutlinedInput, Select, SelectChangeEvent} from "@mui/material";
 import {FormEvent, useEffect} from "react";
 import {FilterRow} from "./FilterRow.tsx";
 import {CharacteristicsBar} from "./CharacteristicsBar/CharacteristicsBar.tsx";
@@ -61,9 +61,9 @@ export function FilterBar({filterService}: { filterService: FilterService }) {
     }
 
     return (
-        <Grow in={true} timeout={500}>
+        <Fade in={true} timeout={500}>
             <div
-                className="w-100 flex flex-col py-3 px-3 bg-amber-950 border-amber-900 border-2 shadow-neutral-800 shadow-md rounded-md text-amber-50 gap-3">
+                className="w-100 flex flex-col py-3 px-3 bg-[#1E1E1E] shadow-neutral-800 shadow-md rounded-md text-amber-50 gap-3">
                 <h3 className="text-2xl underline">Фильтры</h3>
                 <form onSubmit={onFilterSubmit} className="flex flex-col gap-3">
                     <FilterInput type={"text"} fullWidth={true} name={"address-input"} id={"address-input"}
@@ -110,6 +110,6 @@ export function FilterBar({filterService}: { filterService: FilterService }) {
                 <NotificationAlert notification={notifications.notification}
                                    hideNotification={notifications.hideNotification}/>
             </div>
-        </Grow>
+        </Fade>
     )
 }

@@ -9,7 +9,7 @@ export function AdvertisementCard(advertisement: Advertisement) {
     return (
         <Fade in={true} timeout={500}>
             <div className="max-h-22 max-w-52">
-                <Card sx={{boxShadow: '0 0 5px 1px #000'}}>
+                <Card sx={{boxShadow: '0 0 5px 1px #000', height: '320px'}}>
                     <CardContent>
                         <Typography fontSize={"medium"} gutterBottom={true}>
                         <span className="line-clamp-3">
@@ -42,11 +42,12 @@ export function AdvertisementCard(advertisement: Advertisement) {
                             className="line-clamp-2">{advertisement.description}</span>
                         </Typography>
                         <Divider orientation={"horizontal"} flexItem={true}/>
-                        <div className="py-2 flex flex-col gap-3 items-center">
+                        <div className="py-2 flex flex-col gap-3">
                             <Button fullWidth={false} size={"small"} variant={"outlined"}
                                     color={"error"}><span className="text-sm">Удалить</span>
                             </Button>
-                            <Button fullWidth={false} onClick={modal.open} size={"small"} variant={"outlined"}>
+                            <Button fullWidth={false} onClick={modal.open} size={"small"}
+                                    variant={"outlined"}>
                                 <span className="text-sm">Подробнее</span>
                             </Button>
                         </div>

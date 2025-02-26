@@ -11,6 +11,7 @@ export function Header() {
         [
             {routerLink: "advertisements", displayName: "Данные"},
             {routerLink: "parser", displayName: "Парсинг"},
+            {routerLink: 'parser-journals', displayName: 'Журналы'}
         ]
 
     const navigationButtons = navigations.map((navigation, index) => {

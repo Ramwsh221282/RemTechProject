@@ -9,19 +9,19 @@ namespace RemTechAvito.Infrastructure.Repository.ParserJournalsManagement;
 internal sealed class ParserJournalQueryRepository(MongoClient client, ILogger logger)
     : IParserJournalQueryRepository
 {
-    public async Task<IEnumerable<ParserJournalResponse>> Get(
+    public async Task<ParserJournalsResponse> Get(
         int page,
         int pageSize,
         CancellationToken ct = default
     )
     {
         if (page < 1 || pageSize < 1)
-            return [];
+            return new ParserJournalsResponse([], 0);
 
         logger.Information(
             "{Repository} request for nameof {Response}. Status: started.",
             nameof(ParserJournalQueryRepository),
-            nameof(ParserJournalResponse)
+            nameof(ParserJournalDto)
         );
 
         var db = client.GetDatabase(ParserJournalMetadata.DbName);
@@ -29,7 +29,7 @@ internal sealed class ParserJournalQueryRepository(MongoClient client, ILogger l
         var filter = Builders<ParserJournal>.Filter.Empty;
         var query = collection.Find(filter);
         var items = await query.Skip((page - 1) * pageSize).Limit(pageSize).ToListAsync(ct);
-        IEnumerable<ParserJournalResponse> response = items.Select(i => new ParserJournalResponse()
+        var response = items.Select(i => new ParserJournalDto()
         {
             Description = i.Description,
             Id = i.Id,
@@ -40,14 +40,15 @@ internal sealed class ParserJournalQueryRepository(MongoClient client, ILogger l
             IsSuccess = i.IsSuccess,
             ItemsParsed = i.ItemsParsed,
             Error = i.ErrorMessage,
+            CreatedOn = i.CreatedOn.Date,
         });
 
         logger.Information(
             "{Repository} request for nameof {Response}. Status: finished.",
             nameof(ParserJournalQueryRepository),
-            nameof(ParserJournalResponse)
+            nameof(ParserJournalDto)
         );
 
-        return response;
+        return new ParserJournalsResponse(response, items.Count);
     }
 }
