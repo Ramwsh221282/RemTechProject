@@ -12,29 +12,21 @@ public sealed class BasicParseCustomerStatesTest : BasicParserTests
     [Fact]
     public async Task Invoke_Base_Parse_Customer_States()
     {
-        bool noExceptions = true;
-        using CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken ct = cts.Token;
-        using Worker worker = _serviceProvider.GetRequiredService<Worker>();
-        await worker.StartAsync(ct);
+        var noExceptions = true;
+        using var cts = new CancellationTokenSource();
+        var ct = cts.Token;
 
         try
         {
             ParseCustomerStatesCommand command = new();
-            IAvitoCommandHandler<ParseCustomerStatesCommand> handler =
-                _serviceProvider.GetRequiredService<
-                    IAvitoCommandHandler<ParseCustomerStatesCommand>
-                >();
+            var handler = _serviceProvider.GetRequiredService<
+                IAvitoCommandHandler<ParseCustomerStatesCommand>
+            >();
             await handler.Handle(command, ct);
         }
         catch (Exception ex)
         {
-            SingleCommunicationPublisher publisher = new SingleCommunicationPublisher(
-                queue,
-                host,
-                user,
-                password
-            );
+            var publisher = new SingleCommunicationPublisher(queue, host, user, password);
             await publisher.Send(new StopWebDriverContract(), ct);
             noExceptions = false;
             _logger.Fatal(
@@ -43,7 +35,7 @@ public sealed class BasicParseCustomerStatesTest : BasicParserTests
                 ex.Message
             );
         }
-        await worker.StopAsync(ct);
+
         Assert.True(noExceptions);
     }
 }

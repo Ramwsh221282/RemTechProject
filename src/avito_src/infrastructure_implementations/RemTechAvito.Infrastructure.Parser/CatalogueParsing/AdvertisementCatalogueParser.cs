@@ -4,6 +4,7 @@ using RemTechAvito.Infrastructure.Contracts.Parser;
 using RemTechAvito.Infrastructure.Contracts.Parser.AdvertisementsParsing;
 using RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models;
 using RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models.CustomBehaviors;
+using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 using WebDriver.Worker.Service.Contracts.BaseImplementations;
 using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implementations;
@@ -20,26 +21,50 @@ internal sealed class AdvertisementCatalogueParser : BaseParser, IAdvertisementC
         [EnumeratorCancellation] CancellationToken ct = default
     )
     {
-        using WebDriverSession session = new(_publisher);
-        await session.ExecuteBehavior(new StartBehavior("eager"), ct);
+        var start = new StartBehavior("none");
+        var starting = await start.Execute(_publisher, ct);
+        if (starting.IsFailure)
+        {
+            _logger.Error("{Parser} cannot start", nameof(AdvertisementCatalogueParser));
+            yield break;
+        }
+
+        var openPage = new OpenPageBehavior(catalogueUrl);
+        var opening = await openPage.Execute(_publisher, ct);
+        if (opening.IsFailure)
+        {
+            _logger.Error(
+                "{Parser} cannot open page: {url}",
+                nameof(AdvertisementCatalogueParser),
+                catalogueUrl
+            );
+            yield break;
+        }
+
+        var bottom = new ScrollToBottomRetriable(10);
+        await bottom.Execute(_publisher, ct);
+        var top = new ScrollToTopRetriable(10);
+        await top.Execute(_publisher, ct);
 
         CataloguePagination pagination = new(catalogueUrl, _publisher, _logger);
         await pagination.InitializePagination(ct);
 
-        IEnumerable<string> cataloguePages = pagination.GetCataloguePageUrls();
-        foreach (string page in cataloguePages)
+        var cataloguePages = pagination.GetCataloguePageUrls();
+        foreach (var page in cataloguePages)
         {
             CataloguePageModel model = new(page, _publisher, _logger);
             await model.Initialize(ct);
 
-            IEnumerable<CatalogueItem> items = model.GetItems();
-            foreach (CatalogueItem item in items)
+            var items = model.GetItems();
+            foreach (var item in items)
             {
                 AdvertisementParser parser = new(item, _publisher, _logger);
                 await parser.Execute(ct);
                 yield return item.ToParsed();
             }
         }
-        await session.ExecuteBehavior(new StopBehavior(), ct);
+
+        var stopBehavior = new StopBehavior();
+        await stopBehavior.Execute(_publisher, ct);
     }
 }

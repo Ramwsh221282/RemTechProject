@@ -23,7 +23,7 @@ internal sealed class ParserProfileReadRepository(MongoClient client, ILogger lo
 
         if (string.IsNullOrWhiteSpace(id))
         {
-            string error = "Invalid id";
+            var error = "Invalid id";
             logger.Error(
                 "{Repository} request for profile with id: {Id} Failed. Error: {Error}",
                 nameof(ParserProfileReadRepository),
@@ -33,10 +33,10 @@ internal sealed class ParserProfileReadRepository(MongoClient client, ILogger lo
             return new Error(error);
         }
 
-        bool canConvert = Guid.TryParse(id, out Guid guidId);
+        var canConvert = Guid.TryParse(id, out var guidId);
         if (!canConvert)
         {
-            string error = "Invalid id";
+            var error = "Invalid id";
             logger.Error(
                 "{Repository} request for profile with id: {Id} Failed. Error: {Error}",
                 nameof(ParserProfileReadRepository),
@@ -47,16 +47,16 @@ internal sealed class ParserProfileReadRepository(MongoClient client, ILogger lo
         }
 
         var uuid = new BsonBinaryData(guidId, GuidRepresentation.Standard);
-        BsonDocument document = new BsonDocument("_id", new BsonDocument() { { "$eq", uuid } });
-        FilterDefinition<ParserProfile> filter = Builders<ParserProfile>.Filter.And(document);
+        var document = new BsonDocument("_id", new BsonDocument() { { "$eq", uuid } });
+        var filter = Builders<ParserProfile>.Filter.And(document);
         var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
         var collection = db.GetCollection<ParserProfile>(ParserProfileMetadata.CollectionName);
         using var cursor = await collection.FindAsync(filter, cancellationToken: ct);
-        ParserProfile? profile = await cursor.FirstOrDefaultAsync(cancellationToken: ct);
+        var profile = await cursor.FirstOrDefaultAsync(ct);
 
         if (profile == null)
         {
-            string error = $"Not found with id: {id}";
+            var error = $"Not found with id: {id}";
             logger.Warning(
                 "{Repository} request for profile with id: {Id}. Not Found.",
                 nameof(ParserProfileReadRepository),
@@ -85,7 +85,7 @@ internal sealed class ParserProfileReadRepository(MongoClient client, ILogger lo
         var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
         var collection = db.GetCollection<ParserProfile>(ParserProfileMetadata.CollectionName);
         using var data = await collection.FindAsync(_ => true, cancellationToken: ct);
-        List<ParserProfile> profiles = await data.ToListAsync(cancellationToken: ct);
+        var profiles = await data.ToListAsync(ct);
         return profiles
             .Select(p => new ParserProfileResponse(
                 p.Id.Id,
@@ -100,5 +100,32 @@ internal sealed class ParserProfileReadRepository(MongoClient client, ILogger lo
                     .ToArray()
             ))
             .ToList();
+    }
+
+    public async Task<IEnumerable<ParserProfileResponse>> GetActiveOnly(
+        CancellationToken ct = default
+    )
+    {
+        logger.Information(
+            "{Repository} request for getting all active profiles.",
+            nameof(ParserProfileReadRepository)
+        );
+        var document = new BsonDocument(
+            "State.state_value",
+            new BsonDocument() { { "$eq", true } }
+        );
+        var filter = Builders<ParserProfile>.Filter.And(document);
+        var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
+        var collection = db.GetCollection<ParserProfile>(ParserProfileMetadata.CollectionName);
+        using var data = await collection.FindAsync(filter, cancellationToken: ct);
+        var profiles = await data.ToListAsync(ct);
+        return profiles.Select(p => new ParserProfileResponse(
+            p.Id.Id,
+            p.CreatedOn.Date,
+            p.State.IsActive,
+            p.State.Description,
+            p.Links.Select(l => new ParserProfileLinksResponse(l.Id.Id, l.Body.Link, l.Body.Mark))
+                .ToArray()
+        ));
     }
 }

@@ -8,4 +8,5 @@ public interface IParserProfileReadRepository
 {
     Task<Result<ParserProfile>> GetById(string? id, CancellationToken ct = default);
     Task<IReadOnlyCollection<ParserProfileResponse>> Get(CancellationToken ct = default);
+    Task<IEnumerable<ParserProfileResponse>> GetActiveOnly(CancellationToken ct = default);
 }

@@ -1,5 +1,7 @@
-﻿using RemTechAvito.Application.Abstractions.Handlers;
-using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
+﻿using System.Diagnostics;
+using RemTechAvito.Application.Abstractions.Handlers;
+using RemTechAvito.Core.Common.ValueObjects;
+using RemTechAvito.Core.ParserJournalManagement;
 using RemTechAvito.Infrastructure.Contracts.Parser.AdvertisementsParsing;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechCommon.Utils.ResultPattern;
@@ -10,48 +12,73 @@ namespace RemTechAvito.Application.TransportAdvertisementsManagement.TransportAd
 public sealed record ParseTransportAdvertisementCatalogueCommand(string CatalogueUrl)
     : IAvitoCommand;
 
-public sealed class ParseTransportAdvertisementsCatalogueCommandHandler(
-    ITransportAdvertisementsCommandRepository commandRepository,
+internal sealed class ParseTransportAdvertisementsCatalogueCommandHandler(
+    ITransportAdvertisementsCommandRepository advertisementsRepository,
+    IParserJournalCommandRepository journalsRepository,
     IAdvertisementCatalogueParser parser,
     ILogger logger
 ) : IAvitoCommandHandler<ParseTransportAdvertisementCatalogueCommand>
 {
-    public async Task<Result> Handle(
+    public Task<Result> Handle(
         ParseTransportAdvertisementCatalogueCommand command,
         CancellationToken ct = default
     )
     {
-        logger.Information(
-            "{Command} invoked.",
-            nameof(ParseTransportAdvertisementCatalogueCommand)
-        );
-
-        int addedData = 0;
-
-        var parsedData = parser.Parse(command.CatalogueUrl, ct);
-        await foreach (var item in parsedData)
-        {
-            Result<TransportAdvertisement> advertisement = item.ToTransportAdvertisement();
-            if (advertisement.IsFailure)
+        return Task.Run(
+            async () =>
             {
-                logger.Warning(
-                    "Skipped advertisement. Error: {Error}",
-                    advertisement.Error.Description
+                logger.Information(
+                    "{Command} invoked.",
+                    nameof(ParseTransportAdvertisementCatalogueCommand)
                 );
-                continue;
-            }
-            Guid id = await commandRepository.Add(advertisement, ct);
-            if (id == Guid.Empty)
-                continue;
-            addedData++;
-        }
+                var addedData = 0;
 
-        logger.Information(
-            "{Command} parsing completed. Parsed results: {Count}.",
-            nameof(ParseTransportAdvertisementCatalogueCommand),
-            addedData
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+                var parsedData = parser.Parse(command.CatalogueUrl, ct);
+                await foreach (var item in parsedData)
+                {
+                    var advertisement = item.ToTransportAdvertisement();
+                    if (advertisement.IsFailure)
+                    {
+                        logger.Warning(
+                            "Skipped advertisement. Error: {Error}",
+                            advertisement.Error.Description
+                        );
+                        continue;
+                    }
+
+                    var id = await advertisementsRepository.Add(advertisement, ct);
+                    if (id == Guid.Empty)
+                        continue;
+                    addedData++;
+                    logger.Information(
+                        "{Command} parsing completed. Parsed results: {Count}.",
+                        nameof(ParseTransportAdvertisementCatalogueCommand),
+                        addedData
+                    );
+                }
+
+                stopwatch.Stop();
+                var time = Time.Create(stopwatch.Elapsed);
+                var journal =
+                    addedData == 0
+                        ? ParserJournal.CreateFailure(
+                            time,
+                            "Failed at parsing.",
+                            addedData,
+                            command.CatalogueUrl
+                        )
+                        : ParserJournal.CreateSuccess(
+                            time,
+                            addedData,
+                            command.CatalogueUrl,
+                            "Success at parsing."
+                        );
+                await journalsRepository.Add(journal, ct);
+                return journal.IsSuccess ? Result.Success() : new Error(journal.ErrorMessage);
+            },
+            ct
         );
-
-        return Result.Success();
     }
 }

@@ -29,11 +29,7 @@ internal sealed class CataloguePagination
 
     public async Task InitializePagination(CancellationToken ct = default)
     {
-        InitializePaginationBehavior initialization = new InitializePaginationBehavior(
-            this,
-            _logger,
-            _baseCatalogueUrl
-        );
+        var initialization = new InitializePaginationBehavior(this, _logger);
         await initialization.Execute(_publisher, ct);
     }
 
@@ -42,7 +38,7 @@ internal sealed class CataloguePagination
         while (_currentPage <= _maxPage)
         {
             ReadOnlySpan<char> url = _baseCatalogueUrl;
-            string result = $"{url}?p={_currentPage}";
+            var result = $"{url}?p={_currentPage}";
             _currentPage++;
             yield return result;
         }

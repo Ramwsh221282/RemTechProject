@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RemTechAvito.DependencyInjection;
 using Serilog;
-using WebDriver.Worker.Service;
 
 namespace RemTechAvito.Integrational.Tests;
 
@@ -20,8 +19,6 @@ public abstract class BasicParserTests
         IServiceCollection collection = new ServiceCollection();
         collection.RegisterServices();
         collection.AddLogging();
-        collection.InitializeWorkerDependencies(queue, host, user, password);
-        collection.AddSingleton<Worker>();
         _serviceProvider = collection.BuildServiceProvider();
         _logger = _serviceProvider.GetRequiredService<ILogger>();
     }

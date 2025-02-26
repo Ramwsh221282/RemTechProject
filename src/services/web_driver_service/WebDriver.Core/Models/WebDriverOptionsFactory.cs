@@ -1,5 +1,4 @@
-﻿using System.Text;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using RemTechCommon.Utils.ResultPattern;
 
@@ -8,28 +7,25 @@ namespace WebDriver.Core.Models;
 internal sealed class WebDriverOptionsFactory
 {
     private readonly string _loadStrategy;
-    private static readonly Lock _lock = new Lock();
+    private static readonly Lock _lock = new();
 
-    public WebDriverOptionsFactory(string loadStrategy) => _loadStrategy = loadStrategy;
+    public WebDriverOptionsFactory(string loadStrategy)
+    {
+        _loadStrategy = loadStrategy;
+    }
 
     public Result<ChromeOptions> Create(out string uniqueProfilePath)
     {
-        uniqueProfilePath = String.Empty;
-        int strategy = ParseStrategy(_loadStrategy);
+        uniqueProfilePath = string.Empty;
+        var strategy = ParseStrategy(_loadStrategy);
         if (!Enum.IsDefined(typeof(PageLoadStrategy), strategy))
         {
-            Error error = new Error("Page load strategy is not supported");
+            var error = new Error("Page load strategy is not supported");
             return error;
         }
 
-        PageLoadStrategy resolved = (PageLoadStrategy)strategy;
-        ChromeOptions options = new ChromeOptions();
-        options.PageLoadStrategy = resolved;
-        if (Directory.Exists(WebDriverConstants.ProfilePath))
-        {
-            Result<string> profilePath = CreateUniqueProfileFromExisting(options);
-            uniqueProfilePath = profilePath;
-        }
+        var resolved = (PageLoadStrategy)strategy;
+        var options = new ChromeOptions { PageLoadStrategy = resolved };
         options.AddExcludedArgument("enable-automation");
         options.AddArgument("--start-maximized");
         options.AddArgument("--disable-blink-features=AutomationControlled");
@@ -55,17 +51,23 @@ internal sealed class WebDriverOptionsFactory
         options.AddArgument("--disable-default-apps");
         options.AddArgument("--disable-hang-monitor");
         options.AddArgument("--disable-prompt-on-repost");
-        options.AddArgument(
-            "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"
-        );
         options.AcceptInsecureCertificates = true;
         options.AddAdditionalOption("useAutomationExtensions", false);
+        if (!Directory.Exists(WebDriverConstants.ProfilePath))
+            return options;
+        CreateUniqueProfileFromExisting(out var sessionProfilePath);
+        if (string.IsNullOrWhiteSpace(sessionProfilePath))
+            return options;
+        Console.WriteLine(sessionProfilePath);
+        options.AddArgument($"--user-data-dir={sessionProfilePath}");
+        uniqueProfilePath = sessionProfilePath;
+
         return options;
     }
 
     private static int ParseStrategy(string strategyType)
     {
-        int strategy = strategyType switch
+        var strategy = strategyType switch
         {
             "none" => 3,
             "eager" => 2,
@@ -76,35 +78,20 @@ internal sealed class WebDriverOptionsFactory
         return strategy;
     }
 
-    private static Result<string> CreateUniqueProfileFromExisting(ChromeOptions options)
+    private static void CreateUniqueProfileFromExisting(out string profilePath)
     {
-        Guid id = Guid.NewGuid();
+        var id = Guid.NewGuid();
 
-        string? parentPath = Path.GetDirectoryName(WebDriverConstants.ProfilePath);
+        var parentPath = Path.GetDirectoryName(WebDriverConstants.ProfilePath);
         if (string.IsNullOrEmpty(parentPath))
         {
-            return new Error("Invalid profile path format");
+            profilePath = "";
+            return;
         }
 
-        string uniquePath = Path.Combine(parentPath, id.ToString());
-
-        try
-        {
-            CopyDirectory(WebDriverConstants.ProfilePath, uniquePath);
-            StringBuilder profileOptionsBuilder = new StringBuilder();
-            profileOptionsBuilder.Append("user-data-dir=");
-            profileOptionsBuilder.Append(uniquePath);
-            options.AddArgument(profileOptionsBuilder.ToString());
-            options.AddArgument("profile-directory=Default");
-        }
-        catch (Exception ex)
-        {
-            return new Error(
-                $"Failed to create unique profile or copy directory. Exception: {ex.Message}"
-            );
-        }
-
-        return uniquePath;
+        var uniquePath = Path.Combine(parentPath, id.ToString());
+        CopyDirectory(WebDriverConstants.ProfilePath, uniquePath);
+        profilePath = uniquePath;
     }
 
     private static void CopyDirectory(string sourceDir, string destDir)
@@ -116,7 +103,7 @@ internal sealed class WebDriverOptionsFactory
             files,
             file =>
             {
-                string destFile = Path.Combine(destDir, Path.GetFileName(file));
+                var destFile = Path.Combine(destDir, Path.GetFileName(file));
                 lock (_lock)
                 {
                     File.Copy(file, destFile, true);
@@ -129,7 +116,7 @@ internal sealed class WebDriverOptionsFactory
             dirs,
             dir =>
             {
-                string destSubDir = Path.Combine(destDir, Path.GetFileName(dir));
+                var destSubDir = Path.Combine(destDir, Path.GetFileName(dir));
                 CopyDirectory(dir, destSubDir);
             }
         );
