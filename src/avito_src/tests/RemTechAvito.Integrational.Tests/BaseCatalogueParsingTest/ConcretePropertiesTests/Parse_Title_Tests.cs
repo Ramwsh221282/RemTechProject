@@ -19,10 +19,8 @@ public sealed class Parse_Title_Tests : BasicParserTests
         const string path = ".//h1[@data-marker='item-view/title-info']";
         const string name = "title";
 
-        using CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken ct = cts.Token;
-        Worker worker = _serviceProvider.GetRequiredService<Worker>();
-        await worker.StartAsync(ct);
+        using var cts = new CancellationTokenSource();
+        var ct = cts.Token;
 
         try
         {
@@ -32,8 +30,8 @@ public sealed class Parse_Title_Tests : BasicParserTests
                 user,
                 password
             );
-            WebElementPool pool = new WebElementPool();
-            using WebDriverSession session = new WebDriverSession(publisher);
+            var pool = new WebElementPool();
+            using var session = new WebDriverSession(publisher);
             await session.ExecuteBehavior(new StartBehavior("none"), ct);
             await session.ExecuteBehavior(new OpenPageBehavior(url), ct);
             await session.ExecuteBehavior(new ScrollToBottomRetriable(5), ct);
@@ -44,7 +42,7 @@ public sealed class Parse_Title_Tests : BasicParserTests
             );
             await session.ExecuteBehavior(new StopBehavior(), ct);
 
-            Result<WebElement> title = pool[^1];
+            var title = pool[^1];
             Assert.True(title.IsSuccess);
             Assert.NotEqual(string.Empty, title.Value.InnerText);
             _logger.Information("Title: {Title}", title.Value.InnerText);
@@ -57,10 +55,6 @@ public sealed class Parse_Title_Tests : BasicParserTests
                 ex.Source
             );
         }
-        finally
-        {
-            await worker.StopAsync(ct);
-        }
     }
 
     [Fact]
@@ -72,10 +66,8 @@ public sealed class Parse_Title_Tests : BasicParserTests
         const string path = ".//h1[@data-marker='item-view/title-info']";
         const string name = "title";
 
-        using CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken ct = cts.Token;
-        Worker worker = _serviceProvider.GetRequiredService<Worker>();
-        await worker.StartAsync(ct);
+        using var cts = new CancellationTokenSource();
+        var ct = cts.Token;
 
         try
         {
@@ -85,8 +77,8 @@ public sealed class Parse_Title_Tests : BasicParserTests
                 user,
                 password
             );
-            WebElementPool pool = new WebElementPool();
-            using WebDriverSession session = new WebDriverSession(publisher);
+            var pool = new WebElementPool();
+            using var session = new WebDriverSession(publisher);
             await session.ExecuteBehavior(new StartBehavior("none"), ct);
             await session.ExecuteBehavior(new OpenPageBehavior(url), ct);
             await session.ExecuteBehavior(new ScrollToBottomRetriable(5), ct);
@@ -97,13 +89,13 @@ public sealed class Parse_Title_Tests : BasicParserTests
             );
             await session.ExecuteBehavior(new StopBehavior(), ct);
 
-            Result<WebElement> title = pool[^1];
+            var title = pool[^1];
             Assert.True(title.IsSuccess);
-            string html = title.Value.OuterHTML;
+            var html = title.Value.OuterHTML;
             Assert.NotEqual(string.Empty, html);
-            HtmlNode node = HtmlNode.CreateNode(html);
-            string directInnerText = node.GetDirectInnerText();
-            string innerText = node.InnerText;
+            var node = HtmlNode.CreateNode(html);
+            var directInnerText = node.GetDirectInnerText();
+            var innerText = node.InnerText;
             _logger.Information("Title (direct inner text): {Title}", directInnerText);
             _logger.Information("Title (just inner text: {Title}", innerText);
         }
@@ -114,10 +106,6 @@ public sealed class Parse_Title_Tests : BasicParserTests
                 ex.Message,
                 ex.Source
             );
-        }
-        finally
-        {
-            await worker.StopAsync(ct);
         }
     }
 }

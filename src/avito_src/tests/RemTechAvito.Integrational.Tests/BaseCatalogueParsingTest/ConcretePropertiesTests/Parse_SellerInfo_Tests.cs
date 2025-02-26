@@ -19,10 +19,8 @@ public sealed class Parse_SellerInfo_Tests : BasicParserTests
         const string path = ".//div[@data-marker='item-view/seller-info']";
         const string name = "seller-info";
 
-        using CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken ct = cts.Token;
-        Worker worker = _serviceProvider.GetRequiredService<Worker>();
-        await worker.StartAsync(ct);
+        using var cts = new CancellationTokenSource();
+        var ct = cts.Token;
 
         try
         {
@@ -32,8 +30,8 @@ public sealed class Parse_SellerInfo_Tests : BasicParserTests
                 user,
                 password
             );
-            WebElementPool pool = new WebElementPool();
-            using WebDriverSession session = new WebDriverSession(publisher);
+            var pool = new WebElementPool();
+            using var session = new WebDriverSession(publisher);
             await session.ExecuteBehavior(new StartBehavior("none"), ct);
             await session.ExecuteBehavior(new OpenPageBehavior(url), ct);
             await session.ExecuteBehavior(new ScrollToBottomRetriable(5), ct);
@@ -44,18 +42,16 @@ public sealed class Parse_SellerInfo_Tests : BasicParserTests
             );
             await session.ExecuteBehavior(new StopBehavior(), ct);
 
-            Result<WebElement> title = pool[^1];
+            var title = pool[^1];
             Assert.True(title.IsSuccess);
-            string html = title.Value.OuterHTML;
+            var html = title.Value.OuterHTML;
             Assert.NotEqual(string.Empty, html);
-            HtmlNode node = HtmlNode.CreateNode(html);
-            HtmlNode? sellerNameNode = node.SelectSingleNode(
-                ".//div[@data-marker='seller-info/name']"
-            );
-            HtmlNode valuesContainer = sellerNameNode.FirstChild;
-            HtmlNode valuesWrapper = valuesContainer.FirstChild;
-            string sellerName = valuesWrapper.FirstChild.InnerText;
-            string sellerStatus = valuesWrapper.LastChild.InnerText;
+            var node = HtmlNode.CreateNode(html);
+            var sellerNameNode = node.SelectSingleNode(".//div[@data-marker='seller-info/name']");
+            var valuesContainer = sellerNameNode.FirstChild;
+            var valuesWrapper = valuesContainer.FirstChild;
+            var sellerName = valuesWrapper.FirstChild.InnerText;
+            var sellerStatus = valuesWrapper.LastChild.InnerText;
 
             _logger.Information("Seller name: {Name}", sellerName);
             _logger.Information("Seller status: {Status}", sellerStatus);
@@ -67,10 +63,6 @@ public sealed class Parse_SellerInfo_Tests : BasicParserTests
                 ex.Message,
                 ex.Source
             );
-        }
-        finally
-        {
-            await worker.StopAsync(ct);
         }
     }
 
@@ -83,10 +75,8 @@ public sealed class Parse_SellerInfo_Tests : BasicParserTests
         const string path = ".//div[@data-marker='item-view/seller-info']";
         const string name = "seller-info";
 
-        using CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken ct = cts.Token;
-        Worker worker = _serviceProvider.GetRequiredService<Worker>();
-        await worker.StartAsync(ct);
+        using var cts = new CancellationTokenSource();
+        var ct = cts.Token;
 
         try
         {
@@ -96,8 +86,8 @@ public sealed class Parse_SellerInfo_Tests : BasicParserTests
                 user,
                 password
             );
-            WebElementPool pool = new WebElementPool();
-            using WebDriverSession session = new WebDriverSession(publisher);
+            var pool = new WebElementPool();
+            using var session = new WebDriverSession(publisher);
             await session.ExecuteBehavior(new StartBehavior("none"), ct);
             await session.ExecuteBehavior(new OpenPageBehavior(url), ct);
             await session.ExecuteBehavior(new ScrollToBottomRetriable(5), ct);
@@ -108,18 +98,16 @@ public sealed class Parse_SellerInfo_Tests : BasicParserTests
             );
             await session.ExecuteBehavior(new StopBehavior(), ct);
 
-            Result<WebElement> title = pool[^1];
+            var title = pool[^1];
             Assert.True(title.IsSuccess);
-            string html = title.Value.OuterHTML;
+            var html = title.Value.OuterHTML;
             Assert.NotEqual(string.Empty, html);
-            HtmlNode node = HtmlNode.CreateNode(html);
-            HtmlNode? sellerNameNode = node.SelectSingleNode(
-                ".//div[@data-marker='seller-info/name']"
-            );
-            HtmlNode valuesContainer = sellerNameNode.FirstChild;
-            HtmlNode valuesWrapper = valuesContainer.FirstChild;
-            string sellerName = valuesWrapper.FirstChild.InnerText;
-            string sellerStatus = valuesWrapper.LastChild.InnerText;
+            var node = HtmlNode.CreateNode(html);
+            var sellerNameNode = node.SelectSingleNode(".//div[@data-marker='seller-info/name']");
+            var valuesContainer = sellerNameNode.FirstChild;
+            var valuesWrapper = valuesContainer.FirstChild;
+            var sellerName = valuesWrapper.FirstChild.InnerText;
+            var sellerStatus = valuesWrapper.LastChild.InnerText;
 
             _logger.Information("Seller name: {Name}", sellerName);
             _logger.Information("Seller status: {Status}", sellerStatus);
@@ -131,10 +119,6 @@ public sealed class Parse_SellerInfo_Tests : BasicParserTests
                 ex.Message,
                 ex.Source
             );
-        }
-        finally
-        {
-            await worker.StopAsync(ct);
         }
     }
 }

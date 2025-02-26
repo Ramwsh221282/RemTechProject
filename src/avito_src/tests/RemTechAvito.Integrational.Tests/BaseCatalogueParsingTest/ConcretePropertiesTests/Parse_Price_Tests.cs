@@ -19,10 +19,8 @@ public sealed class Parse_Price_Tests : BasicParserTests
         const string type = "xpath";
         const string name = "price";
 
-        using CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken ct = cts.Token;
-        Worker worker = _serviceProvider.GetRequiredService<Worker>();
-        await worker.StartAsync(ct);
+        using var cts = new CancellationTokenSource();
+        var ct = cts.Token;
 
         try
         {
@@ -32,8 +30,8 @@ public sealed class Parse_Price_Tests : BasicParserTests
                 user,
                 password
             );
-            WebElementPool pool = new WebElementPool();
-            using WebDriverSession session = new WebDriverSession(publisher);
+            var pool = new WebElementPool();
+            using var session = new WebDriverSession(publisher);
             await session.ExecuteBehavior(new StartBehavior("none"), ct);
             await session.ExecuteBehavior(new OpenPageBehavior(url), ct);
             await session.ExecuteBehavior(new ScrollToBottomRetriable(5), ct);
@@ -44,39 +42,39 @@ public sealed class Parse_Price_Tests : BasicParserTests
             );
             await session.ExecuteBehavior(new StopBehavior(), ct);
 
-            Result<WebElement> title = pool[^1];
+            var title = pool[^1];
             Assert.True(title.IsSuccess);
-            string html = title.Value.OuterHTML;
+            var html = title.Value.OuterHTML;
 
-            HtmlNode parent = HtmlNode.CreateNode(html);
-            HtmlNode? priceValueNode = parent.SelectSingleNode(
+            var parent = HtmlNode.CreateNode(html);
+            var priceValueNode = parent.SelectSingleNode(
                 ".//span[@data-marker='item-view/item-price']"
             );
             Assert.NotNull(priceValueNode);
             IEnumerable<HtmlAttribute> priceValueNodeAttributes = priceValueNode.GetAttributes();
-            HtmlAttribute? priceValueAttribute = priceValueNodeAttributes.FirstOrDefault(a =>
+            var priceValueAttribute = priceValueNodeAttributes.FirstOrDefault(a =>
                 a.Name == "content"
             );
             Assert.NotNull(priceValueAttribute);
-            string price = priceValueAttribute.Value;
+            var price = priceValueAttribute.Value;
 
-            HtmlNode? currencyNode = parent.SelectSingleNode(".//span[@itemprop='priceCurrency']");
+            var currencyNode = parent.SelectSingleNode(".//span[@itemprop='priceCurrency']");
             Assert.NotNull(currencyNode);
             IEnumerable<HtmlAttribute> priceCurrencyAttributes = currencyNode.GetAttributes();
-            HtmlAttribute? currencyAttribute = priceCurrencyAttributes.FirstOrDefault(a =>
+            var currencyAttribute = priceCurrencyAttributes.FirstOrDefault(a =>
                 a.Name == "content"
             );
             Assert.NotNull(currencyAttribute);
-            string currency = currencyAttribute.Value;
+            var currency = currencyAttribute.Value;
 
-            HtmlNode? extraInfoNodeContainer = parent.SelectSingleNode(
+            var extraInfoNodeContainer = parent.SelectSingleNode(
                 ".//span[@class='style-price-value-additional-pFInr']"
             );
             Assert.NotNull(extraInfoNodeContainer);
-            string extra = extraInfoNodeContainer.InnerText;
+            var extra = extraInfoNodeContainer.InnerText;
 
             ReadOnlySpan<char> extraSpan = extra;
-            int index = extraSpan.IndexOf(';');
+            var index = extraSpan.IndexOf(';');
             extraSpan = extraSpan.Slice(index + 1);
             extra = $"{extraSpan}";
 
@@ -91,10 +89,6 @@ public sealed class Parse_Price_Tests : BasicParserTests
                 ex.Message,
                 ex.Source
             );
-        }
-        finally
-        {
-            await worker.StopAsync(ct);
         }
     }
 }

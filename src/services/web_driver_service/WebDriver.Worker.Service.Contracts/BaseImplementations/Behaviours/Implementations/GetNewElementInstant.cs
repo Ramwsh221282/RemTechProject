@@ -19,8 +19,8 @@ public abstract class GetSingleElementBasic(
     )
     {
         var request = await publisher.Send(new GetSingleElementContract(path, pathType), ct);
-        WebElementResponse response = request.FromResult<WebElementResponse>();
-        Result result = request.ToResult();
+        var response = request.FromResult<WebElementResponse>();
+        var result = request.ToResult();
 
         if (result.IsFailure)
             return result;
@@ -53,15 +53,15 @@ public sealed class GetNewElementRetriable(
         CancellationToken ct = default
     )
     {
-        int attempts = 0;
+        var attempts = 0;
         while (attempts < MaxAttempts)
         {
-            Result execution = await base.Execute(publisher, ct);
+            var execution = await base.Execute(publisher, ct);
 
             if (execution.IsSuccess)
                 return execution;
 
-            await Task.Delay(TimeSpan.FromSeconds(1));
+            await Task.Delay(TimeSpan.FromSeconds(1), ct);
             attempts++;
         }
 

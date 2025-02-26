@@ -128,4 +128,14 @@ public sealed class Parser_Profile_CRUD_Tests
         var update = await handler.Handle(command, token);
         Assert.True(update.IsSuccess);
     }
+
+    [Fact]
+    public async Task Get_Active_Only_Profiles()
+    {
+        using var cts = new CancellationTokenSource();
+        var token = cts.Token;
+        var repository = _provider.GetRequiredService<IParserProfileReadRepository>();
+        var data = await repository.GetActiveOnly(token);
+        Assert.NotEmpty(data);
+    }
 }

@@ -14,12 +14,18 @@ public sealed class Parse_Photos_Tests : BasicParserTests
 
     private sealed record PhotoClickingQueue
     {
-        private readonly Queue<PhotoClicking> _queue = new Queue<PhotoClicking>();
+        private readonly Queue<PhotoClicking> _queue = new();
         public int Count => _queue.Count;
 
-        public void Add(PhotoClicking clicking) => _queue.Enqueue(clicking);
+        public void Add(PhotoClicking clicking)
+        {
+            _queue.Enqueue(clicking);
+        }
 
-        public PhotoClicking Dequeue() => _queue.Dequeue();
+        public PhotoClicking Dequeue()
+        {
+            return _queue.Dequeue();
+        }
     }
 
     [Fact]
@@ -32,10 +38,8 @@ public sealed class Parse_Photos_Tests : BasicParserTests
         const string rightButtonPath = ".//div[@data-marker='image-frame/right-button']";
         const string name = "images-wrapper";
 
-        using CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken ct = cts.Token;
-        Worker worker = _serviceProvider.GetRequiredService<Worker>();
-        await worker.StartAsync(ct);
+        using var cts = new CancellationTokenSource();
+        var ct = cts.Token;
 
         try
         {
@@ -45,8 +49,8 @@ public sealed class Parse_Photos_Tests : BasicParserTests
                 user,
                 password
             );
-            WebElementPool pool = new WebElementPool();
-            using WebDriverSession session = new WebDriverSession(publisher);
+            var pool = new WebElementPool();
+            using var session = new WebDriverSession(publisher);
             await session.ExecuteBehavior(new StartBehavior("none"), ct);
             await session.ExecuteBehavior(new OpenPageBehavior(url), ct);
             await session.ExecuteBehavior(new ScrollToBottomRetriable(5), ct);
@@ -60,22 +64,22 @@ public sealed class Parse_Photos_Tests : BasicParserTests
                 ct
             );
 
-            Result<WebElement> wrapper = pool[^2];
+            var wrapper = pool[^2];
             Assert.True(wrapper.IsSuccess);
 
-            Result<WebElement> scroller = pool[^1];
+            var scroller = pool[^1];
             Assert.True(scroller.IsSuccess);
 
-            HtmlDocument document = new HtmlDocument();
+            var document = new HtmlDocument();
             document.LoadHtml(wrapper.Value.OuterHTML);
-            HtmlNodeCollection? items = document.DocumentNode.SelectNodes(".//li");
+            var items = document.DocumentNode.SelectNodes(".//li");
             Assert.NotNull(items);
             Assert.Equal(9, items.Count);
 
-            PhotoClickingQueue clickQueue = new PhotoClickingQueue();
+            var clickQueue = new PhotoClickingQueue();
 
-            int imageArraySize = 0;
-            int lastNotInitializedImageIndex = 0;
+            var imageArraySize = 0;
+            var lastNotInitializedImageIndex = 0;
 
             foreach (var item in items)
             {
@@ -83,9 +87,7 @@ public sealed class Parse_Photos_Tests : BasicParserTests
                     continue;
 
                 IEnumerable<HtmlAttribute> attributes = item.Attributes;
-                HtmlAttribute? typeAttribute = attributes.FirstOrDefault(a =>
-                    a.Name == "data-type"
-                );
+                var typeAttribute = attributes.FirstOrDefault(a => a.Name == "data-type");
 
                 if (typeAttribute == null)
                     continue;
@@ -100,16 +102,18 @@ public sealed class Parse_Photos_Tests : BasicParserTests
                 clickQueue.Add(new PhotoClicking(true));
             }
 
-            string[] imageLinksArray = new string[imageArraySize];
+            var imageLinksArray = new string[imageArraySize];
 
             while (clickQueue.Count != 0)
             {
-                bool shouldSkip = clickQueue.Dequeue().ShouldSkip;
+                var shouldSkip = clickQueue.Dequeue().ShouldSkip;
                 if (shouldSkip)
+                {
                     await session.ExecuteBehavior(
                         new ClickOnElementRetriable(scroller.Value, 10),
                         ct
                     );
+                }
                 else
                 {
                     await session.ExecuteBehavior(
@@ -122,20 +126,18 @@ public sealed class Parse_Photos_Tests : BasicParserTests
                         ),
                         ct
                     );
-                    Result<WebElement> image = pool[^1];
+                    var image = pool[^1];
                     Assert.True(image.IsSuccess);
-                    HtmlDocument imageDocument = new HtmlDocument();
+                    var imageDocument = new HtmlDocument();
                     imageDocument.LoadHtml(image.Value.OuterHTML);
-                    HtmlNode imageNode = imageDocument.DocumentNode.SelectSingleNode(".//img");
+                    var imageNode = imageDocument.DocumentNode.SelectSingleNode(".//img");
                     if (imageNode == null)
                         continue;
                     IEnumerable<HtmlAttribute> imageAttributes = imageNode.Attributes;
-                    HtmlAttribute? srcAttribute = imageAttributes.FirstOrDefault(a =>
-                        a.Name == "src"
-                    );
+                    var srcAttribute = imageAttributes.FirstOrDefault(a => a.Name == "src");
                     if (srcAttribute == null)
                         continue;
-                    string imageLink = srcAttribute.Value;
+                    var imageLink = srcAttribute.Value;
                     imageLinksArray[lastNotInitializedImageIndex] = imageLink;
                     lastNotInitializedImageIndex++;
                     _logger.Information("image link: {image}", imageLink);
@@ -158,10 +160,6 @@ public sealed class Parse_Photos_Tests : BasicParserTests
                 ex.Message,
                 ex.Source
             );
-        }
-        finally
-        {
-            await worker.StopAsync(ct);
         }
     }
 }

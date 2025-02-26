@@ -12,29 +12,21 @@ public sealed class BasicParseTransportStatesTest : BasicParserTests
     [Fact]
     public async Task Invoke_Basic_Transport_States_Test()
     {
-        bool noExceptions = true;
-        using CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken ct = cts.Token;
-        using Worker worker = _serviceProvider.GetRequiredService<Worker>();
-        await worker.StartAsync(ct);
+        var noExceptions = true;
+        using var cts = new CancellationTokenSource();
+        var ct = cts.Token;
 
         try
         {
             ParseTransportStatesCommand command = new();
-            IAvitoCommandHandler<ParseTransportStatesCommand> handler =
-                _serviceProvider.GetRequiredService<
-                    IAvitoCommandHandler<ParseTransportStatesCommand>
-                >();
+            var handler = _serviceProvider.GetRequiredService<
+                IAvitoCommandHandler<ParseTransportStatesCommand>
+            >();
             await handler.Handle(command, ct);
         }
         catch (Exception ex)
         {
-            SingleCommunicationPublisher publisher = new SingleCommunicationPublisher(
-                queue,
-                host,
-                user,
-                password
-            );
+            var publisher = new SingleCommunicationPublisher(queue, host, user, password);
             await publisher.Send(new StopWebDriverContract(), ct);
             noExceptions = false;
             _logger.Fatal(
@@ -44,7 +36,6 @@ public sealed class BasicParseTransportStatesTest : BasicParserTests
             );
         }
 
-        await worker.StopAsync(ct);
         Assert.True(noExceptions);
     }
 }

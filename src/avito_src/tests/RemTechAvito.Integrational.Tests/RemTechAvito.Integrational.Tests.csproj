@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <Optimize>true</Optimize>
-      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Optimize>true</Optimize>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,9 +24,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\services\web_driver_service\WebDriver.Worker.Service\WebDriver.Worker.Service.csproj" />
-      <ProjectReference Include="..\..\RemTechAvito.Application\RemTechAvito.Application.csproj" />
-      <ProjectReference Include="..\..\RemTechAvito.DependencyInjection\RemTechAvito.DependencyInjection.csproj" />
+        <ProjectReference Include="..\..\RemTechAvito.Application\RemTechAvito.Application.csproj"/>
+        <ProjectReference Include="..\..\RemTechAvito.DependencyInjection\RemTechAvito.DependencyInjection.csproj"/>
     </ItemGroup>
 
 </Project>

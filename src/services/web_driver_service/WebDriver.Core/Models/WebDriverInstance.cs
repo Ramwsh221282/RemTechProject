@@ -11,49 +11,49 @@ namespace WebDriver.Core.Models;
 public sealed class WebDriverInstance
 {
     private static readonly string script =
-        @"                
+        @"
                 Object.defineProperty(navigator, 'webdriver', {
                     get: () => undefined,
                     configurable: true // Make it configurable so it can be redefined later if needed
                 });
-
-                Object.defineProperty(navigator, 'languages', { 
-                     get: () => ['ru-RU', 'ru'] 
+    
+                Object.defineProperty(navigator, 'languages', {
+                     get: () => ['ru-RU', 'ru']
                 });
-
-                Object.defineProperty(navigator, 'vendor', { 
-                     get: () => 'Google Inc.' 
+    
+                Object.defineProperty(navigator, 'vendor', {
+                     get: () => 'Google Inc.'
                 });
-
-                Object.defineProperty(navigator, 'platform', { 
-                    get: () => 'Win32' 
+    
+                Object.defineProperty(navigator, 'platform', {
+                    get: () => 'Win32'
                 });
-
-                Object.defineProperty(navigator, 'mimeTypes', { 
-                    get: () => [{ type: 'application/pdf' }, { type: 'application/x-google-chrome-pdf' }] 
+    
+                Object.defineProperty(navigator, 'mimeTypes', {
+                    get: () => [{ type: 'application/pdf' }, { type: 'application/x-google-chrome-pdf' }]
                 });
-
+    
                 const originalQuery = window.navigator.permissions.query;
                     window.navigator.permissions.__proto__.query = (parameters) => (
                         parameters.name === 'notifications' ?
                         Promise.resolve({ state: Notification.permission }) :
                         originalQuery(parameters)
                     );
-
+    
                 if (window.WebGLRenderingContext) {
                         const originalGetParameter = WebGLRenderingContext.prototype.getParameter;
                         WebGLRenderingContext.prototype.getParameter = function(parameter) {
                             // Constants for UNMASKED_VENDOR_WEBGL and UNMASKED_RENDERER_WEBGL
-                            if (parameter === 37445) { 
+                            if (parameter === 37445) {
                                 return 'Google Inc.';
                             }
-                            if (parameter === 37446) { 
+                            if (parameter === 37446) {
                                 return 'ANGLE (Intel(R) HD Graphics)';
                             }
                             return originalGetParameter.call(this, parameter);
                         };
                     }
-                
+    
                 Object.defineProperty(navigator, 'plugins', {
                     get: () => ({
                         length: 0,
@@ -61,33 +61,39 @@ public sealed class WebDriverInstance
                         namedItem: () => null
                     }),
                     configurable: true
-                });               
-                
+                });
+    
                 const originalUserAgent = navigator.userAgent;
                 Object.defineProperty(navigator, 'userAgent', {
                     get: () => originalUserAgent.replace('HeadlessChrome', 'Chrome'),
                     configurable: true
                 });
-                
-                delete window.__cdc_function_toString;                
+    
+                delete window.__cdc_function_toString;
                 if (Element.prototype.hasOwnProperty('attachShadow')) {
                     delete Element.prototype.attachShadow;
                 }
             ";
 
-    private readonly WebElementObjectsPool _pool = new WebElementObjectsPool();
+    private readonly WebElementObjectsPool _pool = new();
     private IWebDriverState _state = new NotInitializedState();
     private IWebDriver _instance = null!;
     public string ProfilePath { get; private set; } = string.Empty;
 
-    internal void AddInPool(WebElementObject element) => _pool.RegisterObject(element);
+    internal void AddInPool(WebElementObject element)
+    {
+        _pool.RegisterObject(element);
+    }
 
-    internal Result<WebElementObject> GetFromPool(Guid id) => _pool[id];
+    internal Result<WebElementObject> GetFromPool(Guid id)
+    {
+        return _pool[id];
+    }
 
     public Result StopWebDriver()
     {
-        StopDriverInteraction strategy = new StopDriverInteraction(_instance, _state);
-        Result stopping = strategy.Perform(this);
+        var strategy = new StopDriverInteraction(_instance, _state);
+        var stopping = strategy.Perform(this);
 
         if (stopping.IsFailure)
             return stopping;
@@ -98,8 +104,8 @@ public sealed class WebDriverInstance
 
     public Result StartWebDriver(string loadStrategy)
     {
-        StartDriverInteraction strategy = new StartDriverInteraction(loadStrategy);
-        Result<(IWebDriver, string)> instantiation = strategy.Perform();
+        var strategy = new StartDriverInteraction(loadStrategy);
+        var instantiation = strategy.Perform();
 
         if (instantiation.IsFailure)
             return instantiation.Error;
@@ -108,7 +114,6 @@ public sealed class WebDriverInstance
         ProfilePath = instantiation.Value.Item2;
 
         while (true)
-        {
             try
             {
                 ((IJavaScriptExecutor)_instance).ExecuteScript(script);
@@ -118,7 +123,6 @@ public sealed class WebDriverInstance
             {
                 // ignored
             }
-        }
 
         _state = new SleepingState();
         return Result.Success();
@@ -133,11 +137,14 @@ public sealed class WebDriverInstance
         return Result<IWebDriver>.Success(_instance);
     }
 
-    public void RefreshPool() => _pool.Refresh();
+    public void RefreshPool()
+    {
+        _pool.Refresh();
+    }
 
     public async Task<Result<T>> PerformInteraction<T>(IInteractionStrategy<T> strategy)
     {
-        Result<T> result = await strategy.Perform(this);
+        var result = await strategy.Perform(this);
 
         if (_state is ProcessingState)
             _state = new SleepingState();
@@ -147,7 +154,7 @@ public sealed class WebDriverInstance
 
     public async Task<Result> PerformInteraction(IInteractionStrategy strategy)
     {
-        Result result = await strategy.Perform(this);
+        var result = await strategy.Perform(this);
 
         if (_state is ProcessingState)
             _state = new SleepingState();
@@ -157,7 +164,7 @@ public sealed class WebDriverInstance
 
     public async Task<Result<WebElementObject>> FindElement(ISingleElementSearchStrategy strategy)
     {
-        Result<WebElementObject> result = await strategy.Search(this);
+        var result = await strategy.Search(this);
 
         if (_state is ProcessingState)
             _state = new SleepingState();
@@ -169,7 +176,7 @@ public sealed class WebDriverInstance
         IMultipleElementSearchStrategy strategy
     )
     {
-        Result<WebElementObject[]> result = await strategy.Search(this);
+        var result = await strategy.Search(this);
 
         if (_state is ProcessingState)
             _state = new SleepingState();

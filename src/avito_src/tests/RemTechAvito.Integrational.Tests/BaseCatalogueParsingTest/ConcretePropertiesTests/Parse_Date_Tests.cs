@@ -19,10 +19,8 @@ public sealed class Parse_Date_Tests : BasicParserTests
         const string type = "xpath";
         const string name = "Date";
 
-        using CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken ct = cts.Token;
-        Worker worker = _serviceProvider.GetRequiredService<Worker>();
-        await worker.StartAsync(ct);
+        using var cts = new CancellationTokenSource();
+        var ct = cts.Token;
 
         try
         {
@@ -32,8 +30,8 @@ public sealed class Parse_Date_Tests : BasicParserTests
                 user,
                 password
             );
-            WebElementPool pool = new WebElementPool();
-            using WebDriverSession session = new WebDriverSession(publisher);
+            var pool = new WebElementPool();
+            using var session = new WebDriverSession(publisher);
             await session.ExecuteBehavior(new StartBehavior("none"), ct);
             await session.ExecuteBehavior(new OpenPageBehavior(url), ct);
             await session.ExecuteBehavior(new ScrollToBottomRetriable(5), ct);
@@ -44,15 +42,15 @@ public sealed class Parse_Date_Tests : BasicParserTests
             );
             await session.ExecuteBehavior(new StopBehavior(), ct);
 
-            Result<WebElement> date = pool[^1];
+            var date = pool[^1];
             Assert.True(date.IsSuccess);
-            string html = date.Value.OuterHTML;
+            var html = date.Value.OuterHTML;
 
-            HtmlDocument doc = new HtmlDocument();
+            var doc = new HtmlDocument();
             doc.LoadHtml(html);
             var dateNode = doc.DocumentNode.FirstChild;
             var dateText = dateNode.LastChild;
-            string text = dateText.InnerText;
+            var text = dateText.InnerText;
             _logger.Information("{Date}", text);
         }
         catch (Exception ex)
@@ -62,10 +60,6 @@ public sealed class Parse_Date_Tests : BasicParserTests
                 ex.Message,
                 ex.Source
             );
-        }
-        finally
-        {
-            await worker.StopAsync(ct);
         }
     }
 }

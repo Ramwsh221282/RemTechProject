@@ -16,8 +16,6 @@ public sealed class BasicParseTransportTypeTest : BasicParserTests
         var noException = true;
         using var cts = new CancellationTokenSource();
         var ct = cts.Token;
-        using var worker = _serviceProvider.GetRequiredService<Worker>();
-        await worker.StartAsync(ct);
         try
         {
             ParseTransportTypesCommand command = new();
@@ -34,7 +32,6 @@ public sealed class BasicParseTransportTypeTest : BasicParserTests
             _logger.Fatal("Test finished. Exception: {Ex}", ex.Message);
         }
 
-        await worker.StopAsync(ct);
         Assert.True(noException);
     }
 }

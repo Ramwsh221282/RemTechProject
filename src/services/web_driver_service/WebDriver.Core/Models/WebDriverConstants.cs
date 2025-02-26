@@ -4,7 +4,7 @@ namespace WebDriver.Core.Models;
 
 internal static class WebDriverConstants
 {
-    internal static readonly ChromeConfig DriverConfig = new ChromeConfig();
+    internal static readonly ChromeConfig DriverConfig = new();
 
     internal static readonly string CompatibleVersion = DriverConfig.GetMatchingBrowserVersion();
 
@@ -21,11 +21,13 @@ internal static class WebDriverConstants
 
     internal static readonly string ProfilePath = Path.Combine(
         ChromeDriversCataloguePath,
-        "Profile"
+        "User Data"
     );
 
-    internal static string GetExpectedChromeDriverExecutablePath() =>
-        Environment.Is64BitOperatingSystem
-            ? Path.Combine(WebDriverConstants.ExpectedChromeDriverPath, "X64", "chromedriver.exe")
-            : Path.Combine(WebDriverConstants.ExpectedChromeDriverPath, "X32", "chromedriver.exe");
+    internal static string GetExpectedChromeDriverExecutablePath()
+    {
+        return Environment.Is64BitOperatingSystem
+            ? Path.Combine(ExpectedChromeDriverPath, "X64", "chromedriver.exe")
+            : Path.Combine(ExpectedChromeDriverPath, "X32", "chromedriver.exe");
+    }
 }

@@ -7,12 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\infrastructure_contracts\RemTechAvito.Infrastructure.Contracts.Repository\RemTechAvito.Infrastructure.Contracts.Repository.csproj" />
-      <ProjectReference Include="..\..\RemTechAvito.Contracts.Common\RemTechAvito.Contracts.Common.csproj" />
+        <ProjectReference Include="..\..\infrastructure_contracts\RemTechAvito.Infrastructure.Contracts.Repository\RemTechAvito.Infrastructure.Contracts.Repository.csproj"/>
+        <ProjectReference Include="..\..\RemTechAvito.Contracts.Common\RemTechAvito.Contracts.Common.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MongoDB.Driver" Version="3.2.0" />
+        <PackageReference Include="MongoDB.Driver" Version="3.2.0"/>
     </ItemGroup>
 
 </Project>
