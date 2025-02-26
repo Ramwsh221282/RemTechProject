@@ -1,5 +1,5 @@
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import {Fab, Grow, TextField} from "@mui/material";
+import {Fab, Fade, TextField} from "@mui/material";
 import {ChangeEvent, useState} from "react";
 import {FilterService} from "../Services/FilterAdvertismentsService.ts";
 
@@ -29,8 +29,8 @@ export function AdvertisementsTextSearchBar({service}: { service: FilterService 
 
 
     return (
-        <Grow in={true} timeout={500}>
-            <div className="inline-flex flex-row gap-1 bg-amber-950 py-2 px-1 rounded-md items-center">
+        <Fade in={true} timeout={500}>
+            <div className="inline-flex flex-row gap-1 bg-[#1E1E1E] py-2 px-1 rounded-md items-center">
                 <TextField
                     value={text}
                     onChange={onChange}
@@ -45,6 +45,6 @@ export function AdvertisementsTextSearchBar({service}: { service: FilterService 
                     <SearchOutlinedIcon fontSize={"small"}/>
                 </Fab>
             </div>
-        </Grow>
+        </Fade>
     )
 }

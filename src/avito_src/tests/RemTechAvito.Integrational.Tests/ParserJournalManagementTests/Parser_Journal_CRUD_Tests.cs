@@ -71,8 +71,8 @@ public sealed class Parser_Journal_CRUD_Tests
             var insert = await repository.Add(journal, ct);
             Assert.True(insert.IsSuccess);
             var queryRepository = _provider.GetRequiredService<IParserJournalQueryRepository>();
-            var items = await queryRepository.Get(1, 1, ct);
-            Assert.NotEmpty(items);
+            var response = await queryRepository.Get(1, 1, ct);
+            Assert.NotEmpty(response.Journals);
         }
         catch
         {

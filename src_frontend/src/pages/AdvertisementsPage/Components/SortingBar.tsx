@@ -2,7 +2,7 @@ import * as React from "react";
 import {useState} from "react";
 import NorthIcon from '@mui/icons-material/North';
 import SouthIcon from '@mui/icons-material/South';
-import {Fab, Grow, Typography} from "@mui/material";
+import {Fab, Fade, Typography} from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
 import {PaginationService} from "../Services/PaginationService.ts";
 
@@ -27,8 +27,8 @@ export function SortingBar({service}: { service: PaginationService }) {
     }
 
     return (
-        <Grow in={true} timeout={500}>
-            <div className="flex flex-col gap-2 p-1 rounded-md shadow-neutral-800 shadow-md bg-amber-950">
+        <Fade in={true} timeout={500}>
+            <div className="flex flex-col gap-2 p-1 rounded-md shadow-neutral-800 shadow-md bg-[#1E1E1E]">
                 <Typography sx={{textDecoration: 'underline'}} variant={"subtitle1"}
                             color="textPrimary">{"Сортировка"}</Typography>
                 <div className="flex flex-row gap-3 justify-center">
@@ -60,6 +60,6 @@ export function SortingBar({service}: { service: PaginationService }) {
                     </Fab>
                 </div>
             </div>
-        </Grow>
+        </Fade>
     )
 }

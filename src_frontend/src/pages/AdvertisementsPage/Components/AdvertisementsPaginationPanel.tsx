@@ -23,14 +23,14 @@ export function AdvertisementsPaginationPanel({paginationService, statisticsServ
             <Fade in={true} timeout={500}>
                 <Pagination sx={{
                     margin: "auto",
-                    backgroundColor: '#461901',
+                    backgroundColor: '#1E1E1E',
                     width: '350px',
                     padding: '4px',
-                    borderRadius: '20px',
+                    borderRadius: '5px',
+                    boxShadow: '0 0 5px 1px',
                     alignItems: 'center',
                     justifyContent: 'center',
                     justifyItems: 'center',
-                    boxShadow: '0 0 5px 1px',
                 }}
                             page={paginationService.pagination.page}
                             count={pageCount}

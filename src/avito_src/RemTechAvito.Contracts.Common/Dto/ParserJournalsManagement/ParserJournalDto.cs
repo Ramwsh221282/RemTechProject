@@ -1,6 +1,8 @@
 ﻿namespace RemTechAvito.Contracts.Common.Dto.ParserJournalsManagement;
 
-public sealed class ParserJournalResponse
+public sealed record ParserJournalsResponse(IEnumerable<ParserJournalDto> Journals, int Count);
+
+public sealed class ParserJournalDto
 {
     public Guid Id { get; set; }
     public bool IsSuccess { get; set; }
@@ -11,4 +13,5 @@ public sealed class ParserJournalResponse
     public int Seconds { get; set; } = 0;
     public int ItemsParsed { get; set; } = 0;
     public string Error { get; set; } = string.Empty;
+    public DateOnly CreatedOn { get; set; }
 }

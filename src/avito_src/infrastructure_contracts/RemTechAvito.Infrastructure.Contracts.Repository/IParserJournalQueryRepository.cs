@@ -4,9 +4,5 @@ namespace RemTechAvito.Infrastructure.Contracts.Repository;
 
 public interface IParserJournalQueryRepository
 {
-    Task<IEnumerable<ParserJournalResponse>> Get(
-        int page,
-        int pageSize,
-        CancellationToken ct = default
-    );
+    Task<ParserJournalsResponse> Get(int page, int pageSize, CancellationToken ct = default);
 }
