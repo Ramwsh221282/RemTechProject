@@ -30,6 +30,7 @@ public static class RepositoryExtensions
             var options = p.GetRequiredService<MongoDbOptions>();
             var client = new MongoClient(options.ConnectionString);
             TransportAdvertisementsRepository.RegisterIndexes(client).Wait();
+            TransportTypesMetadata.RegisterIndexes(client).Wait();
             return client;
         });
         services.AddScoped<IParserJournalCommandRepository, ParserJournalCommandRepository>();
@@ -57,9 +58,7 @@ public static class RepositoryExtensions
         return services;
     }
 
-    private static IServiceCollection RegisterTransportAdvertisementQueries(
-        this IServiceCollection services
-    )
+    private static void RegisterTransportAdvertisementQueries(this IServiceCollection services)
     {
         services.AddSingleton<
             IMongoFilterQuery<FilterAdvertisementsDto, TransportAdvertisement>,
@@ -81,6 +80,5 @@ public static class RepositoryExtensions
             IMongoFilterQuery<FilterAdvertisementsDto, TransportAdvertisement>,
             AdvertisementTextSearchQuery
         >();
-        return services;
     }
 }

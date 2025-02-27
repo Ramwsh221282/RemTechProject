@@ -19,11 +19,10 @@ public sealed class ParserProfileController : ApplicationController
     [HttpPost("/parser-profile")]
     public async Task<IActionResult> Create(
         [FromServices] IAvitoCommandHandler<CreateProfileCommand, ParserProfileResponse> handler,
+        [FromBody] CreateProfileCommand command,
         CancellationToken ct = default
     )
     {
-        Console.WriteLine();
-        var command = new CreateProfileCommand();
         var result = await handler.Handle(command, ct);
         return result.IsSuccess
             ? this.ToOkResult(result.Value)

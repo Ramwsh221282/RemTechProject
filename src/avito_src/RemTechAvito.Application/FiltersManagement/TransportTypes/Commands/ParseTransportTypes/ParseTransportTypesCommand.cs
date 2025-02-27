@@ -1,4 +1,6 @@
-﻿using RemTechAvito.Application.Abstractions.Handlers;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RemTechAvito.Application.Abstractions.Handlers;
+using RemTechAvito.Contracts.Common.Dto.TransportTypesManagement;
 using RemTechAvito.Contracts.Common.Responses.TransportTypesManagement;
 using RemTechAvito.Core.FiltersManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
@@ -8,11 +10,21 @@ using Serilog;
 
 namespace RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.ParseTransportTypes;
 
-public sealed record ParseTransportTypesCommand : IAvitoCommand<TransportTypeResponse>;
+public sealed record ParseTransportTypesCommand : IAvitoCommand<TransportTypeResponse>
+{
+    internal static void Register(IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddScoped<
+            IAvitoCommandHandler<ParseTransportTypesCommand, TransportTypeResponse>,
+            ParseTransportTypesCommandHandler
+        >();
+    }
+}
 
 internal sealed class ParseTransportTypesCommandHandler(
     ITransportTypesParser parser,
-    ITransportTypesCommandRepository repository,
+    ITransportTypesCommandRepository commandRepository,
+    ITransportTypesQueryRepository queryRepository,
     ILogger logger
 ) : IAvitoCommandHandler<ParseTransportTypesCommand, TransportTypeResponse>
 {
@@ -24,7 +36,8 @@ internal sealed class ParseTransportTypesCommandHandler(
         logger.Information("{Command} invoked.", nameof(ParseTransportTypesCommand));
 
         var types = parser.Parse(ct);
-        List<TransportType> results = [];
+        var results = new List<SystemTransportType>();
+
         await foreach (var type in types)
         {
             if (type.IsFailure)
@@ -40,17 +53,36 @@ internal sealed class ParseTransportTypesCommandHandler(
             results.Add(type);
         }
 
-        var insertion = await repository.Add(results, ct);
+        var existingLinks = await queryRepository.Get(
+            new GetTransportTypesQuery(
+                Links: results.Select(r => new GetTransportTypeLinkCondition(r.Link)).ToArray()
+            ),
+            ct
+        );
+
+        var newTypes = results.Where(r => !existingLinks.Items.Any(i => i.Link == r.Link)).ToList();
+
+        if (newTypes.Count == 0)
+        {
+            logger.Information(
+                "{Command} no new transport types found.",
+                nameof(ParseTransportTypesCommand)
+            );
+            return new TransportTypeResponse([], results.Count);
+        }
+
+        var insertion = await commandRepository.AddMany(newTypes, ct);
         if (insertion.IsFailure)
             return insertion.Error;
 
         logger.Information(
-            "{Command} parsing completed. Parsed results: {Count}.",
+            "{Command} parsing completed. Parsed results: {Count}. New types added: {NewCount}.",
             nameof(ParseTransportTypesCommand),
-            results.Count
+            results.Count,
+            newTypes.Count
         );
 
-        var items = results.Select(t => new TransportTypeDto(t.Name, t.Link));
+        var items = newTypes.Select(t => new TransportTypeDto(t.Name, t.Link));
         return new TransportTypeResponse(items, results.Count);
     }
 }

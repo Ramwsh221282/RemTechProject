@@ -28,7 +28,7 @@ public sealed class BasicParseTransportTypeTest : BasicParserTests
         {
             noException = false;
             var stopper = new SingleCommunicationPublisher(queue, host, user, password);
-            await stopper.Send(new StopWebDriverContract());
+            await stopper.Send(new StopWebDriverContract(), ct);
             _logger.Fatal("Test finished. Exception: {Ex}", ex.Message);
         }
 

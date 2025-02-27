@@ -1,6 +1,5 @@
 ﻿using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Contracts.Common.Dto.ParserProfileManagement;
-using RemTechAvito.Core.ParserProfileManagement;
 using RemTechAvito.Core.ParserProfileManagement.Entities.ParserProfileLinks;
 using RemTechAvito.Core.ParserProfileManagement.Entities.ParserProfileLinks.ValueObjects;
 using RemTechAvito.Infrastructure.Contracts.Repository;
@@ -72,8 +71,8 @@ internal sealed class UpdateParserProfileLinksCommandHandler
             links.Add(new ParserProfileLink(body, profileLinkId));
         }
 
-        profile.Value.UpdateProfile(links, command.Dto.State);
-        var update = await _commandRepository.Update(profile, ct);
+        var updated = profile.Value.Update(profile.Value.Name, links, command.Dto.State);
+        var update = await _commandRepository.Update(updated, ct);
         return update;
     }
 }

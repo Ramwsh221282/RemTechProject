@@ -5,5 +5,5 @@ namespace RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
 
 public interface ITransportTypesParser
 {
-    IAsyncEnumerable<Result<TransportType>> Parse(CancellationToken ct = default);
+    IAsyncEnumerable<Result<SystemTransportType>> Parse(CancellationToken ct = default);
 }
