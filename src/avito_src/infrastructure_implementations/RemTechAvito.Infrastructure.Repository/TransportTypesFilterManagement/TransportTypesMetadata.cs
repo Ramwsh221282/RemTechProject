@@ -1,9 +1,11 @@
 ﻿using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using RemTechAvito.Core.FiltersManagement.TransportTypes;
+using RemTechAvito.Infrastructure.Repository.Common.Indexes;
 using RemTechAvito.Infrastructure.Repository.Common.Serializers;
 using RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement;
 using RemTechAvito.Infrastructure.Repository.TransportStatesFilterManagement.Serializers;
+using RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement.Indexes;
 using RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement.Serializers;
 
 namespace RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement;
@@ -32,25 +34,11 @@ internal static class TransportTypesMetadata
 
     public static async Task RegisterIndexes(MongoClient client)
     {
-        try
-        {
-            var textSearchIndexModel = new CreateIndexModel<TransportType>(
-                Builders<TransportType>.IndexKeys.Text("type_name"),
-                new CreateIndexOptions() { Name = "Transport_Types_Text_Search" }
-            );
-
-            var textQueryIndexModel = new CreateIndexModel<TransportType>(
-                Builders<TransportType>.IndexKeys.Ascending("type_name"),
-                new CreateIndexOptions() { Name = "Transport_Types_Text_Query" }
-            );
-
-            var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
-            var collection = db.GetCollection<TransportType>(Collection);
-            await collection.Indexes.CreateManyAsync([textSearchIndexModel, textQueryIndexModel]);
-        }
-        catch
-        {
-            // ignored
-        }
+        AbstractIndexModel<TransportType> model = new TransportTypesIndexModel();
+        await model.UpdateIndexesAsync(
+            client,
+            Collection,
+            TransportAdvertisementsRepository.DbName
+        );
     }
 }

@@ -5,10 +5,8 @@ using RemTechAvito.Application.ParserProfileManagement.DeleteProfile;
 using RemTechAvito.Application.ParserProfileManagement.UpdateParserProfileLinks;
 using RemTechAvito.Contracts.Common.Dto.ParserProfileManagement;
 using RemTechAvito.Contracts.Common.Responses.ParserProfileManagement;
-using RemTechAvito.Core.ParserProfileManagement;
 using RemTechAvito.DependencyInjection;
 using RemTechAvito.Infrastructure.Contracts.Repository;
-using RemTechCommon.Utils.ResultPattern;
 
 namespace RemTechAvito.Integrational.Tests.ParserProfileManagement;
 
@@ -29,7 +27,7 @@ public sealed class Parser_Profile_CRUD_Tests
     {
         using var cts = new CancellationTokenSource();
         var token = cts.Token;
-        var command = new CreateProfileCommand();
+        var command = new CreateProfileCommand(new ProfileNameDto("test"));
         var handler = _provider.GetRequiredService<
             IAvitoCommandHandler<CreateProfileCommand, ParserProfileResponse>
         >();

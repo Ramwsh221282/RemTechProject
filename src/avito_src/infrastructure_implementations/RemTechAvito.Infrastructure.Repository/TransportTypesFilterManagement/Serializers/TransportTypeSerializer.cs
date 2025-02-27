@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using System.Data;
+using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using RemTechAvito.Core.FiltersManagement.TransportTypes;
@@ -26,6 +27,9 @@ internal sealed class TransportTypeSerializer : IBsonSerializer<TransportType>
 
         writer.WriteStartDocument();
 
+        writer.WriteName("type_implementor");
+        writer.WriteString(value.Type);
+
         writer.WriteName("type_name");
         writer.WriteString(value.Name);
 
@@ -34,6 +38,23 @@ internal sealed class TransportTypeSerializer : IBsonSerializer<TransportType>
 
         writer.WriteName("date_created");
         writer.WriteDateTime(value.CreatedOn.ToUnix());
+
+        if (value.Type == TransportType.USER_TYPE)
+        {
+            UserTransportType userType = value.Unwrap<UserTransportType>();
+
+            writer.WriteName("type_user_additions");
+            writer.WriteStartArray();
+            foreach (var addition in userType.Additions)
+                writer.WriteString(addition);
+            writer.WriteEndArray();
+
+            writer.WriteName("type_user_profiles");
+            writer.WriteStartArray();
+            foreach (var profile in userType.Profiles)
+                writer.WriteString(profile);
+            writer.WriteEndArray();
+        }
 
         writer.WriteEndDocument();
     }
@@ -46,15 +67,21 @@ internal sealed class TransportTypeSerializer : IBsonSerializer<TransportType>
         var reader = context.Reader;
         reader.ReadStartDocument();
 
-        string name = string.Empty;
-        string link = string.Empty;
-        DateOnly date = default;
+        var implementor = string.Empty;
+        var name = string.Empty;
+        var link = string.Empty;
+        DateOnly createdOn = default;
+        List<string> textSearchAdditions = [];
+        List<string> profileAdditions = [];
 
         while (reader.ReadBsonType() != BsonType.EndOfDocument)
         {
-            string property = reader.ReadName();
+            var property = reader.ReadName();
             switch (property)
             {
+                case "type_implementor":
+                    implementor = reader.ReadString();
+                    break;
                 case "type_name":
                     name = reader.ReadString();
                     break;
@@ -62,7 +89,19 @@ internal sealed class TransportTypeSerializer : IBsonSerializer<TransportType>
                     link = reader.ReadString();
                     break;
                 case "date_created":
-                    date = reader.ReadDateTime().FromUnix();
+                    createdOn = reader.ReadDateTime().FromUnix();
+                    break;
+                case "type_user_additions":
+                    reader.ReadStartArray();
+                    while (reader.ReadBsonType() != BsonType.EndOfDocument)
+                        textSearchAdditions.Add(reader.ReadString());
+                    reader.ReadEndArray();
+                    break;
+                case "type_user_profiles":
+                    reader.ReadStartArray();
+                    while (reader.ReadBsonType() != BsonType.EndOfDocument)
+                        profileAdditions.Add(reader.ReadString());
+                    reader.ReadEndArray();
                     break;
                 default:
                     reader.SkipValue();
@@ -71,7 +110,15 @@ internal sealed class TransportTypeSerializer : IBsonSerializer<TransportType>
         }
 
         reader.ReadEndDocument();
-        return TransportType.Create(name, link, date);
+        return implementor switch
+        {
+            TransportType.USER_TYPE => UserTransportType
+                .Create(name, link, createdOn, textSearchAdditions)
+                .Value.Unwrap<UserTransportType>()
+                .Value.Update(profileAdditions, textSearchAdditions),
+            TransportType.SYSTEM_TYPE => SystemTransportType.Create(name, link, createdOn),
+            _ => throw new InvalidConstraintException("Unknown transport type"),
+        };
     }
 
     public void Serialize(

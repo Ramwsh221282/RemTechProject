@@ -7,16 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="FiltersManagement\CustomerStates\Queries\" />
-      <Folder Include="FiltersManagement\CustomerTypes\Queries\" />
-      <Folder Include="FiltersManagement\TransportStates\Queries\" />
-      <Folder Include="FiltersManagement\TransportTypes\Queries\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\infrastructure_contracts\RemTechAvito.Infrastructure.Contracts.Parser\RemTechAvito.Infrastructure.Contracts.Parser.csproj" />
-      <ProjectReference Include="..\infrastructure_contracts\RemTechAvito.Infrastructure.Contracts.Repository\RemTechAvito.Infrastructure.Contracts.Repository.csproj" />
-      <ProjectReference Include="..\RemTechAvito.Core\RemTechAvito.Core.csproj" />
+        <ProjectReference Include="..\infrastructure_contracts\RemTechAvito.Infrastructure.Contracts.Parser\RemTechAvito.Infrastructure.Contracts.Parser.csproj"/>
+        <ProjectReference Include="..\infrastructure_contracts\RemTechAvito.Infrastructure.Contracts.Repository\RemTechAvito.Infrastructure.Contracts.Repository.csproj"/>
+        <ProjectReference Include="..\RemTechAvito.Core\RemTechAvito.Core.csproj"/>
     </ItemGroup>
 
 </Project>

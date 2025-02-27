@@ -20,20 +20,24 @@ public sealed class ParserProfile
         }
     }
 
-    public ParserProfileId Id { get; private set; }
-    public DateCreated CreatedOn { get; private set; }
-    public ParserProfileState State { get; private set; }
+    public ParserProfileId Id { get; private set; } = new(GuidUtils.New());
+    public DateCreated CreatedOn { get; private set; } = DateCreated.Current();
+    public ParserProfileState State { get; private set; } = ParserProfileState.CreateInactive();
+    public ParserProfileName Name { get; private set; }
 
-    public ParserProfile()
+    public ParserProfile(ParserProfileName name)
     {
-        Id = new ParserProfileId(GuidUtils.New());
-        CreatedOn = DateCreated.Current();
-        State = ParserProfileState.CreateInactive();
+        Name = name;
     }
 
-    public void UpdateProfile(List<ParserProfileLink> links, bool state)
+    public ParserProfile Update(ParserProfileName name, List<ParserProfileLink> links, bool state)
     {
-        Links = links;
-        State = state ? ParserProfileState.CreateActive() : ParserProfileState.CreateInactive();
+        return new ParserProfile(name)
+        {
+            Links = links,
+            State = state ? ParserProfileState.CreateActive() : ParserProfileState.CreateInactive(),
+            Id = Id,
+            CreatedOn = CreatedOn,
+        };
     }
 }

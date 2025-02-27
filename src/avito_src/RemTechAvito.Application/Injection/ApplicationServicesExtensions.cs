@@ -3,6 +3,7 @@ using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Application.FiltersManagement.CustomerStates.Commands.ParseCustomerStates;
 using RemTechAvito.Application.FiltersManagement.CustomerTypes.Commands.ParseCustomerTypes;
 using RemTechAvito.Application.FiltersManagement.TransportStates.Commands.ParseTransportStates;
+using RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.CreateCustomTransportType;
 using RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.ParseTransportTypes;
 using RemTechAvito.Application.ParserProfileManagement.CreateProfile;
 using RemTechAvito.Application.ParserProfileManagement.DeleteProfile;
@@ -36,10 +37,8 @@ public static class ApplicationServicesExtensions
             IAvitoCommandHandler<ParseTransportStatesCommand>,
             ParseTransportStatesCommandHandler
         >();
-        services.AddScoped<
-            IAvitoCommandHandler<ParseTransportTypesCommand, TransportTypeResponse>,
-            ParseTransportTypesCommandHandler
-        >();
+        CreateCustomTransportTypeCommand.Register(services);
+        ParseTransportTypesCommand.Register(services);
     }
 
     private static void RegisterTransportAdvertisementsManagement(this IServiceCollection services)

@@ -4,7 +4,7 @@ using RemTechAvito.Contracts.Common.Responses.TransportTypesManagement;
 using RemTechAvito.Core.FiltersManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement;
-using RemTechCommon.Utils.Extensions;
+using RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement.Models;
 using Serilog;
 
 namespace RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement;
@@ -31,47 +31,24 @@ internal sealed class TransportTypesQueryRepository(MongoClient client, ILogger 
         CancellationToken ct = default
     )
     {
-        var sortOrder = query.Sort?.Mode;
-        var sorting = sortOrder switch
-        {
-            "ASC" => Builders<TransportType>.Sort.Ascending("type_name"),
-            "DESC" => Builders<TransportType>.Sort.Descending("type_name"),
-            _ => null,
-        };
-
-        var textSearch = query.TextSearch?.Text;
-        FilterDefinition<TransportType> filter = textSearch switch
-        {
-            not null => Builders<TransportType>.Filter.Text(
-                textSearch.CleanString(),
-                new TextSearchOptions() { CaseSensitive = false, DiacriticSensitive = false }
-            ),
-            _ => Builders<TransportType>.Filter.Empty,
-        };
-
+        var queryModel = GetTransportTypeQueryModelExtensions.Create(query);
         var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
         var collection = db.GetCollection<TransportType>(TransportTypesMetadata.Collection);
-
-        var findQuery = collection.Find(filter);
-
-        if (sorting != null)
-            findQuery.Sort(sorting);
+        var findQuery = collection.Find(queryModel.Filter);
+        if (queryModel.Sort != null)
+            findQuery.Sort(queryModel.Sort);
 
         var countTask = findQuery.CountDocumentsAsync(ct);
         var fetchTask = findQuery
-            .Skip((query.Pagination.Page - 1) * query.Pagination.PageSize)
-            .Limit(query.Pagination.PageSize)
+            .Skip((queryModel.Page - 1) * queryModel.Size)
+            .Limit(queryModel.Size)
             .ToListAsync(ct);
-
         await Task.WhenAll(countTask, fetchTask);
 
         var count = countTask.Result;
         var fetchedData = fetchTask.Result;
 
-        IEnumerable<TransportTypeDto> response = fetchedData.Select(t => new TransportTypeDto(
-            t.Name,
-            t.Link
-        ));
+        var response = fetchedData.Select(t => new TransportTypeDto(t.Name, t.Link));
         return new TransportTypeResponse(response, count);
     }
 }
