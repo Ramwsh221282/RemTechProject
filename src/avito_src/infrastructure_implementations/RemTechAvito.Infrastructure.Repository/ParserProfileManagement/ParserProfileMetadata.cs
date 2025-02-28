@@ -6,7 +6,7 @@ namespace RemTechAvito.Infrastructure.Repository.ParserProfileManagement;
 
 internal static class ParserProfileMetadata
 {
-    internal const string CollectionName = "parser_profile";
+    internal const string CollectionName = "Parser_Profiles";
 
     public static void RegisterMetadata()
     {
@@ -17,8 +17,6 @@ internal static class ParserProfileMetadata
     private static void RegisterSerializers()
     {
         BsonSerializer.RegisterSerializer(new ParserProfileIdSerializer());
-        BsonSerializer.RegisterSerializer(new ParserProfileLinkBodySerializer());
-        BsonSerializer.RegisterSerializer(new ParserProfileLinkIdSerializer());
         BsonSerializer.RegisterSerializer(new ParserProfileLinksCollectionSerializer());
         BsonSerializer.RegisterSerializer(new ParserProfileStateSerializer());
     }

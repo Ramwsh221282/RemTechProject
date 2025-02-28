@@ -16,13 +16,9 @@ public static class ParserExtensions
 
     public static IServiceCollection RegisterParser(this IServiceCollection services)
     {
-        services.AddScoped<IMessagePublisher, MultiCommunicationPublisher>(p =>
-        {
-            return new MultiCommunicationPublisher(queue, host, user, password);
-        });
-        services.AddScoped<ICustomerStatesParser, CustomerStatesParser>();
-        services.AddScoped<ICustomerTypesParser, CustomerTypesParser>();
-        services.AddScoped<ITransportStatesParser, TransportStatesParser>();
+        services.AddScoped<IMessagePublisher, MultiCommunicationPublisher>(
+            _ => new MultiCommunicationPublisher(queue, host, user, password)
+        );
         services.AddScoped<ITransportTypesParser, TransportTypesParser>();
         services.AddScoped<IAdvertisementCatalogueParser, AdvertisementCatalogueParser>();
         return services;

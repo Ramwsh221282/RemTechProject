@@ -3,137 +3,219 @@ using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Application.ParserProfileManagement.CreateProfile;
 using RemTechAvito.Application.ParserProfileManagement.DeleteProfile;
 using RemTechAvito.Application.ParserProfileManagement.UpdateParserProfileLinks;
-using RemTechAvito.Contracts.Common.Dto.ParserProfileManagement;
 using RemTechAvito.Contracts.Common.Responses.ParserProfileManagement;
+using RemTechAvito.Core.ParserProfileManagement;
+using RemTechAvito.Core.ParserProfileManagement.ValueObjects;
 using RemTechAvito.DependencyInjection;
 using RemTechAvito.Infrastructure.Contracts.Repository;
+using RemTechAvito.Integrational.Tests.Helpers;
+using RemTechCommon.Utils.ResultPattern;
+using Serilog;
 
 namespace RemTechAvito.Integrational.Tests.ParserProfileManagement;
 
 public sealed class Parser_Profile_CRUD_Tests
 {
     private readonly IServiceProvider _provider;
-    private const string temporaryId = "1ebd871e-7636-4af5-b20d-2a0dd2419f23";
+    private readonly ILogger _logger;
 
     public Parser_Profile_CRUD_Tests()
     {
-        IServiceCollection collection = new ServiceCollection();
-        collection.RegisterServices();
-        _provider = collection.BuildServiceProvider();
+        IServiceCollection services = new ServiceCollection();
+        services.RegisterServices();
+        _provider = services.BuildServiceProvider();
+        _logger = _provider.GetRequiredService<ILogger>();
     }
 
     [Fact]
-    public async Task Create_New_Profile()
+    public async Task Create_Parser_Profile_Test()
     {
         using var cts = new CancellationTokenSource();
-        var token = cts.Token;
-        var command = new CreateProfileCommand(new ProfileNameDto("test"));
-        var handler = _provider.GetRequiredService<
-            IAvitoCommandHandler<CreateProfileCommand, ParserProfileResponse>
-        >();
-        var creation = await handler.Handle(command, token);
-        Assert.True(creation.IsSuccess);
+        var ct = cts.Token;
+        var noExceptions = true;
+        try
+        {
+            var createCommand = new CreateProfileCommand("Test Profile 1");
+            var createHandler = _provider.GetRequiredService<
+                IAvitoCommandHandler<CreateProfileCommand, ParserProfileResponse>
+            >();
+            var creation = await createHandler.Handle(createCommand, ct);
+            Assert.True(creation.IsSuccess);
+
+            var readRepository = _provider.GetRequiredService<IParserProfileReadRepository>();
+            var response = await readRepository.GetById(creation.Value.Id.ToString(), ct);
+
+            Assert.True(response.IsSuccess);
+            Assert.Equal(creation.Value.Id, response.Value.Id.Id);
+            Assert.Equal(creation.Value.Name, response.Value.Name.Name);
+            Assert.Equal(creation.Value.State, response.Value.State.IsActive);
+            Assert.Equal(creation.Value.StateDescription, response.Value.State.Description);
+            Assert.Empty(response.Value.Links);
+
+            var deleteCommand = new DeleteParserProfileCommand(creation.Value.Id.ToString());
+            var deleteHandler = _provider.GetRequiredService<
+                IAvitoCommandHandler<DeleteParserProfileCommand>
+            >();
+            var deletion = await deleteHandler.Handle(deleteCommand, ct);
+            Assert.True(deletion.IsSuccess);
+        }
+        catch (Exception ex)
+        {
+            noExceptions = false;
+            _logger.LogTestFailedWithException(nameof(Create_Parser_Profile_Test), ex);
+        }
+
+        Assert.True(noExceptions);
     }
 
     [Fact]
-    public async Task Get_Profile_By_ID()
+    public async Task Update_Parser_Profile_With_Additions_Test()
     {
         using var cts = new CancellationTokenSource();
-        var token = cts.Token;
-        var repository = _provider.GetRequiredService<IParserProfileReadRepository>();
-        var profile = await repository.GetById(temporaryId, token);
-        Assert.True(profile.IsSuccess);
+        var ct = cts.Token;
+        var noExceptions = true;
+        try
+        {
+            var createCommand = new CreateProfileCommand("Test Profile 1");
+            var createHandler = _provider.GetRequiredService<
+                IAvitoCommandHandler<CreateProfileCommand, ParserProfileResponse>
+            >();
+            var creation = await createHandler.Handle(createCommand, ct);
+            Assert.True(creation.IsSuccess);
+
+            var dto = new ParserProfileDto(
+                creation.Value.Id.ToString(),
+                creation.Value.Name,
+                creation.Value.State,
+                [
+                    new ParserProfileLinkDto("LiuGong", "http://localhost.com", ["H855"]),
+                    new ParserProfileLinkDto("ACE", "https://vk.com"),
+                ]
+            );
+
+            var updateCommand = new UpdateParserProfileCommand(dto);
+            var updateHandler = _provider.GetRequiredService<
+                IAvitoCommandHandler<UpdateParserProfileCommand>
+            >();
+            var updateResult = await updateHandler.Handle(updateCommand, ct);
+            Assert.True(updateResult.IsSuccess);
+
+            var readRepository = _provider.GetRequiredService<IParserProfileReadRepository>();
+            var updatedProfile = await readRepository.GetById(creation.Value.Id.ToString(), ct);
+            var withAdditions = updatedProfile.Value.Links.FirstOrDefault(l =>
+                l.Unwrap<ParserProfileLinkWithAdditions>().IsSuccess
+            )!;
+            var withoutAdditions = updatedProfile.Value.Links.FirstOrDefault(l =>
+                l.Unwrap<ParserProfileLinkWithAdditions>().IsFailure
+            )!;
+            Assert.Equal("ACE", withoutAdditions.Name);
+            Assert.Equal("https://vk.com", withoutAdditions.Link);
+            Assert.Equal("LiuGong", withAdditions.Name);
+            Assert.Equal("http://localhost.com", withAdditions.Link);
+            var casted = withAdditions.Unwrap<ParserProfileLinkWithAdditions>();
+            Assert.True(casted.IsSuccess);
+            Assert.NotEmpty(casted.Value.Additions);
+            Assert.Contains("H855", casted.Value.Additions);
+            Assert.Equal(creation.Value.Name, updatedProfile.Value.Name.Name);
+            Assert.Equal(creation.Value.State, updatedProfile.Value.State.IsActive);
+            Assert.Equal(creation.Value.StateDescription, updatedProfile.Value.State.Description);
+            Assert.Equal(creation.Value.Id, updatedProfile.Value.Id.Id);
+            var deleteCommand = new DeleteParserProfileCommand(creation.Value.Id.ToString());
+            var deleteHandler = _provider.GetRequiredService<
+                IAvitoCommandHandler<DeleteParserProfileCommand>
+            >();
+            var deletion = await deleteHandler.Handle(deleteCommand, ct);
+            Assert.True(deletion.IsSuccess);
+        }
+        catch (Exception ex)
+        {
+            noExceptions = false;
+            _logger.LogTestFailedWithException(
+                nameof(Update_Parser_Profile_With_Additions_Test),
+                ex
+            );
+        }
+
+        Assert.True(noExceptions);
     }
 
     [Fact]
-    public async Task Update_Profile_Links()
-    {
-        const string link =
-            "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki/liugong-ASgBAgICAkRU4E3cxg3urj8?cd=1";
-        const string mark = "liugong";
-        using var cts = new CancellationTokenSource();
-        var token = cts.Token;
-        var handler = _provider.GetRequiredService<
-            IAvitoCommandHandler<UpdateParserProfileLinksCommand>
-        >();
-        var dto = new ParserProfileDto(temporaryId, false, [new ParserProfileLinkDto(mark, link)]);
-        var command = new UpdateParserProfileLinksCommand(dto);
-        var update = await handler.Handle(command, token);
-        Assert.True(update.IsSuccess);
-    }
-
-    [Fact]
-    public async Task Update_Profile_Links_With_Existing_Links()
-    {
-        const string existingLink =
-            "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki/liugong-ASgBAgICAkRU4E3cxg3urj8?cd=1";
-        const string existingMark = "liugong";
-        const string existingId = "7748e966-a548-4e8c-a031-b929636314bf";
-
-        const string link =
-            "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki/newmark-ASgBAgICAkRU4E3cxg3urj8?cd=1";
-        const string mark = "newmark";
-        using var cts = new CancellationTokenSource();
-        var token = cts.Token;
-        var handler = _provider.GetRequiredService<
-            IAvitoCommandHandler<UpdateParserProfileLinksCommand>
-        >();
-        var dto = new ParserProfileDto(
-            temporaryId,
-            false,
-            [
-                new ParserProfileLinkDto(existingMark, existingLink, existingId),
-                new ParserProfileLinkDto(mark, link),
-            ]
-        );
-        var command = new UpdateParserProfileLinksCommand(dto);
-        var update = await handler.Handle(command, token);
-        Assert.True(update.IsSuccess);
-    }
-
-    [Fact]
-    public async Task Get_Profiles()
+    public async Task Update_Parser_Profile_With_Additions_And_Get_As_Response_Test()
     {
         using var cts = new CancellationTokenSource();
-        var token = cts.Token;
-        var repository = _provider.GetRequiredService<IParserProfileReadRepository>();
-        var data = await repository.Get(token);
-        Assert.NotEmpty(data);
-    }
+        var ct = cts.Token;
+        var noExceptions = true;
+        try
+        {
+            var createCommand = new CreateProfileCommand("Test Profile 1");
+            var createHandler = _provider.GetRequiredService<
+                IAvitoCommandHandler<CreateProfileCommand, ParserProfileResponse>
+            >();
+            var creation = await createHandler.Handle(createCommand, ct);
+            Assert.True(creation.IsSuccess);
 
-    [Fact]
-    public async Task Delete_Profile_Fake_ID()
-    {
-        using var cts = new CancellationTokenSource();
-        var token = cts.Token;
-        var handler = _provider.GetRequiredService<
-            IAvitoCommandHandler<DeleteParserProfileCommand>
-        >();
-        var command = new DeleteParserProfileCommand("7748e966-a548-4e8c-a031-b929636314bf");
-        var update = await handler.Handle(command, token);
-        Assert.False(update.IsSuccess);
-    }
+            var dto = new ParserProfileDto(
+                creation.Value.Id.ToString(),
+                creation.Value.Name,
+                creation.Value.State,
+                [
+                    new ParserProfileLinkDto("LiuGong", "http://localhost.com", ["H855"]),
+                    new ParserProfileLinkDto("ACE", "https://vk.com"),
+                ]
+            );
 
-    [Fact]
-    public async Task Delete_Profile_Real_ID()
-    {
-        using var cts = new CancellationTokenSource();
-        var token = cts.Token;
-        var handler = _provider.GetRequiredService<
-            IAvitoCommandHandler<DeleteParserProfileCommand>
-        >();
-        var command = new DeleteParserProfileCommand(temporaryId);
-        var update = await handler.Handle(command, token);
-        Assert.True(update.IsSuccess);
-    }
+            var updateCommand = new UpdateParserProfileCommand(dto);
+            var updateHandler = _provider.GetRequiredService<
+                IAvitoCommandHandler<UpdateParserProfileCommand>
+            >();
+            var updateResult = await updateHandler.Handle(updateCommand, ct);
+            Assert.True(updateResult.IsSuccess);
 
-    [Fact]
-    public async Task Get_Active_Only_Profiles()
-    {
-        using var cts = new CancellationTokenSource();
-        var token = cts.Token;
-        var repository = _provider.GetRequiredService<IParserProfileReadRepository>();
-        var data = await repository.GetActiveOnly(token);
-        Assert.NotEmpty(data);
+            var readRepository = _provider.GetRequiredService<IParserProfileReadRepository>();
+            var updatedProfile = await readRepository.GetById(creation.Value.Id.ToString(), ct);
+            var withAdditions = updatedProfile.Value.Links.FirstOrDefault(l =>
+                l.Unwrap<ParserProfileLinkWithAdditions>().IsSuccess
+            )!;
+            var withoutAdditions = updatedProfile.Value.Links.FirstOrDefault(l =>
+                l.Unwrap<ParserProfileLinkWithAdditions>().IsFailure
+            )!;
+            Assert.Equal("ACE", withoutAdditions.Name);
+            Assert.Equal("https://vk.com", withoutAdditions.Link);
+            Assert.Equal("LiuGong", withAdditions.Name);
+            Assert.Equal("http://localhost.com", withAdditions.Link);
+            var casted = withAdditions.Unwrap<ParserProfileLinkWithAdditions>();
+            Assert.True(casted.IsSuccess);
+            Assert.NotEmpty(casted.Value.Additions);
+            Assert.Contains("H855", casted.Value.Additions);
+            Assert.Equal(creation.Value.Name, updatedProfile.Value.Name.Name);
+            Assert.Equal(creation.Value.State, updatedProfile.Value.State.IsActive);
+            Assert.Equal(creation.Value.StateDescription, updatedProfile.Value.State.Description);
+            Assert.Equal(creation.Value.Id, updatedProfile.Value.Id.Id);
+
+            var response = await readRepository.Get(ct);
+            Assert.NotEmpty(response);
+            foreach (var item in response)
+            {
+                var HaswithAdditions = item.Links.Any(l => l.Additions.Any());
+                Assert.True(HaswithAdditions);
+            }
+
+            var deleteCommand = new DeleteParserProfileCommand(creation.Value.Id.ToString());
+            var deleteHandler = _provider.GetRequiredService<
+                IAvitoCommandHandler<DeleteParserProfileCommand>
+            >();
+            var deletion = await deleteHandler.Handle(deleteCommand, ct);
+            Assert.True(deletion.IsSuccess);
+        }
+        catch (Exception ex)
+        {
+            noExceptions = false;
+            _logger.LogTestFailedWithException(
+                nameof(Update_Parser_Profile_With_Additions_And_Get_As_Response_Test),
+                ex
+            );
+        }
+
+        Assert.True(noExceptions);
     }
 }

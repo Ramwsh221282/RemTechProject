@@ -1,7 +1,7 @@
 ﻿using MongoDB.Driver;
 using RemTechAvito.Contracts.Common.Dto.TransportTypesManagement;
 using RemTechAvito.Contracts.Common.Responses.TransportTypesManagement;
-using RemTechAvito.Core.FiltersManagement.TransportTypes;
+using RemTechAvito.Core.AdvertisementManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement;
 using RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement.Models;
@@ -18,7 +18,7 @@ internal sealed class TransportTypesQueryRepository(MongoClient client, ILogger 
             "{Repository} transport types requested",
             nameof(TransportTypesQueryRepository)
         );
-        var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
+        var db = client.GetDatabase(MongoDbOptions.Databse);
         var collection = db.GetCollection<TransportType>(TransportTypesMetadata.Collection);
         var cursor = await collection.FindAsync(_ => true, cancellationToken: ct);
         var items = await cursor.ToListAsync(ct);
@@ -32,7 +32,7 @@ internal sealed class TransportTypesQueryRepository(MongoClient client, ILogger 
     )
     {
         var queryModel = GetTransportTypeQueryModelExtensions.Create(query);
-        var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
+        var db = client.GetDatabase(MongoDbOptions.Databse);
         var collection = db.GetCollection<TransportType>(TransportTypesMetadata.Collection);
         var findQuery = collection.Find(queryModel.Filter);
         if (queryModel.Sort != null)

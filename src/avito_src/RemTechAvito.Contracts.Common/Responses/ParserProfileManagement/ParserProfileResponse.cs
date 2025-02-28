@@ -3,9 +3,14 @@
 public sealed record ParserProfileResponse(
     Guid Id,
     DateOnly CreatedOn,
+    string Name,
     bool State,
     string StateDescription,
-    ParserProfileLinksResponse[] Links
+    IEnumerable<ParserProfileLinksResponse> Links
 );
 
-public sealed record ParserProfileLinksResponse(Guid Id, string Link, string Mark);
+public sealed record ParserProfileLinksResponse(
+    string Name,
+    string Link,
+    IEnumerable<string> Additions
+);

@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
-using RemTechAvito.Core.FiltersManagement.TransportTypes;
+using RemTechAvito.Core.AdvertisementManagement.TransportTypes;
 using RemTechCommon.Utils.Converters;
 
 namespace RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement.Serializers;

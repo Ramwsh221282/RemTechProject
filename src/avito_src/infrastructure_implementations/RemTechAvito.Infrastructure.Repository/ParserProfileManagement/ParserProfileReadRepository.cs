@@ -2,9 +2,8 @@
 using MongoDB.Driver;
 using RemTechAvito.Contracts.Common.Responses.ParserProfileManagement;
 using RemTechAvito.Core.ParserProfileManagement;
+using RemTechAvito.Core.ParserProfileManagement.ValueObjects;
 using RemTechAvito.Infrastructure.Contracts.Repository;
-using RemTechAvito.Infrastructure.Repository.ParserProfileManagement.Mappers;
-using RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 
@@ -21,18 +20,6 @@ internal sealed class ParserProfileReadRepository(MongoClient client, ILogger lo
             id
         );
 
-        if (string.IsNullOrWhiteSpace(id))
-        {
-            var error = "Invalid id";
-            logger.Error(
-                "{Repository} request for profile with id: {Id} Failed. Error: {Error}",
-                nameof(ParserProfileReadRepository),
-                id,
-                error
-            );
-            return new Error(error);
-        }
-
         var canConvert = Guid.TryParse(id, out var guidId);
         if (!canConvert)
         {
@@ -46,18 +33,19 @@ internal sealed class ParserProfileReadRepository(MongoClient client, ILogger lo
             return new Error(error);
         }
 
-        var uuid = new BsonBinaryData(guidId, GuidRepresentation.Standard);
-        var document = new BsonDocument("_id", new BsonDocument() { { "$eq", uuid } });
-        var filter = Builders<ParserProfile>.Filter.And(document);
-        var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
+        var filter = Builders<ParserProfile>.Filter.Eq(
+            profile => profile.Id,
+            new ParserProfileId(guidId)
+        );
+        var db = client.GetDatabase(MongoDbOptions.Databse);
         var collection = db.GetCollection<ParserProfile>(ParserProfileMetadata.CollectionName);
-        using var cursor = await collection.FindAsync(filter, cancellationToken: ct);
-        var profile = await cursor.FirstOrDefaultAsync(ct);
+        var query = collection.Find(filter);
+        var profile = await query.FirstOrDefaultAsync(ct);
 
         if (profile == null)
         {
             var error = $"Not found with id: {id}";
-            logger.Warning(
+            logger.Error(
                 "{Repository} request for profile with id: {Id}. Not Found.",
                 nameof(ParserProfileReadRepository),
                 id
@@ -82,24 +70,36 @@ internal sealed class ParserProfileReadRepository(MongoClient client, ILogger lo
             "{Repository} request for getting all profiles.",
             nameof(ParserProfileReadRepository)
         );
-        var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
+        var db = client.GetDatabase(MongoDbOptions.Databse);
         var collection = db.GetCollection<ParserProfile>(ParserProfileMetadata.CollectionName);
         using var data = await collection.FindAsync(_ => true, cancellationToken: ct);
         var profiles = await data.ToListAsync(ct);
-        return profiles
-            .Select(p => new ParserProfileResponse(
-                p.Id.Id,
-                p.CreatedOn.Date,
-                p.State.IsActive,
-                p.State.Description,
-                p.Links.Select(l => new ParserProfileLinksResponse(
-                        l.Id.Id,
-                        l.Body.Link,
-                        l.Body.Mark
-                    ))
-                    .ToArray()
-            ))
-            .ToList();
+        List<ParserProfileResponse> response = [];
+        foreach (var profile in profiles)
+        {
+            List<ParserProfileLinksResponse> links = [];
+            foreach (var link in profile.Links)
+            {
+                IEnumerable<string> additions = [];
+                var isWithAdditions = link.Unwrap<ParserProfileLinkWithAdditions>();
+                if (isWithAdditions.IsSuccess)
+                    additions = isWithAdditions.Value.Additions;
+                links.Add(new ParserProfileLinksResponse(link.Name, link.Link, additions));
+            }
+
+            response.Add(
+                new ParserProfileResponse(
+                    profile.Id.Id,
+                    profile.CreatedOn.Date,
+                    profile.Name.Name,
+                    profile.State.IsActive,
+                    profile.State.Description,
+                    links
+                )
+            );
+        }
+
+        return response;
     }
 
     public async Task<IEnumerable<ParserProfileResponse>> GetActiveOnly(
@@ -115,17 +115,35 @@ internal sealed class ParserProfileReadRepository(MongoClient client, ILogger lo
             new BsonDocument() { { "$eq", true } }
         );
         var filter = Builders<ParserProfile>.Filter.And(document);
-        var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
+        var db = client.GetDatabase(MongoDbOptions.Databse);
         var collection = db.GetCollection<ParserProfile>(ParserProfileMetadata.CollectionName);
         using var data = await collection.FindAsync(filter, cancellationToken: ct);
         var profiles = await data.ToListAsync(ct);
-        return profiles.Select(p => new ParserProfileResponse(
-            p.Id.Id,
-            p.CreatedOn.Date,
-            p.State.IsActive,
-            p.State.Description,
-            p.Links.Select(l => new ParserProfileLinksResponse(l.Id.Id, l.Body.Link, l.Body.Mark))
-                .ToArray()
-        ));
+        List<ParserProfileResponse> response = [];
+        foreach (var profile in profiles)
+        {
+            List<ParserProfileLinksResponse> links = [];
+            foreach (var link in profile.Links)
+            {
+                IEnumerable<string> additions = [];
+                var isWithAdditions = link.Unwrap<ParserProfileLinkWithAdditions>();
+                if (isWithAdditions.IsSuccess)
+                    additions = isWithAdditions.Value.Additions;
+                links.Add(new ParserProfileLinksResponse(link.Name, link.Link, additions));
+            }
+
+            response.Add(
+                new ParserProfileResponse(
+                    profile.Id.Id,
+                    profile.CreatedOn.Date,
+                    profile.Name.Name,
+                    profile.State.IsActive,
+                    profile.State.Description,
+                    links
+                )
+            );
+        }
+
+        return response;
     }
 }

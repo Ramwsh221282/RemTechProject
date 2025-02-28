@@ -4,7 +4,6 @@ using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Application.ParserProfileManagement.CreateProfile;
 using RemTechAvito.Application.ParserProfileManagement.DeleteProfile;
 using RemTechAvito.Application.ParserProfileManagement.UpdateParserProfileLinks;
-using RemTechAvito.Contracts.Common.Dto.ParserProfileManagement;
 using RemTechAvito.Contracts.Common.Responses.ParserProfileManagement;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechAvito.WebApi.Responses;
@@ -34,13 +33,13 @@ public sealed class ParserProfileController : ApplicationController
     [EndpointName("Parser Profile Update.")]
     [HttpPut("/parser-profile/{id}")]
     public async Task<IActionResult> Update(
-        [FromServices] IAvitoCommandHandler<UpdateParserProfileLinksCommand> handler,
+        [FromServices] IAvitoCommandHandler<UpdateParserProfileCommand> handler,
         [FromBody] ParserProfileDto dto,
         [FromRoute] string id,
         CancellationToken ct = default
     )
     {
-        var command = new UpdateParserProfileLinksCommand(dto);
+        var command = new UpdateParserProfileCommand(dto);
         var result = await handler.Handle(command, ct);
         return result.IsSuccess
             ? this.ToOkResult()

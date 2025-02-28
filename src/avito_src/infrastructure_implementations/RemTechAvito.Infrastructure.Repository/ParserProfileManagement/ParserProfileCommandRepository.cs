@@ -15,7 +15,7 @@ internal sealed class ParserProfileCommandRepository(ILogger logger, MongoClient
     {
         try
         {
-            var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
+            var db = client.GetDatabase(MongoDbOptions.Databse);
             await db.CreateCollectionAsync(
                 ParserProfileMetadata.CollectionName,
                 cancellationToken: ct
@@ -44,17 +44,15 @@ internal sealed class ParserProfileCommandRepository(ILogger logger, MongoClient
     {
         try
         {
-            var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
+            var db = client.GetDatabase(MongoDbOptions.Databse);
             await db.CreateCollectionAsync(
                 ParserProfileMetadata.CollectionName,
                 cancellationToken: ct
             );
             var collection = db.GetCollection<ParserProfile>(ParserProfileMetadata.CollectionName);
             var uuid = new BsonBinaryData(profile.Id.Id, GuidRepresentation.Standard);
-            BsonDocument document = new BsonDocument("_id", new BsonDocument() { { "$eq", uuid } });
-            FilterDefinition<ParserProfile> definition = Builders<ParserProfile>.Filter.And(
-                document
-            );
+            var document = new BsonDocument("_id", new BsonDocument() { { "$eq", uuid } });
+            var definition = Builders<ParserProfile>.Filter.And(document);
             var updateResult = await collection.ReplaceOneAsync(
                 definition,
                 profile,
@@ -63,7 +61,7 @@ internal sealed class ParserProfileCommandRepository(ILogger logger, MongoClient
 
             if (!updateResult.IsAcknowledged)
             {
-                string error =
+                var error =
                     $"Cannot update profile with id: {profile.Id.Id}. Internal server error.";
                 logger.Error("{Repository} {Error}", nameof(ParserProfileCommandRepository), error);
                 return new Error(error);
@@ -93,7 +91,7 @@ internal sealed class ParserProfileCommandRepository(ILogger logger, MongoClient
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                string error = "Id is invalid";
+                var error = "Id is invalid";
                 logger.Error(
                     "{Repository} cannot delete profile. Id is invalid",
                     nameof(ParserProfileCommandRepository)
@@ -101,10 +99,10 @@ internal sealed class ParserProfileCommandRepository(ILogger logger, MongoClient
                 return new Error(error);
             }
 
-            bool canParse = Guid.TryParse(id, out Guid parsedGuid);
+            var canParse = Guid.TryParse(id, out var parsedGuid);
             if (!canParse)
             {
-                string error = "Id is invalid";
+                var error = "Id is invalid";
                 logger.Error(
                     "{Repository} cannot delete profile. Id is invalid",
                     nameof(ParserProfileCommandRepository)
@@ -113,21 +111,19 @@ internal sealed class ParserProfileCommandRepository(ILogger logger, MongoClient
             }
 
             var uuid = new BsonBinaryData(parsedGuid, GuidRepresentation.Standard);
-            var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
+            var db = client.GetDatabase(MongoDbOptions.Databse);
             await db.CreateCollectionAsync(
                 ParserProfileMetadata.CollectionName,
                 cancellationToken: ct
             );
             var collection = db.GetCollection<ParserProfile>(ParserProfileMetadata.CollectionName);
-            BsonDocument document = new BsonDocument("_id", new BsonDocument() { { "$eq", uuid } });
-            FilterDefinition<ParserProfile> definition = Builders<ParserProfile>.Filter.And(
-                document
-            );
+            var document = new BsonDocument("_id", new BsonDocument() { { "$eq", uuid } });
+            var definition = Builders<ParserProfile>.Filter.And(document);
 
-            var deleteResult = await collection.DeleteOneAsync(definition, cancellationToken: ct);
+            var deleteResult = await collection.DeleteOneAsync(definition, ct);
             if (!deleteResult.IsAcknowledged || deleteResult.DeletedCount == 0)
             {
-                string error = $"Cannot delete profile. Not found with id {parsedGuid}.";
+                var error = $"Cannot delete profile. Not found with id {parsedGuid}.";
                 logger.Error(
                     "{Repository} error: {Error}",
                     nameof(ParserProfileCommandRepository),

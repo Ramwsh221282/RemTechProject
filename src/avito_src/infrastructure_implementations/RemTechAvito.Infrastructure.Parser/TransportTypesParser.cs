@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using HtmlAgilityPack;
 using Rabbit.RPC.Client.Abstractions;
-using RemTechAvito.Core.FiltersManagement.TransportTypes;
+using RemTechAvito.Core.AdvertisementManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;
 using RemTechAvito.Infrastructure.Parser.Extensions;
 using RemTechCommon.Utils.ResultPattern;

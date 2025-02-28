@@ -1,6 +1,6 @@
 ﻿using MongoDB.Driver;
 using RemTechAvito.Contracts.Common.Dto.TransportTypesManagement;
-using RemTechAvito.Core.FiltersManagement.TransportTypes;
+using RemTechAvito.Core.AdvertisementManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement;
 using RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement.Extensions;
@@ -20,7 +20,7 @@ internal sealed class TransportTypesCommandCommandRepository(MongoClient client,
     {
         try
         {
-            var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
+            var db = client.GetDatabase(MongoDbOptions.Databse);
             var collection = db.GetCollection<TransportType>(TransportTypesMetadata.Collection);
             await collection.InsertManyAsync(types, cancellationToken: ct);
             logger.Information(
@@ -45,7 +45,7 @@ internal sealed class TransportTypesCommandCommandRepository(MongoClient client,
     {
         try
         {
-            var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
+            var db = client.GetDatabase(MongoDbOptions.Databse);
             var collection = db.GetCollection<TransportType>(TransportTypesMetadata.Collection);
             await collection.InsertOneAsync(type, cancellationToken: ct);
             logger.Information(
@@ -72,7 +72,7 @@ internal sealed class TransportTypesCommandCommandRepository(MongoClient client,
         try
         {
             var filterDefinition = query.CreateFilter();
-            var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
+            var db = client.GetDatabase(MongoDbOptions.Databse);
             var collection = db.GetCollection<TransportType>(TransportTypesMetadata.Collection);
             var deleteResult = await collection.DeleteManyAsync(filterDefinition, ct);
 

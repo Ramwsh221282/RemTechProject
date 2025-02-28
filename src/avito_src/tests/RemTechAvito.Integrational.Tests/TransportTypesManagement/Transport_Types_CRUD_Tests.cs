@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RemTechAvito.Contracts.Common.Dto.TransportTypesManagement;
 using RemTechAvito.Contracts.Common.Responses.TransportTypesManagement;
-using RemTechAvito.Core.FiltersManagement.TransportTypes;
+using RemTechAvito.Core.AdvertisementManagement.TransportTypes;
 using RemTechAvito.DependencyInjection;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechCommon.Utils.ResultPattern;

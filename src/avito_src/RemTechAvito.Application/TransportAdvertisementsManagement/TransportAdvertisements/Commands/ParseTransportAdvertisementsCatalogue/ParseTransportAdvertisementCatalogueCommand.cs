@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Core.Common.ValueObjects;
 using RemTechAvito.Core.ParserJournalManagement;
@@ -10,7 +11,16 @@ using Serilog;
 namespace RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.ParseTransportAdvertisementsCatalogue;
 
 public sealed record ParseTransportAdvertisementCatalogueCommand(string CatalogueUrl)
-    : IAvitoCommand;
+    : IAvitoCommand
+{
+    internal static void Register(IServiceCollection services)
+    {
+        services.AddScoped<
+            IAvitoCommandHandler<ParseTransportAdvertisementCatalogueCommand>,
+            ParseTransportAdvertisementsCatalogueCommandHandler
+        >();
+    }
+}
 
 internal sealed class ParseTransportAdvertisementsCatalogueCommandHandler(
     ITransportAdvertisementsCommandRepository advertisementsRepository,

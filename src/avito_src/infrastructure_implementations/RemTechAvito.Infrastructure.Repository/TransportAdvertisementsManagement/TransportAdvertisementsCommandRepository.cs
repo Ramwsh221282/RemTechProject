@@ -1,23 +1,13 @@
-﻿using MongoDB.Bson.Serialization;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using Serilog;
 
 namespace RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement;
 
-internal sealed class TransportAdvertisementsCommandRepository
+internal sealed class TransportAdvertisementsCommandRepository(ILogger logger, MongoClient client)
     : ITransportAdvertisementsCommandRepository
 {
-    private readonly ILogger _logger;
-    private readonly MongoClient _client;
-
-    public TransportAdvertisementsCommandRepository(ILogger logger, MongoClient client)
-    {
-        _logger = logger;
-        _client = client;
-    }
-
     public async Task<Guid> Add(
         TransportAdvertisement advertisement,
         CancellationToken ct = default
@@ -25,17 +15,17 @@ internal sealed class TransportAdvertisementsCommandRepository
     {
         try
         {
-            var db = _client.GetDatabase(TransportAdvertisementsRepository.DbName);
+            var db = client.GetDatabase(MongoDbOptions.Databse);
             await db.CreateCollectionAsync(
-                TransportAdvertisementsRepository.CollectionName,
+                TransportAdvertisementsMetadata.Collection,
                 cancellationToken: ct
             );
             var collection = db.GetCollection<TransportAdvertisement>(
-                TransportAdvertisementsRepository.CollectionName
+                TransportAdvertisementsMetadata.Collection
             );
 
             await collection.InsertOneAsync(advertisement, cancellationToken: ct);
-            _logger.Information(
+            logger.Information(
                 "{Repository} inserted advertisement ({Id})",
                 nameof(TransportAdvertisementsCommandRepository),
                 advertisement.TransportAdvertisementId.Id
@@ -44,7 +34,7 @@ internal sealed class TransportAdvertisementsCommandRepository
         }
         catch (Exception ex)
         {
-            _logger.Fatal(
+            logger.Fatal(
                 "{ClassName} exception on insert: {Ex}",
                 nameof(TransportAdvertisementsCommandRepository),
                 ex.Message

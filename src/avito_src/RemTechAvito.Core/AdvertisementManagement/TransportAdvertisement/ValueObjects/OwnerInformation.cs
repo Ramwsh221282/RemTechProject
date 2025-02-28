@@ -6,21 +6,14 @@ public sealed record OwnerInformation
 {
     public string Text { get; }
     public string Status { get; }
-    public string Contacts { get; } = string.Empty;
 
-    public OwnerInformation(string text, string status, string? contacts = null)
+    private OwnerInformation(string text, string status)
     {
         Text = text;
         Status = status;
-        if (!string.IsNullOrWhiteSpace(contacts))
-            Contacts = contacts;
     }
 
-    public static Result<OwnerInformation> Create(
-        string? text,
-        string? status,
-        string? contacts = null
-    )
+    public static Result<OwnerInformation> Create(string? text, string? status)
     {
         if (string.IsNullOrWhiteSpace(text))
             return new Error("Owner information text should be provided");
@@ -28,6 +21,6 @@ public sealed record OwnerInformation
         if (string.IsNullOrWhiteSpace(status))
             return new Error("Owner status information should be provided");
 
-        return new OwnerInformation(text, status, contacts);
+        return new OwnerInformation(text, status);
     }
 }

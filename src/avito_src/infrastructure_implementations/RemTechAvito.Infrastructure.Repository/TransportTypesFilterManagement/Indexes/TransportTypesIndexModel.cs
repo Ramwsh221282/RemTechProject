@@ -1,5 +1,5 @@
 ﻿using MongoDB.Driver;
-using RemTechAvito.Core.FiltersManagement.TransportTypes;
+using RemTechAvito.Core.AdvertisementManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Repository.Common.Indexes;
 
 namespace RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement.Indexes;
