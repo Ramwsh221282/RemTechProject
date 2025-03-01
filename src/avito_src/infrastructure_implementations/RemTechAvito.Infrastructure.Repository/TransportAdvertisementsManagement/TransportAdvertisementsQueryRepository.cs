@@ -115,6 +115,17 @@ internal sealed class TransportAdvertisementsQueryRepository(
 
         return new AnalyticsStatsResponse(totalCount, avgPrice, maxPrice, minPrice);
     }
+
+    public async Task<IEnumerable<long>> GetAdvertisementIDs(CancellationToken ct = default)
+    {
+        var db = client.GetDatabase(MongoDbOptions.Databse);
+        var collection = db.GetCollection<TransportAdvertisement>(
+            TransportAdvertisementsMetadata.Collection
+        );
+        var find = collection.Find(_ => true);
+        var data = (await find.ToListAsync(ct)).Select(d => d.AdvertisementId.Id);
+        return data;
+    }
 }
 
 internal static class TransportAdvertisementConvertExtensions

@@ -1,4 +1,5 @@
-﻿using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
+﻿using System.Text.RegularExpressions;
+using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
 using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement.ValueObjects;
 using RemTechAvito.Core.Common.ValueObjects;
 using RemTechCommon.Utils.ResultPattern;
@@ -48,7 +49,7 @@ public static class ParsedTransportAdvertisementExtensions
         if (description.IsFailure)
             return description.Error;
 
-        Result<Price> price = parsed.PriceInfo.ToValueObject();
+        var price = parsed.PriceInfo.ToValueObject();
         if (price.IsFailure)
             return price.Error;
 
@@ -100,7 +101,7 @@ public static class ParsedTransportAdvertisementExtensions
         this ParsedTransportAdvertisement advertisement
     )
     {
-        string[] ctxParsed = advertisement.Characteristics;
+        var ctxParsed = advertisement.Characteristics;
         List<Characteristic> ctxConverted = [];
         foreach (var element in ctxParsed)
             try
@@ -131,5 +132,25 @@ public static class ParsedTransportAdvertisementExtensions
         );
 
         return photos;
+    }
+
+    public static bool IsFollowingAdditions(
+        this ParsedTransportAdvertisement advertisement,
+        IEnumerable<string> additions
+    )
+    {
+        string[] attributes =
+        [
+            advertisement.Address,
+            advertisement.Description,
+            .. advertisement.Characteristics,
+            advertisement.Title,
+            advertisement.SellerInfo.Status,
+            advertisement.SellerInfo.Name,
+        ];
+
+        return additions
+            .Select(addition => $".*{Regex.Escape(addition)}.*")
+            .Any(regExp => attributes.Any(a => Regex.IsMatch(a, regExp)));
     }
 }

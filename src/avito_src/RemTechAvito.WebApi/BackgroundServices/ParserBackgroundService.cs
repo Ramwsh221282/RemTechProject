@@ -2,6 +2,7 @@
 using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.ParseTransportTypes;
 using RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.ParseTransportAdvertisementsCatalogue;
+using RemTechAvito.Contracts.Common.Responses.ParserProfileManagement;
 using RemTechAvito.Contracts.Common.Responses.TransportTypesManagement;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using WebDriver.Worker.Service.Contracts.BaseContracts;
@@ -26,38 +27,61 @@ public sealed class ParserBackgroundService(ILogger logger, IServiceScopeFactory
 
     private async Task ProcessParsing(CancellationToken ct)
     {
-        var urls = await GetUrls(ct);
         IsWorking = true;
-        foreach (var url in urls)
+        var profilesTask = GetProfiles(ct);
+        var identifiersTask = GetIdentifiers(ct);
+        await Task.WhenAll(profilesTask, identifiersTask);
+
+        var profiles = profilesTask.Result;
+        var identifiers = identifiersTask.Result;
+        foreach (var profile in profiles)
+        foreach (var link in profile.Links)
             try
             {
-                await PerformParsing(url, ct);
+                await PerformParsing(link, identifiers, ct);
             }
             catch (Exception ex)
             {
                 logger.Fatal(
                     "{Service}. Cannot parse url {url}. Exception: {Ex}",
                     nameof(ParserBackgroundService),
-                    url,
+                    link.Link,
                     ex.Message
                 );
             }
     }
 
-    private async Task<IEnumerable<string>> GetUrls(CancellationToken ct)
+    private async Task<IEnumerable<ParserProfileResponse>> GetProfiles(CancellationToken ct)
     {
         using var scope = factory.CreateScope();
         var provider = scope.ServiceProvider;
         var repository = provider.GetRequiredService<IParserProfileReadRepository>();
         var profiles = await repository.GetActiveOnly(ct);
-        return profiles.SelectMany(p => p.Links).Select(l => l.Link).Distinct().ToArray();
+        return profiles;
     }
 
-    private async Task PerformParsing(string url, CancellationToken ct)
+    private async Task<IEnumerable<long>> GetIdentifiers(CancellationToken ct)
     {
         using var scope = factory.CreateScope();
         var provider = scope.ServiceProvider;
-        var command = new ParseTransportAdvertisementCatalogueCommand(url);
+        var repository = provider.GetRequiredService<ITransportAdvertisementsQueryRepository>();
+        var identifiers = await repository.GetAdvertisementIDs(ct);
+        return identifiers;
+    }
+
+    private async Task PerformParsing(
+        ParserProfileLinksResponse link,
+        IEnumerable<long> identifiers,
+        CancellationToken ct
+    )
+    {
+        using var scope = factory.CreateScope();
+        var provider = scope.ServiceProvider;
+        var command = new ParseTransportAdvertisementCatalogueCommand(
+            link.Link,
+            identifiers,
+            link.Additions
+        );
         var handler = provider.GetRequiredService<
             IAvitoCommandHandler<ParseTransportAdvertisementCatalogueCommand>
         >();
