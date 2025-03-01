@@ -8,7 +8,10 @@ internal sealed class ParserProfileIdSerializer : IBsonSerializer<ParserProfileI
     object IBsonSerializer.Deserialize(
         BsonDeserializationContext context,
         BsonDeserializationArgs args
-    ) => Deserialize(context, args);
+    )
+    {
+        return Deserialize(context, args);
+    }
 
     public void Serialize(
         BsonSerializationContext context,
@@ -26,15 +29,17 @@ internal sealed class ParserProfileIdSerializer : IBsonSerializer<ParserProfileI
     )
     {
         var reader = context.Reader;
-        Guid id = reader.ReadGuid();
-        return new ParserProfileId(id);
+        return new ParserProfileId(reader.ReadGuid());
     }
 
     public void Serialize(
         BsonSerializationContext context,
         BsonSerializationArgs args,
         object value
-    ) => Serialize(context, args, (ParserProfileId)value);
+    )
+    {
+        Serialize(context, args, (ParserProfileId)value);
+    }
 
     public Type ValueType => typeof(ParserProfileId);
 }

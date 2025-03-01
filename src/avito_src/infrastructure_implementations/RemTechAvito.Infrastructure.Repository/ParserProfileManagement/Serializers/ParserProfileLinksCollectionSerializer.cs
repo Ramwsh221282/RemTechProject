@@ -1,9 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
-using RemTechAvito.Core.ParserProfileManagement.Entities.ParserProfileLinks;
-using RemTechAvito.Core.ParserProfileManagement.Entities.ParserProfileLinks.ValueObjects;
-using RemTechCommon.Utils.Extensions;
+using RemTechAvito.Core.ParserProfileManagement.ValueObjects;
 
 namespace RemTechAvito.Infrastructure.Repository.ParserProfileManagement.Serializers;
 
@@ -25,25 +23,39 @@ internal sealed class ParserProfileLinksCollectionSerializer
     )
     {
         var writer = context.Writer;
+        writer.WriteStartDocument();
+        writer.WriteName("profile_links");
         writer.WriteStartArray();
+
         foreach (var link in value)
         {
             writer.WriteStartDocument();
 
-            writer.WriteName("link_id");
-            writer.WriteGuid(link.Id.Id);
+            writer.WriteName("link_name");
+            writer.WriteString(link.Name);
 
-            writer.WriteName("link_body");
-            writer.WriteStartDocument();
-            writer.WriteName("link_link");
-            writer.WriteString(link.Body.Link);
-            writer.WriteName("link_mark");
-            writer.WriteString(link.Body.Mark);
-            writer.WriteEndDocument();
+            writer.WriteName("link_value");
+            writer.WriteString(link.Link);
+
+            var unwrapped = link.Unwrap<ParserProfileLinkWithAdditions>();
+            if (!unwrapped.IsSuccess)
+            {
+                writer.WriteEndDocument();
+                continue;
+            }
+
+            writer.WriteName("link_additions");
+            writer.WriteStartArray();
+
+            foreach (var addition in unwrapped.Value.Additions)
+                writer.WriteString(addition);
+            writer.WriteEndArray();
 
             writer.WriteEndDocument();
         }
+
         writer.WriteEndArray();
+        writer.WriteEndDocument();
     }
 
     public IReadOnlyCollection<ParserProfileLink> Deserialize(
@@ -53,41 +65,43 @@ internal sealed class ParserProfileLinksCollectionSerializer
     {
         var list = new List<ParserProfileLink>();
         var reader = context.Reader;
+        reader.ReadStartDocument();
         reader.ReadStartArray();
-
         while (reader.ReadBsonType() != BsonType.EndOfDocument)
         {
             reader.ReadStartDocument();
-
-            Guid id = Guid.Empty;
-            string mark = string.Empty;
-            string link = string.Empty;
-
+            List<string> additions = [];
+            var name = string.Empty;
+            var value = string.Empty;
             while (reader.ReadBsonType() != BsonType.EndOfDocument)
             {
-                id = reader.ReadGuid();
-                reader.ReadStartDocument();
-                while (reader.ReadBsonType() != BsonType.EndOfDocument)
+                var property = reader.ReadName();
+                switch (property)
                 {
-                    reader.ReadName("link_link");
-                    link = reader.ReadString();
-                    reader.ReadName("link_mark");
-                    mark = reader.ReadString();
+                    case "link_name":
+                        name = reader.ReadString();
+                        break;
+                    case "link_value":
+                        value = reader.ReadString();
+                        break;
+                    case "link_additions":
+                        reader.ReadStartArray();
+                        while (reader.ReadBsonType() != BsonType.EndOfDocument)
+                            additions.Add(reader.ReadString());
+                        reader.ReadEndArray();
+                        break;
+                    default:
+                        reader.SkipValue();
+                        break;
                 }
-                reader.ReadEndDocument();
             }
 
+            list.Add(ParserProfileLinkFactory.Create(name, value, additions));
             reader.ReadEndDocument();
-
-            list.Add(
-                new ParserProfileLink(
-                    ParserProfileLinkBody.Create(mark, link),
-                    new ParserProfileLinkId(GuidUtils.Existing(id))
-                )
-            );
         }
 
         reader.ReadEndArray();
+        reader.ReadEndDocument();
         return list;
     }
 

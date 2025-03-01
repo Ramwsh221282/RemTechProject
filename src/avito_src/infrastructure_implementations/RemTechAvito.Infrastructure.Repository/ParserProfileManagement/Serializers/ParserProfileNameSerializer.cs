@@ -22,10 +22,7 @@ internal sealed class ParserProfileNameSerializer : IBsonSerializer<ParserProfil
     )
     {
         var writer = context.Writer;
-        writer.WriteStartDocument();
-        writer.WriteName("profile_name");
         writer.WriteString(value.Name);
-        writer.WriteEndDocument();
     }
 
     public ParserProfileName Deserialize(
@@ -33,20 +30,8 @@ internal sealed class ParserProfileNameSerializer : IBsonSerializer<ParserProfil
         BsonDeserializationArgs args
     )
     {
-        var reader = context.Reader;
-        reader.ReadStartDocument();
-        var value = string.Empty;
-
-        while (reader.ReadBsonType() != BsonType.EndOfDocument)
-        {
-            var name = reader.ReadName();
-            if (name == "profile_name")
-                value = reader.ReadString();
-            reader.SkipValue();
-        }
-
-        reader.ReadEndDocument();
-        return ParserProfileName.Create(value);
+        var name = context.Reader.ReadString();
+        return ParserProfileName.Create(name);
     }
 
     public void Serialize(

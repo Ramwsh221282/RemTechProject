@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Core.Common.ValueObjects;
 using RemTechAvito.Core.ParserJournalManagement;
@@ -9,8 +10,20 @@ using Serilog;
 
 namespace RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.ParseTransportAdvertisementsCatalogue;
 
-public sealed record ParseTransportAdvertisementCatalogueCommand(string CatalogueUrl)
-    : IAvitoCommand;
+public sealed record ParseTransportAdvertisementCatalogueCommand(
+    string CatalogueUrl,
+    IEnumerable<long>? identefiers = null,
+    IEnumerable<string>? additions = null
+) : IAvitoCommand
+{
+    internal static void Register(IServiceCollection services)
+    {
+        services.AddScoped<
+            IAvitoCommandHandler<ParseTransportAdvertisementCatalogueCommand>,
+            ParseTransportAdvertisementsCatalogueCommandHandler
+        >();
+    }
+}
 
 internal sealed class ParseTransportAdvertisementsCatalogueCommandHandler(
     ITransportAdvertisementsCommandRepository advertisementsRepository,
@@ -35,7 +48,12 @@ internal sealed class ParseTransportAdvertisementsCatalogueCommandHandler(
 
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
-                var parsedData = parser.Parse(command.CatalogueUrl, ct);
+                var parsedData = parser.Parse(
+                    command.CatalogueUrl,
+                    existingIds: command.identefiers,
+                    additions: command.additions,
+                    ct: ct
+                );
                 await foreach (var item in parsedData)
                 {
                     var advertisement = item.ToTransportAdvertisement();

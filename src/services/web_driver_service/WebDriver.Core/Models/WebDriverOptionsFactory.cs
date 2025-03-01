@@ -43,7 +43,7 @@ internal sealed class WebDriverOptionsFactory
         options.AddArgument("--fast-enable");
         options.AddArgument("--disable-logging");
         options.AddArgument("--log-level=3");
-        options.AddArgument("--headless=new");
+        //options.AddArgument("--headless=new");
         options.AddArgument("--disable-background-networking");
         options.AddArgument("disable-selenium-metadata");
         options.AddArgument("--disable-sync");

@@ -1,5 +1,4 @@
 ﻿using RemTechAvito.Contracts.Common.Dto.TransportAdvertisementsManagement;
-using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
 
 namespace RemTechAvito.Infrastructure.Contracts.Repository;
 
@@ -14,6 +13,8 @@ public interface ITransportAdvertisementsQueryRepository
         GetAnalyticsStatsRequest query,
         CancellationToken ct = default
     );
+
+    Task<IEnumerable<long>> GetAdvertisementIDs(CancellationToken ct = default);
 }
 
 public sealed record GetAnalyticsItemsRequest(
@@ -36,16 +37,18 @@ public sealed class AdvertisementItemResponse
 {
     public Guid Id { get; set; } = Guid.Empty;
     public long AdvertisementId { get; set; }
-    public string Title { get; set; } = String.Empty;
-    public string Description { get; set; } = String.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
     public string[] ImageLinks { get; set; } = Array.Empty<string>();
     public string SourceUrl { get; set; }
     public string Address { get; set; }
+
     public CharacteristicsResponse[] Characteristics { get; set; } =
         Array.Empty<CharacteristicsResponse>();
-    public OwnerInformationResponse Owner { get; set; } = new OwnerInformationResponse();
 
-    public PriceResponse Price { get; set; } = new PriceResponse();
+    public OwnerInformationResponse Owner { get; set; } = new();
+
+    public PriceResponse Price { get; set; } = new();
 }
 
 public sealed class CharacteristicsResponse

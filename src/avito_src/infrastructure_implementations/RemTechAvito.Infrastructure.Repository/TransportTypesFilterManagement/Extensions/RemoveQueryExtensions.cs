@@ -1,6 +1,6 @@
 ﻿using MongoDB.Driver;
 using RemTechAvito.Contracts.Common.Dto.TransportTypesManagement;
-using RemTechAvito.Core.FiltersManagement.TransportTypes;
+using RemTechAvito.Core.AdvertisementManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Repository.Common.Helpers;
 
 namespace RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement.Extensions;

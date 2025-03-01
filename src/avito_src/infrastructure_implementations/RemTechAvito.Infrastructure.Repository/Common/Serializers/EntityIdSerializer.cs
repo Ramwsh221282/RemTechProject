@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson.Serialization;
+using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement.ValueObjects;
 using RemTechAvito.Core.Common.ValueObjects;
 using RemTechCommon.Utils.Extensions;
 
@@ -30,7 +31,7 @@ internal sealed class EntityIdSerializer : IBsonSerializer<TransportAdvertisemen
     )
     {
         var reader = context.Reader;
-        Guid id = reader.ReadGuid();
+        var id = reader.ReadGuid();
         return new TransportAdvertisementID(GuidUtils.Existing(id));
     }
 

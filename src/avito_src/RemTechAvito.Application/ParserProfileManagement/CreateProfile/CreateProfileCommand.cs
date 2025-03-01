@@ -1,4 +1,5 @@
-﻿using RemTechAvito.Application.Abstractions.Handlers;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Contracts.Common.Responses.ParserProfileManagement;
 using RemTechAvito.Core.ParserProfileManagement;
 using RemTechAvito.Core.ParserProfileManagement.ValueObjects;
@@ -9,12 +10,18 @@ using Serilog;
 
 namespace RemTechAvito.Application.ParserProfileManagement.CreateProfile;
 
-public sealed record CreateProfileCommand(ProfileNameDto Name)
-    : IAvitoCommand<ParserProfileResponse>;
-
-public sealed record ProfileNameDto(string Name)
+public sealed record CreateProfileCommand(string Name) : IAvitoCommand<ParserProfileResponse>
 {
-    public ParserProfileName ToValueObject()
+    internal static void Register(IServiceCollection services)
+    {
+        services.AddScoped<
+            IAvitoCommandHandler<CreateProfileCommand, ParserProfileResponse>,
+            CreateProfileCommandHandler
+        >();
+        services.AddScoped<CreateProfileCommandValidator>();
+    }
+
+    public ParserProfileName GetName()
     {
         return ParserProfileName.Create(Name);
     }
@@ -23,7 +30,7 @@ public sealed record ProfileNameDto(string Name)
 internal sealed class CreateProfileCommandHandler(
     IParserProfileCommandRepository repository,
     ILogger logger,
-    ProfileNameDtoValidator validator
+    CreateProfileCommandValidator commandValidator
 ) : IAvitoCommandHandler<CreateProfileCommand, ParserProfileResponse>
 {
     public async Task<Result<ParserProfileResponse>> Handle(
@@ -31,12 +38,11 @@ internal sealed class CreateProfileCommandHandler(
         CancellationToken ct = default
     )
     {
-        var validation = await validator.ValidateAsync(command.Name, ct);
+        var validation = await commandValidator.ValidateAsync(command, ct);
         if (!validation.IsValid)
             return validation.LogAndReturnError(logger, nameof(CreateProfileCommand));
 
-        var name = command.Name.ToValueObject();
-        var profile = new ParserProfile(name);
+        var profile = new ParserProfile(command.GetName());
         var insertion = await repository.Add(profile, ct);
         if (insertion.IsFailure)
             return insertion.Error.LogAndReturnError(logger, nameof(CreateProfileCommand));
@@ -44,15 +50,10 @@ internal sealed class CreateProfileCommandHandler(
         return new ParserProfileResponse(
             profile.Id.Id,
             profile.CreatedOn.Date,
+            profile.Name.Name,
             profile.State.IsActive,
             profile.State.Description,
-            profile
-                .Links.Select(l => new ParserProfileLinksResponse(
-                    l.Id.Id,
-                    l.Body.Link,
-                    l.Body.Mark
-                ))
-                .ToArray()
+            []
         );
     }
 }

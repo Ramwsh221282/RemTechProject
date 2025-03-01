@@ -1,12 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
 using Rabbit.RPC.Client.Abstractions;
-using RemTechAvito.Infrastructure.Contracts.Parser;
 using RemTechAvito.Infrastructure.Contracts.Parser.AdvertisementsParsing;
 using RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models;
 using RemTechAvito.Infrastructure.Parser.CatalogueParsing.Models.CustomBehaviors;
-using RemTechCommon.Utils.ResultPattern;
 using Serilog;
-using WebDriver.Worker.Service.Contracts.BaseImplementations;
 using WebDriver.Worker.Service.Contracts.BaseImplementations.Behaviours.Implementations;
 
 namespace RemTechAvito.Infrastructure.Parser.CatalogueParsing;
@@ -18,6 +15,8 @@ internal sealed class AdvertisementCatalogueParser : BaseParser, IAdvertisementC
 
     public async IAsyncEnumerable<ParsedTransportAdvertisement> Parse(
         string catalogueUrl,
+        IEnumerable<string>? additions = null,
+        IEnumerable<long>? existingIds = null,
         [EnumeratorCancellation] CancellationToken ct = default
     )
     {
@@ -60,6 +59,17 @@ internal sealed class AdvertisementCatalogueParser : BaseParser, IAdvertisementC
             {
                 AdvertisementParser parser = new(item, _publisher, _logger);
                 await parser.Execute(ct);
+                var parsed = item.ToParsed();
+
+                if (additions != null && additions.Any())
+                {
+                    var isMatch = parsed.IsFollowingAdditions(additions);
+                    if (isMatch)
+                        yield return parsed;
+
+                    continue;
+                }
+
                 yield return item.ToParsed();
             }
         }

@@ -13,19 +13,25 @@ internal sealed class ParseCataloguePageBehavior : IWebDriverBehavior
 {
     private readonly CataloguePageModel _model;
     private readonly ILogger _logger;
+    private readonly IEnumerable<long> _existingIds;
     private const string pathType = "xpath";
     private const string cataloguePath = ".//div[@data-marker='catalog-serp']";
     private const string catalogue = "catalogue";
 
-    public ParseCataloguePageBehavior(CataloguePageModel model, ILogger logger)
+    public ParseCataloguePageBehavior(
+        CataloguePageModel model,
+        ILogger logger,
+        IEnumerable<long>? existingIds = null
+    )
     {
         _model = model;
         _logger = logger;
+        _existingIds = existingIds ?? [];
     }
 
     public async Task<Result> Execute(IMessagePublisher publisher, CancellationToken ct = default)
     {
-        WebElementPool pool = new WebElementPool();
+        var pool = new WebElementPool();
         await AddContainerInPool(pool, publisher, ct);
         AddItemsInModel(pool);
         return Result.Success();
@@ -37,7 +43,7 @@ internal sealed class ParseCataloguePageBehavior : IWebDriverBehavior
         CancellationToken ct = default
     )
     {
-        CompositeBehavior pipeline = new CompositeBehavior()
+        var pipeline = new CompositeBehavior()
             .AddBehavior(new ScrollToBottomRetriable(10))
             .AddBehavior(new ScrollToTopRetriable(10))
             .AddBehavior(new GetNewElementRetriable(pool, cataloguePath, pathType, catalogue, 10))
@@ -50,16 +56,16 @@ internal sealed class ParseCataloguePageBehavior : IWebDriverBehavior
     {
         try
         {
-            Result<WebElement> container = pool[^1];
+            var container = pool[^1];
             if (container.IsFailure)
             {
                 _logger.Error("Container was not found");
                 return;
             }
 
-            HtmlNode node = HtmlNode.CreateNode(container.Value.OuterHTML);
+            var node = HtmlNode.CreateNode(container.Value.OuterHTML);
             _logger.Information("Created items node url tree");
-            HtmlNodeCollection items = node.ChildNodes;
+            var items = node.ChildNodes;
             if (items.Count == 0)
             {
                 _logger.Error("Items count was 0");
@@ -71,28 +77,32 @@ internal sealed class ParseCataloguePageBehavior : IWebDriverBehavior
                 if (catalogueItem == null)
                     continue;
 
-                HtmlNode? linkNode = catalogueItem.SelectSingleNode(
+                var linkNode = catalogueItem.SelectSingleNode(
                     ".//div[@class='iva-item-listTopBlock-K5zdG']"
                 );
                 if (linkNode == null)
                     continue;
 
-                HtmlNode? linkContainer = linkNode.SelectSingleNode(".//a[@itemprop='url']");
+                var linkContainer = linkNode.SelectSingleNode(".//a[@itemprop='url']");
                 if (linkContainer == null)
                     continue;
 
                 IEnumerable<HtmlAttribute> linkAttributes = linkContainer.GetAttributes();
-                HtmlAttribute? linkAttribute = linkAttributes.FirstOrDefault(a => a.Name == "href");
+                var linkAttribute = linkAttributes.FirstOrDefault(a => a.Name == "href");
                 if (linkAttribute == null)
                     continue;
 
-                ReadOnlySpan<char> domain = TransportTypesParser.GetDomainUrlPart();
+                var domain = TransportTypesParser.GetDomainUrlPart();
                 ReadOnlySpan<char> url = linkAttribute.Value;
 
-                CatalogueItem item = new CatalogueItem();
+                var item = new CatalogueItem();
                 item.Url = $"{domain}{url}";
                 item.Title = linkContainer.InnerText.CleanString();
                 InitializeIdIfExists(catalogueItem, item);
+
+                if (_existingIds.Any(i => i.ToString() == item.Id))
+                    continue;
+
                 InitializeDescriptionIfExists(catalogueItem, item);
                 InitializePriceIfExists(catalogueItem, item);
                 InitializeAddressIfExists(catalogueItem, item);
@@ -115,70 +125,62 @@ internal sealed class ParseCataloguePageBehavior : IWebDriverBehavior
     private void InitializeIdIfExists(HtmlNode node, CatalogueItem item)
     {
         IEnumerable<HtmlAttribute> attributes = node.GetAttributes();
-        HtmlAttribute? attribute = attributes.FirstOrDefault(a => a.Name == "data-item-id");
+        var attribute = attributes.FirstOrDefault(a => a.Name == "data-item-id");
         if (attribute != null)
             item.Id = attribute.Value.CleanString();
     }
 
     private void InitializeDescriptionIfExists(HtmlNode node, CatalogueItem item)
     {
-        HtmlNode? descriptionNode = node.SelectSingleNode(
-            ".//div[@class='iva-item-bottomBlock-FhNhY']"
-        );
+        var descriptionNode = node.SelectSingleNode(".//div[@class='iva-item-bottomBlock-FhNhY']");
         if (descriptionNode != null)
             item.Description = descriptionNode.FirstChild.InnerText.CleanString();
     }
 
     private void InitializePriceIfExists(HtmlNode node, CatalogueItem item)
     {
-        HtmlNode? priceContainer = node.SelectSingleNode(".//p[@data-marker='item-price']");
+        var priceContainer = node.SelectSingleNode(".//p[@data-marker='item-price']");
         if (priceContainer == null)
             return;
-        HtmlNodeCollection childs = priceContainer.ChildNodes;
+        var childs = priceContainer.ChildNodes;
         foreach (var child in childs)
         {
             if (child == null)
                 return;
 
-            HtmlAttribute? propertyAttribute = child.Attributes.FirstOrDefault(a =>
-                a.Name == "itemprop"
-            );
+            var propertyAttribute = child.Attributes.FirstOrDefault(a => a.Name == "itemprop");
             if (propertyAttribute == null)
                 continue;
 
             if (propertyAttribute.Value == "priceCurrency")
             {
-                HtmlAttribute? currencyAttribute = child.Attributes.FirstOrDefault(a =>
-                    a.Name == "content"
-                );
+                var currencyAttribute = child.Attributes.FirstOrDefault(a => a.Name == "content");
                 if (currencyAttribute != null)
                     item.Price.Currency = currencyAttribute.Value;
             }
 
             if (propertyAttribute.Value == "price")
             {
-                HtmlAttribute? currencyAttribute = child.Attributes.FirstOrDefault(a =>
-                    a.Name == "content"
-                );
+                var currencyAttribute = child.Attributes.FirstOrDefault(a => a.Name == "content");
                 if (currencyAttribute != null)
                     item.Price.Value = currencyAttribute.Value;
             }
         }
 
-        HtmlNode extraPriceData = priceContainer.SelectSingleNode(
+        var extraPriceData = priceContainer.SelectSingleNode(
             ".//span[@class='styles-module-size_l-j3Csw styles-module-size_l_dense-JjSpL']"
         );
         if (extraPriceData == null)
             return;
-        HtmlNode lastChild = extraPriceData.LastChild;
+        var lastChild = extraPriceData.LastChild;
         ReadOnlySpan<char> extraTextSpan = lastChild.InnerText;
-        int index = extraTextSpan.IndexOf(';');
+        var index = extraTextSpan.IndexOf(';');
         item.Price.Extra = $"{extraTextSpan.Slice(index + 1)}";
     }
 
     private void InitializeAddressIfExists(HtmlNode node, CatalogueItem item)
     {
-        HtmlNode? geoNode = node.SelectSingleNode(".//div[@class='geo-root-NrkbV']");
+        var geoNode = node.SelectSingleNode(".//div[@class='geo-root-NrkbV']");
         if (geoNode == null)
             return;
         item.Address = geoNode.InnerText;

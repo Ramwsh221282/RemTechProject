@@ -1,10 +1,9 @@
 ﻿using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
-using RemTechAvito.Core.FiltersManagement.TransportTypes;
+using RemTechAvito.Core.AdvertisementManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Repository.Common.Indexes;
 using RemTechAvito.Infrastructure.Repository.Common.Serializers;
 using RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement;
-using RemTechAvito.Infrastructure.Repository.TransportStatesFilterManagement.Serializers;
 using RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement.Indexes;
 using RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement.Serializers;
 
@@ -12,7 +11,7 @@ namespace RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement;
 
 internal static class TransportTypesMetadata
 {
-    internal const string Collection = "Transport_Types";
+    internal const string Collection = "Parser_Links";
 
     public static void RegisterMetadata()
     {
@@ -22,7 +21,6 @@ internal static class TransportTypesMetadata
 
     private static void RegisterSerializers()
     {
-        BsonSerializer.RegisterSerializer(new TransportStateSerializer());
         BsonSerializer.RegisterSerializer(new TransportTypeSerializer());
         BsonSerializer.RegisterSerializer(new DateOnlySerializer());
     }
@@ -35,10 +33,6 @@ internal static class TransportTypesMetadata
     public static async Task RegisterIndexes(MongoClient client)
     {
         AbstractIndexModel<TransportType> model = new TransportTypesIndexModel();
-        await model.UpdateIndexesAsync(
-            client,
-            Collection,
-            TransportAdvertisementsRepository.DbName
-        );
+        await model.UpdateIndexesAsync(client, Collection, MongoDbOptions.Databse);
     }
 }

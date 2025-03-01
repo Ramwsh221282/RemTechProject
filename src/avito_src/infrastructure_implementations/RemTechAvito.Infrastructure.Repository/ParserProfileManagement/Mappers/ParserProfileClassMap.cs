@@ -15,5 +15,6 @@ internal sealed class ParserProfileClassMap : BsonClassMap<ParserProfile>
         MapMember(x => x.CreatedOn).SetSerializer(new DateCreatedSerializer());
         MapMember(x => x.State).SetSerializer(new ParserProfileStateSerializer());
         MapMember(x => x.Links).SetSerializer(new ParserProfileLinksCollectionSerializer());
+        MapMember(x => x.Name).SetSerializer(new ParserProfileNameSerializer());
     }
 }

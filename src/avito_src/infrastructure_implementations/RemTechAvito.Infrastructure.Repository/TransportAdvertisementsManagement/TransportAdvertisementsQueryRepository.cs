@@ -16,7 +16,7 @@ internal sealed class TransportAdvertisementsQueryRepository(
         CancellationToken ct = default
     )
     {
-        string? sortOrder = query.SortOrder;
+        var sortOrder = query.SortOrder;
         SortDefinition<TransportAdvertisement>? sortDefinition = sortOrder switch
         {
             "ASC" => Builders<TransportAdvertisement>.Sort.Ascending("Price.price_value"),
@@ -25,9 +25,9 @@ internal sealed class TransportAdvertisementsQueryRepository(
         };
 
         var filter = resolver.Resolve(query.FilterData);
-        var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
+        var db = client.GetDatabase(MongoDbOptions.Databse);
         var collection = db.GetCollection<TransportAdvertisement>(
-            TransportAdvertisementsRepository.CollectionName
+            TransportAdvertisementsMetadata.Collection
         );
 
         IFindFluent<TransportAdvertisement, TransportAdvertisement> findQuery = collection.Find(
@@ -56,9 +56,9 @@ internal sealed class TransportAdvertisementsQueryRepository(
     )
     {
         var filter = resolver.Resolve(query.FilterData);
-        var db = client.GetDatabase(TransportAdvertisementsRepository.DbName);
+        var db = client.GetDatabase(MongoDbOptions.Databse);
         var collection = db.GetCollection<TransportAdvertisement>(
-            TransportAdvertisementsRepository.CollectionName
+            TransportAdvertisementsMetadata.Collection
         );
 
         var facet = AggregateFacet.Create(
@@ -108,12 +108,23 @@ internal sealed class TransportAdvertisementsQueryRepository(
         if (aggregateDocumentResults == null)
             return new AnalyticsStatsResponse(0, 0, 0, 0);
 
-        int totalCount = aggregateDocumentResults["totalCount"].ToInt32();
-        double avgPrice = aggregateDocumentResults["avgPrice"].ToDouble();
-        long maxPrice = aggregateDocumentResults["maxPrice"].ToInt64();
-        long minPrice = aggregateDocumentResults["minPrice"].ToInt64();
+        var totalCount = aggregateDocumentResults["totalCount"].ToInt32();
+        var avgPrice = aggregateDocumentResults["avgPrice"].ToDouble();
+        var maxPrice = aggregateDocumentResults["maxPrice"].ToInt64();
+        var minPrice = aggregateDocumentResults["minPrice"].ToInt64();
 
         return new AnalyticsStatsResponse(totalCount, avgPrice, maxPrice, minPrice);
+    }
+
+    public async Task<IEnumerable<long>> GetAdvertisementIDs(CancellationToken ct = default)
+    {
+        var db = client.GetDatabase(MongoDbOptions.Databse);
+        var collection = db.GetCollection<TransportAdvertisement>(
+            TransportAdvertisementsMetadata.Collection
+        );
+        var find = collection.Find(_ => true);
+        var data = (await find.ToListAsync(ct)).Select(d => d.AdvertisementId.Id);
+        return data;
     }
 }
 
@@ -121,7 +132,7 @@ internal static class TransportAdvertisementConvertExtensions
 {
     internal static AdvertisementItemResponse ToResponse(this TransportAdvertisement advertisement)
     {
-        AdvertisementItemResponse response = new AdvertisementItemResponse();
+        var response = new AdvertisementItemResponse();
         response.Id = advertisement.TransportAdvertisementId.Id;
         response.AdvertisementId = advertisement.AdvertisementId.Id;
         response.Title = advertisement.Title.Text;

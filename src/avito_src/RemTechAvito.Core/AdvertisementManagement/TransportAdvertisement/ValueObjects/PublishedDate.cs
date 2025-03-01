@@ -1,6 +1,4 @@
-﻿using RemTechCommon.Utils.ResultPattern;
-
-namespace RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement.ValueObjects;
+﻿namespace RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement.ValueObjects;
 
 public sealed record PublishedDate
 {

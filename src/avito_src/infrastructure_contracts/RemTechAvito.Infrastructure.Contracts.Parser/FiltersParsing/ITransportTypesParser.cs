@@ -1,4 +1,4 @@
-﻿using RemTechAvito.Core.FiltersManagement.TransportTypes;
+﻿using RemTechAvito.Core.AdvertisementManagement.TransportTypes;
 using RemTechCommon.Utils.ResultPattern;
 
 namespace RemTechAvito.Infrastructure.Contracts.Parser.FiltersParsing;

@@ -1,38 +1,38 @@
-﻿using RemTechAvito.Application.Abstractions.Handlers;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 
 namespace RemTechAvito.Application.ParserProfileManagement.DeleteProfile;
 
-public sealed record DeleteParserProfileCommand(string? Id) : IAvitoCommand;
-
-internal sealed class DeleteParserProfileCommandHandler
-    : IAvitoCommandHandler<DeleteParserProfileCommand>
+public sealed record DeleteParserProfileCommand(string? Id) : IAvitoCommand
 {
-    private readonly IParserProfileCommandRepository _repository;
-    private readonly ILogger _logger;
-
-    public DeleteParserProfileCommandHandler(
-        IParserProfileCommandRepository repository,
-        ILogger logger
-    )
+    internal static void Register(IServiceCollection services)
     {
-        _repository = repository;
-        _logger = logger;
+        services.AddScoped<
+            IAvitoCommandHandler<DeleteParserProfileCommand>,
+            DeleteParserProfileCommandHandler
+        >();
     }
+}
 
+internal sealed class DeleteParserProfileCommandHandler(
+    IParserProfileCommandRepository repository,
+    ILogger logger
+) : IAvitoCommandHandler<DeleteParserProfileCommand>
+{
     public async Task<Result> Handle(
         DeleteParserProfileCommand command,
         CancellationToken ct = default
     )
     {
-        _logger.Information(
+        logger.Information(
             "{Command} requested. Body: {Body}",
             nameof(DeleteParserProfileCommand),
             command
         );
-        Result<Guid> deletion = await _repository.Delete(command.Id, ct);
+        var deletion = await repository.Delete(command.Id, ct);
         return deletion;
     }
 }
