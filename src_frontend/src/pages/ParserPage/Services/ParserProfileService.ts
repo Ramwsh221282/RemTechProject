@@ -6,9 +6,11 @@ const parserProfileApiUri: string = 'http://localhost:5256/parser-profile';
 
 export class ParserProfileService {
 
-    public static async createNewProfile(): Promise<ParserProfile | string> {
+    public static async createNewProfile(name: string): Promise<ParserProfile | string> {
         try {
-            const response: AxiosResponse<Envelope<ParserProfile>> = await axios.post(parserProfileApiUri);
+            const response: AxiosResponse<Envelope<ParserProfile>> = await axios.post(parserProfileApiUri, {
+                name: name,
+            });
             if (response.data.error.trim().length > 0)
                 return response.data.error;
             return response.data.result;

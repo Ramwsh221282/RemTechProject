@@ -59,9 +59,11 @@ public sealed class TransportTypesController : ApplicationController
     public async Task<IActionResult> Create(
         [FromServices] IAvitoCommandHandler<CreateCustomTransportTypeCommand> handler,
         [FromBody] CreateCustomTransportTypeCommand command,
+        [FromRoute(Name = "name")] string name,
         CancellationToken ct = default
     )
     {
+        command = command with { Name = name };
         var result = await handler.Handle(command, ct);
         return result.IsFailure
             ? this.ToErrorResult(HttpStatusCode.InternalServerError, result.Error.Description)
