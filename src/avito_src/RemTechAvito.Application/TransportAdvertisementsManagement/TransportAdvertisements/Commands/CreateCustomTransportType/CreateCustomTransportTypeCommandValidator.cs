@@ -2,7 +2,7 @@
 using RemTechAvito.Core.AdvertisementManagement.TransportTypes;
 using RemTechCommon.Injections;
 
-namespace RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.CreateCustomTransportType;
+namespace RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.CreateCustomTransportType;
 
 internal sealed class CreateCustomTransportTypeCommandValidator
     : AbstractValidator<CreateCustomTransportTypeCommand>

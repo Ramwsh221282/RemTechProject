@@ -14,9 +14,9 @@ export function Header() {
             {routerLink: 'parser-journals', displayName: 'Журналы'}
         ]
 
-    const navigationButtons = navigations.map((navigation, index) => {
+    const navigationButtons = navigations.map((navigation) => {
         return (
-            <NavLink to={navigation.routerLink} key={index}>
+            <NavLink to={navigation.routerLink} key={navigation.displayName}>
                 <Button color="inherit">{navigation.displayName}</Button>
             </NavLink>
         )

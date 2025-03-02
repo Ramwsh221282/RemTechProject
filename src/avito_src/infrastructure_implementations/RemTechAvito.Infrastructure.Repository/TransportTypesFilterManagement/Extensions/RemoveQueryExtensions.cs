@@ -15,7 +15,8 @@ public static class RemoveQueryExtensions
         {
             RemoveSystemTransportTypeQuery => CreateSystemTypesRemoveFilter(),
             RemoveUserTransportTypeQuery userTypeQuery => CreateUserTypesRemoveFilter(
-                userTypeQuery.Name
+                userTypeQuery.Name,
+                userTypeQuery.Link
             ),
             _ => Builders<TransportType>.Filter.Empty,
         };
@@ -23,16 +24,20 @@ public static class RemoveQueryExtensions
 
     private static FilterDefinition<TransportType> CreateSystemTypesRemoveFilter()
     {
-        return FilterDefinitionFactory.CreateEquality<TransportType>(
+        return FilterDefinition<TransportType>.Empty.AddEquality(
             "type_implementor",
             TransportType.SYSTEM_TYPE
         );
     }
 
-    private static FilterDefinition<TransportType> CreateUserTypesRemoveFilter(string name)
+    private static FilterDefinition<TransportType> CreateUserTypesRemoveFilter(
+        string name,
+        string link
+    )
     {
-        return FilterDefinitionFactory
-            .CreateEquality<TransportType>("type_implementor", TransportType.USER_TYPE)
-            .CreateEquality("type_name", name);
+        return FilterDefinition<TransportType>
+            .Empty.AddEquality("type_implementor", TransportType.USER_TYPE)
+            .AddEquality<TransportType>("type_name", name)
+            .AddEquality("type_link", link);
     }
 }

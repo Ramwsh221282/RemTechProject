@@ -34,6 +34,7 @@ export class ParserProfileService {
         try {
             const response: AxiosResponse<Envelope<any>> = await axios.put(`${parserProfileApiUri}/${profile.id}`, {
                 id: profile.id,
+                name: profile.name,
                 state: profile.state,
                 links: profile.links
             });

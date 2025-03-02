@@ -3,6 +3,7 @@ import {RootLayout} from "./RootLayout.tsx";
 import {AdvertisementsPage} from "../pages/AdvertisementsPage/AdvertisementsPage.tsx";
 import {ParserPage} from "../pages/ParserPage/ParserPage.tsx";
 import {JournalsPage} from "../pages/JournalsPage/JournalsPage.tsx";
+import {ParserProfilesSection} from "../pages/ParserPage/Sections/ParserProfilesSection/ParserProfilesSection.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -15,7 +16,11 @@ export const router = createBrowserRouter([
             },
             {
                 path: "parser",
-                element: <ParserPage/>
+                element: <ParserPage/>,
+            },
+            {
+                path: 'parser/profiles',
+                element: <ParserProfilesSection/>
             },
             {
                 path: 'parser-journals',

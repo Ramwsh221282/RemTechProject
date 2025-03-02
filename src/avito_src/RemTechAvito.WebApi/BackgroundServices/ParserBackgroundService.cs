@@ -1,7 +1,7 @@
 ﻿using Rabbit.RPC.Client.Abstractions;
 using RemTechAvito.Application.Abstractions.Handlers;
-using RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.ParseTransportTypes;
 using RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.ParseTransportAdvertisementsCatalogue;
+using RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.ParseTransportTypes;
 using RemTechAvito.Contracts.Common.Responses.ParserProfileManagement;
 using RemTechAvito.Contracts.Common.Responses.TransportTypesManagement;
 using RemTechAvito.Infrastructure.Contracts.Repository;

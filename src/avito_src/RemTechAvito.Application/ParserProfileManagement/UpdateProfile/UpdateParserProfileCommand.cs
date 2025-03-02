@@ -6,7 +6,7 @@ using RemTechCommon.Injections;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 
-namespace RemTechAvito.Application.ParserProfileManagement.UpdateParserProfileLinks;
+namespace RemTechAvito.Application.ParserProfileManagement.UpdateProfile;
 
 public sealed record ParserProfileDto(
     string Id,
@@ -28,12 +28,12 @@ public sealed record ParserProfileDto(
     public ParserProfileLink[] GetLinks()
     {
         return Links
-            .Select(l => ParserProfileLinkFactory.Create(l.Mark, l.Link, l.Additions).Value)
+            .Select(l => ParserProfileLinkFactory.Create(l.Name, l.Link, l.Additions).Value)
             .ToArray();
     }
 }
 
-public sealed record ParserProfileLinkDto(string Mark, string Link, List<string>? Additions = null);
+public sealed record ParserProfileLinkDto(string Name, string Link, List<string>? Additions = null);
 
 public sealed record UpdateParserProfileCommand(ParserProfileDto Dto) : IAvitoCommand
 {

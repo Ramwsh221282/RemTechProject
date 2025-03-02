@@ -2,7 +2,7 @@
 using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Application.ParserProfileManagement.CreateProfile;
 using RemTechAvito.Application.ParserProfileManagement.DeleteProfile;
-using RemTechAvito.Application.ParserProfileManagement.UpdateParserProfileLinks;
+using RemTechAvito.Application.ParserProfileManagement.UpdateProfile;
 using RemTechAvito.Contracts.Common.Responses.ParserProfileManagement;
 using RemTechAvito.Core.ParserProfileManagement;
 using RemTechAvito.Core.ParserProfileManagement.ValueObjects;

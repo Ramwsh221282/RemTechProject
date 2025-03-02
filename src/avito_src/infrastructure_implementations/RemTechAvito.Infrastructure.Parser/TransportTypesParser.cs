@@ -61,7 +61,9 @@ internal sealed class TransportTypesParser : BaseParser, ITransportTypesParser
         await open.Execute(_publisher, ct);
         await bottom.Execute(_publisher, ct);
         await top.Execute(_publisher, ct);
+        await Task.Delay(TimeSpan.FromSeconds(5), ct);
         await getButton.Execute(_publisher, ct);
+        await Task.Delay(TimeSpan.FromSeconds(5), ct);
 
         var button = pool[^1];
         if (button.IsFailure)
@@ -73,6 +75,7 @@ internal sealed class TransportTypesParser : BaseParser, ITransportTypesParser
 
         var click = new ClickOnElementRetriable(button, 10);
         await click.Execute(_publisher, ct);
+        await Task.Delay(TimeSpan.FromSeconds(5), ct); // REQUIRED
 
         var getContainer = new GetNewElementRetriable(
             pool,

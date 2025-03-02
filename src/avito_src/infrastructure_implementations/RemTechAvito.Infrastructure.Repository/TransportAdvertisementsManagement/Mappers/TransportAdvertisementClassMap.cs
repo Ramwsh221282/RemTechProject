@@ -3,7 +3,7 @@ using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
 using RemTechAvito.Infrastructure.Repository.Common.Serializers;
 using RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Serializers;
 
-namespace RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement;
+namespace RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Mappers;
 
 internal sealed class TransportAdvertisementClassMap : BsonClassMap<TransportAdvertisement>
 {
