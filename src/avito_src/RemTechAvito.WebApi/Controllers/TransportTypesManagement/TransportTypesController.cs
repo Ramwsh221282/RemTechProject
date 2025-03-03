@@ -1,8 +1,9 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using RemTechAvito.Application.Abstractions.Handlers;
-using RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.CreateCustomTransportType;
-using RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.ParseTransportTypes;
+using RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.CreateCustomTransportType;
+using RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.DeleteTransportType;
+using RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.ParseTransportTypes;
 using RemTechAvito.Contracts.Common.Dto.TransportTypesManagement;
 using RemTechAvito.Contracts.Common.Responses.TransportTypesManagement;
 using RemTechAvito.Infrastructure.Contracts.Repository;
@@ -59,12 +60,33 @@ public sealed class TransportTypesController : ApplicationController
     public async Task<IActionResult> Create(
         [FromServices] IAvitoCommandHandler<CreateCustomTransportTypeCommand> handler,
         [FromBody] CreateCustomTransportTypeCommand command,
+        [FromRoute(Name = "name")] string name,
         CancellationToken ct = default
     )
     {
+        command = command with { Name = name };
         var result = await handler.Handle(command, ct);
         return result.IsFailure
             ? this.ToErrorResult(HttpStatusCode.InternalServerError, result.Error.Description)
+            : this.ToOkResult();
+    }
+
+    [EndpointDescription("Removes user created transport type in system")]
+    [EndpointSummary("Removes user transport type")]
+    [EndpointName("User Transport Type Remove")]
+    [HttpDelete("transport-types/{name}")]
+    public async Task<IActionResult> Delete(
+        [FromServices] IAvitoCommandHandler<DeleteTransportTypeCommand> handler,
+        [FromBody] RemoveUserTransportTypeQuery query,
+        [FromRoute] string name,
+        CancellationToken ct = default
+    )
+    {
+        query = query with { Name = name };
+        var command = new DeleteTransportTypeCommand(query);
+        var result = await handler.Handle(command, ct);
+        return result.IsFailure
+            ? this.ToErrorResult(HttpStatusCode.BadRequest, result.Error.Description)
             : this.ToOkResult();
     }
 }

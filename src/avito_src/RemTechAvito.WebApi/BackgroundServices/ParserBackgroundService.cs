@@ -1,7 +1,7 @@
 ﻿using Rabbit.RPC.Client.Abstractions;
 using RemTechAvito.Application.Abstractions.Handlers;
-using RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.ParseTransportTypes;
 using RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.ParseTransportAdvertisementsCatalogue;
+using RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.ParseTransportTypes;
 using RemTechAvito.Contracts.Common.Responses.ParserProfileManagement;
 using RemTechAvito.Contracts.Common.Responses.TransportTypesManagement;
 using RemTechAvito.Infrastructure.Contracts.Repository;
@@ -17,17 +17,17 @@ public sealed class ParserBackgroundService(ILogger logger, IServiceScopeFactory
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        IsWorking = true;
-        await ProcessParsing(stoppingToken);
-        await RefreshTransportTypesCollection(stoppingToken);
-        logger.Information("{Service} sleeping for 6 hours.", nameof(ParserBackgroundService));
-        await Task.Delay(TimeSpan.FromHours(6), stoppingToken);
-        IsWorking = false;
+        if (IsWorking)
+        {
+            await ProcessParsing(stoppingToken);
+            await RefreshTransportTypesCollection(stoppingToken);
+            logger.Information("{Service} sleeping for 6 hours.", nameof(ParserBackgroundService));
+            await Task.Delay(TimeSpan.FromHours(6), stoppingToken);
+        }
     }
 
     private async Task ProcessParsing(CancellationToken ct)
     {
-        IsWorking = true;
         var profilesTask = GetProfiles(ct);
         var identifiersTask = GetIdentifiers(ct);
         await Task.WhenAll(profilesTask, identifiersTask);
@@ -116,12 +116,14 @@ public sealed class ParserBackgroundService(ILogger logger, IServiceScopeFactory
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
+        IsWorking = true;
         logger.Information("{Service} started.", nameof(ParserBackgroundService));
         return base.StartAsync(cancellationToken);
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)
     {
+        IsWorking = false;
         logger.Information("{Service} stopped.", nameof(ParserBackgroundService));
         var publisher = new SingleCommunicationPublisher(queue, host, user, password);
         publisher.Send(new StopWebDriverContract(), cancellationToken);

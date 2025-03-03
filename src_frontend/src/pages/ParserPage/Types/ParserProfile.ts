@@ -1,13 +1,14 @@
 export type ParserProfile = {
     id: string;
     createdOn: string;
+    name: string;
     state: boolean;
     stateDescription: string;
-    links: ParserProfileLinks[];
+    links: ParserProfileLink[];
 }
 
-export type ParserProfileLinks = {
-    id: string | null;
+export type ParserProfileLink = {
+    name: string;
     link: string;
-    mark: string;
+    additions: string[] | null;
 }

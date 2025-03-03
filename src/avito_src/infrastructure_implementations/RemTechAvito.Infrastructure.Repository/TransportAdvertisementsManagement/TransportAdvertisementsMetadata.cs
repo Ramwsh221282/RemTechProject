@@ -4,6 +4,7 @@ using RemTechAvito.Core.AdvertisementManagement.TransportAdvertisement;
 using RemTechAvito.Infrastructure.Repository.Common.Indexes;
 using RemTechAvito.Infrastructure.Repository.Common.Serializers;
 using RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Indexes;
+using RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Mappers;
 using RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement.Serializers;
 
 namespace RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement;

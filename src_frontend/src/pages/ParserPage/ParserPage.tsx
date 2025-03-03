@@ -1,26 +1,60 @@
-import {Provider} from "react-redux"
-import {ParserPageRoot} from "./Components/ParserPageRoot.tsx";
-import {Fade} from "@mui/material";
-import {ParserProfileMenu} from "./Components/ParserProfileMenu/ParserProfileMenu.tsx";
-import {parserPageStore} from "./Store/ParserPageStore.ts";
-import {TransportMarksMenu} from "./Components/TransportMarksMenu/TransportMarksMenu.tsx";
+import {Button, Card, CardContent, Divider, Fade, Typography} from "@mui/material";
+import {RowsContainer} from "./Components/RowsContainer.tsx";
+import {NavLink} from "react-router";
+
 
 export const ParserPage = () => {
+    function createPageNavigationCardProps(): ParserPageNavigationCardProps[] {
+        const props: ParserPageNavigationCardProps[] = [
+            {
+                title: 'Профили парсинга',
+                description: ['Настройка ссылок парсера', 'Создание профилей парсера'],
+                path: 'profiles',
+            },
+        ];
+        return props;
+    }
+
 
     return (
-        <Provider store={parserPageStore}>
-            <ParserPageRoot>
-                <Fade in={true} timeout={500}>
-                    <div className="flex flex-row w-full h-full gap-5">
-                        <div className="flex flex-col overflow-auto w-full h-full">
-                            <ParserProfileMenu/>
-                        </div>
-                        <div className="flex flex-col overflow-auto w-full h-full">
-                            <TransportMarksMenu/>
-                        </div>
-                    </div>
-                </Fade>
-            </ParserPageRoot>
-        </Provider>
+        <>
+            <Fade in={true} timeout={500}>
+                <div className="flex flex-col w-full h-full">
+                    <RowsContainer
+                        children={createPageNavigationCardProps().map((prop, index) => <ParserPageNavigationCard
+                            key={index} {...prop} />)}/>
+                </div>
+            </Fade>
+        </>
     )
 }
+
+type ParserPageNavigationCardProps = {
+    title: string;
+    description: string[];
+    path: string;
+}
+
+function ParserPageNavigationCard(props: ParserPageNavigationCardProps) {
+    return (
+        <Card>
+            <CardContent>
+                <div className="flex flex-row gap-1">
+                    <Typography variant={"h5"}>{props.title}</Typography>
+                </div>
+                <Divider/>
+                <div className="flex flex-col">
+                    {props.description.map((description) => <Typography sx={{fontSize: '1rem'}} variant={"overline"}
+                                                                        key={description}>{description}</Typography>)}
+                </div>
+                <Divider/>
+                <div className="flex flex-row justify-center my-1">
+                    <NavLink to={props.path}>
+                        <Button>{"Перейти"}</Button>
+                    </NavLink>
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
+

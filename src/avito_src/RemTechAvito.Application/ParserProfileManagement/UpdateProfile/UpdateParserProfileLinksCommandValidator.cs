@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using RemTechAvito.Core.ParserProfileManagement.ValueObjects;
 
-namespace RemTechAvito.Application.ParserProfileManagement.UpdateParserProfileLinks;
+namespace RemTechAvito.Application.ParserProfileManagement.UpdateProfile;
 
 internal sealed class UpdateParserProfileLinksCommandValidator
     : AbstractValidator<UpdateParserProfileCommand>
@@ -22,7 +22,7 @@ internal sealed class UpdateParserProfileLinksCommandValidator
                     foreach (var link in dto.Links)
                     {
                         var linkResult = ParserProfileLinkFactory.Create(
-                            link.Mark,
+                            link.Name,
                             link.Link,
                             link.Additions
                         );

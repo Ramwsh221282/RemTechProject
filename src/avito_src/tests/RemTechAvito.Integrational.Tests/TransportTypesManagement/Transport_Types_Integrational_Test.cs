@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RemTechAvito.Application.Abstractions.Handlers;
-using RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.CreateCustomTransportType;
+using RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.CreateCustomTransportType;
 using RemTechAvito.DependencyInjection;
 using Serilog;
 

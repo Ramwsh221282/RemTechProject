@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rabbit.RPC.Client.Abstractions;
 using RemTechAvito.Application.Abstractions.Handlers;
-using RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.ParseTransportTypes;
+using RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.ParseTransportTypes;
 using RemTechAvito.Contracts.Common.Responses.TransportTypesManagement;
 using WebDriver.Worker.Service;
 using WebDriver.Worker.Service.Contracts.BaseContracts;

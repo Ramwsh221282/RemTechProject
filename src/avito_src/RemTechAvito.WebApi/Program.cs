@@ -9,6 +9,7 @@ builder.Services.AddHttpLogging();
 builder.Services.RegisterServices();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
 builder.Services.AddSingleton<ParserBackgroundService>();
 builder.Services.AddHostedService<ParserBackgroundService>();
 

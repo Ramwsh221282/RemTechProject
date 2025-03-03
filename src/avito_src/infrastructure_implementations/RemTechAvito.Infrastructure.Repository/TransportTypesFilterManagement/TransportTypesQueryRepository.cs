@@ -3,7 +3,6 @@ using RemTechAvito.Contracts.Common.Dto.TransportTypesManagement;
 using RemTechAvito.Contracts.Common.Responses.TransportTypesManagement;
 using RemTechAvito.Core.AdvertisementManagement.TransportTypes;
 using RemTechAvito.Infrastructure.Contracts.Repository;
-using RemTechAvito.Infrastructure.Repository.TransportAdvertisementsManagement;
 using RemTechAvito.Infrastructure.Repository.TransportTypesFilterManagement.Models;
 using Serilog;
 
@@ -31,7 +30,7 @@ internal sealed class TransportTypesQueryRepository(MongoClient client, ILogger 
         CancellationToken ct = default
     )
     {
-        var queryModel = GetTransportTypeQueryModelExtensions.Create(query);
+        var queryModel = query.Create();
         var db = client.GetDatabase(MongoDbOptions.Databse);
         var collection = db.GetCollection<TransportType>(TransportTypesMetadata.Collection);
         var findQuery = collection.Find(queryModel.Filter);

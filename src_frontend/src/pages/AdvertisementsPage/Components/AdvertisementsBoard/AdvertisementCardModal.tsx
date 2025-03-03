@@ -1,6 +1,6 @@
 import {Advertisement} from "../../Types/AdvertisementsPageTypes.ts";
 import {Modal} from "../../../../components/Modal.tsx";
-import {Box, Button, CircularProgress, ImageList, ImageListItem, Typography} from "@mui/material";
+import {Box, Button, CircularProgress, ImageList, ImageListItem, Link, Typography} from "@mui/material";
 import {useEffect, useState} from "react";
 import {CustomTabs} from "../../../../components/CustomTabPanel.tsx";
 
@@ -42,6 +42,12 @@ export function AdvertisementCardModal({isOpen, handleClose, card}: Advertisemen
 }
 
 function CharacteristicsPanel({card}: { card: Advertisement }) {
+
+    function onLinkClick() {
+        window.open(card.sourceUrl, "_blank", "noreferrer");
+    }
+
+
     return (
         <div className={"flex flex-col"}>
             {card.characteristics.map((ctx, index) => (
@@ -50,6 +56,7 @@ function CharacteristicsPanel({card}: { card: Advertisement }) {
                     <Typography fontSize={"medium"}>{ctx.value}</Typography>
                 </div>
             ))}
+            <Link onClick={onLinkClick} sx={{cursor: 'pointer', userSelect: 'none'}}>{"Ссылка на источник"}</Link>
         </div>
     );
 }

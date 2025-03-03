@@ -8,7 +8,7 @@ using RemTechAvito.Infrastructure.Contracts.Repository;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 
-namespace RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.ParseTransportTypes;
+namespace RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.ParseTransportTypes;
 
 public sealed record ParseTransportTypesCommand : IAvitoCommand<TransportTypeResponse>
 {

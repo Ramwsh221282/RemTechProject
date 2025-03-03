@@ -7,7 +7,7 @@ using RemTechCommon.Injections;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 
-namespace RemTechAvito.Application.FiltersManagement.TransportTypes.Commands.CreateCustomTransportType;
+namespace RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.CreateCustomTransportType;
 
 public sealed record CreateCustomTransportTypeCommand(
     string Name,
