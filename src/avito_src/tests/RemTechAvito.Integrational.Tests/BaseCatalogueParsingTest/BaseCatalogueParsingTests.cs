@@ -4,7 +4,8 @@ using Rabbit.RPC.Client.Abstractions;
 using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Application.ParserProfileManagement.CreateProfile;
 using RemTechAvito.Application.ParserProfileManagement.UpdateProfile;
-using RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.ParseTransportAdvertisementsCatalogue;
+using RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.
+    ParseTransportAdvertisementsCatalogue;
 using RemTechAvito.Contracts.Common.Responses.ParserProfileManagement;
 using RemTechAvito.Core.ParserProfileManagement.ValueObjects;
 using RemTechAvito.Infrastructure.Contracts.Repository;
@@ -63,7 +64,7 @@ public sealed class BaseCatalogueParsingTests : BasicParserTests
         try
         {
             const string catalogueUrl =
-                "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki/liugong/855h-ASgBAgICA0RU4E3cxg3urj_exg2wsz8";
+                "https://www.avito.ru/all/gruzoviki_i_spetstehnika/tehnika_dlya_lesozagotovki/john_deere-ASgBAgICAkRUsiyexw3W6j8?cd=1";
             var createProfile = new CreateProfileCommand("LuGong 855H");
             var createProfileHandler = _serviceProvider.GetRequiredService<
                 IAvitoCommandHandler<CreateProfileCommand, ParserProfileResponse>

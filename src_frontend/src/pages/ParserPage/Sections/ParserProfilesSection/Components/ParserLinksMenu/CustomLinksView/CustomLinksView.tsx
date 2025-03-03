@@ -1,5 +1,5 @@
-import {useEffect, useRef, useState} from "react";
-import {TransportType} from "../../../../../Types/TransportType.ts";
+import {useEffect, useState} from "react";
+import {TransportType, TransportTypeResponse} from "../../../../../Types/TransportType.ts";
 import {useNotification} from "../../../../../../../components/Notification.tsx";
 import {TransportTypesService} from "../../../../../Services/TransportTypesService.ts";
 import {GeneralLinksSearchBar} from "../GeneralLinksView/GeneralLinksSearchBar.tsx";
@@ -29,44 +29,10 @@ export function CustomLinksView(props: Props) {
     const notification = useNotification();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [count, setCount] = useState(0);
-    const firstInit = useRef<boolean>(true);
-
-    function updatePagination(page: number): void {
-        setPagination({...pagination, page: page});
-    }
-
-    function addTransportType(type: TransportType | string): void {
-        if (typeof type === 'string') {
-            notification.showNotification({severity: 'error', message: type})
-            return;
-        }
-        const copy = transportTypes.slice();
-        copy.push(type);
-        setTransportTypes(copy)
-        notification.showNotification({severity: 'success', message: `Добавлена пользовательская ссылка: ${type.name}`})
-    }
-
-    function removeTransportType(result: TransportType | string): void {
-        if (typeof result === "string") {
-            notification.showNotification({severity: 'error', message: result})
-            return;
-        }
-        const copy = transportTypes.filter(t => t.name !== result.name);
-        setTransportTypes(copy)
-    }
-
-    function onSearchSubmit(searchTerm: string | null) {
-        setPagination({...pagination, searchTerm: searchTerm});
-    }
 
     useEffect(() => {
-        if (firstInit.current) {
-            firstInit.current = false;
-        }
         const fetching = async () => {
-            setIsLoading(true);
-            const response = await TransportTypesService.getTransportTypes(pagination.page, pagination.size, pagination.sort, pagination.searchTerm, 'USER');
-            setIsLoading(false);
+            const response = await fetchTypes(pagination);
             if (typeof response === 'string') {
                 notification.showNotification({severity: 'error', message: response})
                 return;
@@ -77,14 +43,69 @@ export function CustomLinksView(props: Props) {
         fetching();
     }, [])
 
+    async function fetchTypes(pagination: CustomLinksViewPagination): Promise<TransportTypeResponse | string> {
+        setIsLoading(true);
+        const response = await TransportTypesService.getTransportTypes(pagination.page, pagination.size, pagination.sort, pagination.searchTerm, 'USER');
+        setIsLoading(false);
+        return response;
+    }
+
+    async function onPageChange(page: number) {
+        const newPagination = {...pagination, page: page};
+        const response = await fetchTypes(newPagination);
+        if (typeof response === 'string') {
+            notification.showNotification({severity: 'error', message: response})
+            return;
+        }
+        setPagination({...newPagination});
+        setTransportTypes(response.items);
+        setCount(response.count);
+    }
+
+    async function onSearchSubmit(searchTerm: string | null) {
+        const newPagination = {...pagination, searchTerm: searchTerm};
+        const response = await fetchTypes(newPagination);
+        if (typeof response === 'string') {
+            notification.showNotification({severity: 'error', message: response})
+            return;
+        }
+        setPagination({...newPagination});
+        setTransportTypes(response.items);
+        setCount(response.count);
+    }
+
+    async function addTransportType(type: TransportType) {
+        const result = await TransportTypesService.createCustomTransportType(type.name, type.link, []);
+        if (result.trim().length > 0) {
+            notification.showNotification({severity: 'error', message: result})
+            return;
+        }
+        const copy = transportTypes.slice();
+        copy.push(type);
+        setTransportTypes(copy.reverse())
+        notification.showNotification({severity: 'success', message: `Добавлена пользовательская ссылка: ${type.name}`})
+    }
+
+    async function removeTransportType(type: TransportType) {
+        const result = await TransportTypesService.deleteTransportType(type.name, type.link);
+        if (result.trim().length > 0) {
+            notification.showNotification({severity: 'error', message: result})
+            return;
+        }
+        const copy = transportTypes.filter(t => t.name !== type.name && t.link !== type.link);
+        setTransportTypes(copy.reverse())
+        notification.showNotification({severity: 'success', message: `Удалена пользовательская ссылка: ${type.name}`})
+    }
+
+
     return (
-        <section className="flex flex-col gap-1">
+        <section className="flex flex-col gap-2">
             <GeneralLinksSearchBar onSearchSubmit={onSearchSubmit}/>
             <CustomLinksCreateForm onCreateSubmit={addTransportType}/>
             {isLoading ? <CircularProgress size={100}/> :
                 <TransportTypesLinkContainer onDelete={removeTransportType} onSelect={props.onTransportTypeClick}
                                              types={transportTypes} columnSize={10}/>}
-            <GeneralLinkspagination onPageChange={updatePagination}
+            <GeneralLinkspagination onPageChange={onPageChange}
                                     itemsCount={count}
                                     pageSize={pagination.size}
                                     page={pagination.page}/>

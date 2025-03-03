@@ -15,7 +15,7 @@ export function GeneralLinksGrid(props: Props) {
     }
 
     return (
-        <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
+        <div style={{display: 'flex', flexDirection: 'column', gap: '8px', height: '580px'}}>
             <div>
                 <Typography variant={"subtitle1"}>{"Нажмите на название"}</Typography>
                 <Typography variant={"subtitle1"}>{"Чтобы добавить в редактируемый профиль"}</Typography>

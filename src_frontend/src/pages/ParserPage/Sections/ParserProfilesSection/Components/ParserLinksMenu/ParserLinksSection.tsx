@@ -11,13 +11,9 @@ type Props = {
 export function ParserLinksSection(props: Props) {
     return (
         <Card sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5rem',
-            width: '50%',
-            overflow: 'auto'
+            width: '50%', overflow: 'auto'
         }}>
-            <CardContent>
+            <CardContent sx={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
                 <Typography variant={"h5"}>Ссылки:</Typography>
                 <CustomTabs panels=
                                 {

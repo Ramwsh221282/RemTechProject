@@ -46,7 +46,7 @@ export function FilterBar({filterService}: { filterService: FilterService }) {
         stateCopy.priceMaxRange = priceMaxRange;
         stateCopy.priceExact = priceExact;
         internalFilterService.handleSetFilters(stateCopy);
-        filterService.handleSetFilters({...internalFilterService.filter});
+        filterService.handleSetFilters(stateCopy);
         if (internalFilterService.error.trim().length === 0) {
             notifications.showNotification({severity: "success", message: "Фильтры применены"});
         }

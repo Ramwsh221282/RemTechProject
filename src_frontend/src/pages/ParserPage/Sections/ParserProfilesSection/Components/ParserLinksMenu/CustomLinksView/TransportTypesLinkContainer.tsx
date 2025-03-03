@@ -1,10 +1,9 @@
 import {TransportType} from "../../../../../Types/TransportType.ts";
 import {Fab, Fade, Typography} from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
-import {TransportTypesService} from "../../../../../Services/TransportTypesService.ts";
 
 type Props = {
-    onDelete(result: TransportType | string): void;
+    onDelete(result: TransportType): void;
     onSelect(result: TransportType): void;
     types: TransportType[];
     columnSize: number;
@@ -21,10 +20,10 @@ export function TransportTypesLinkContainer(props: Props) {
     }
 
     return (
-        <section className="flex flex-row gap-1">
+        <section className="flex flex-row gap-1 h-100">
             {createColumnsOfItems().map((column, index) => {
                 return (
-                    <div key={index} className="flex flex-col gap-1 items-center">
+                    <div key={index} className="flex flex-col gap-2 items-center">
                         {column.map((type) => {
                             return <TransportTypeItem onDelete={props.onDelete} onSelect={props.onSelect}
                                                       transportType={type}/>
@@ -43,11 +42,9 @@ type TransportTypeItemProps = {
 }
 
 function TransportTypeItem(props: TransportTypeItemProps) {
-    async function deleteTransportType() {
-        const name = props.transportType.name;
-        const link = props.transportType.link;
-        const result = await TransportTypesService.deleteTransportType(name, link);
-        props.onDelete(result);
+
+    function deleteTransportType() {
+        props.onDelete(props.transportType);
     }
 
     function selectTransportType() {
@@ -60,6 +57,8 @@ function TransportTypeItem(props: TransportTypeItemProps) {
                 <div className="flex flex-row gap-1">
                     <Typography onClick={selectTransportType}
                                 sx={{
+                                    textAlign: 'center',
+                                    width: '100px',
                                     padding: '5px',
                                     borderRadius: '10px',
                                     backgroundColor: '#272727',

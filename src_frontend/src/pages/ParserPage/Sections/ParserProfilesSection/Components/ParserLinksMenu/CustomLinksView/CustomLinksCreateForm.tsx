@@ -2,7 +2,6 @@ import {useState} from "react";
 import * as React from "react";
 import {Divider, Fab, TextField, Typography} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import {TransportTypesService} from "../../../../../Services/TransportTypesService.ts";
 import {TransportType} from "../../../../../Types/TransportType.ts";
 
 type Props = {
@@ -18,7 +17,7 @@ export function CustomLinksCreateForm(props: Props) {
         setLink('');
     }
 
-    async function submitCreation(e: React.FormEvent) {
+    function submitCreation(e: React.FormEvent) {
         e.preventDefault();
         e.stopPropagation();
         clearInputs();
@@ -26,23 +25,25 @@ export function CustomLinksCreateForm(props: Props) {
             return props.onCreateSubmit("Требуется имя ссылки")
         if (link.trim().length === 0)
             return props.onCreateSubmit("Требуется значение ссылки")
-        const result = await TransportTypesService.createCustomTransportType(name, link, []);
-        props.onCreateSubmit(result);
+        const type: TransportType = {link: link, name: name}
+        props.onCreateSubmit(type)
         setName("");
         setLink("");
     }
 
     return (
         <form onSubmit={submitCreation} className="flex flex-row items-center gap-1">
-            <div className="flex flex-col gap-1 w-full">
+            <div className="flex flex-col gap-2 w-full">
                 <Typography variant={"subtitle1"}>Создание пользовательской ссылки:</Typography>
                 <TextField
+                    autoComplete={"off"}
                     fullWidth={true}
                     size={"small"}
                     value={name}
                     label={'Название'}
                     onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => setName(event.currentTarget.value)}/>
                 <TextField
+                    autoComplete={"off"}
                     fullWidth={true}
                     size={"small"}
                     value={link}

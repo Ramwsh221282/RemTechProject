@@ -32,7 +32,8 @@ export function GeneralLinksSearchBar(props: Props) {
 
     return (
         <form onSubmit={onSearchSubmit} className="flex flex-row gap-1">
-            <TextField onChange={onInputChange} size={"small"} fullWidth={true} label={"Поиск по названию"}
+            <TextField autoComplete={"off"} onChange={onInputChange} size={"small"} fullWidth={true}
+                       label={"Поиск по названию"}
                        value={searchTerm}></TextField>
             <Fab size={"small"} type={"submit"}>
                 <SearchOutlinedIcon/>
