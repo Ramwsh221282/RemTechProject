@@ -1,24 +1,8 @@
-﻿using Serilog;
-
-namespace RemTechCommon.Utils.ResultPattern;
+﻿namespace RemTechCommon.Utils.ResultPattern;
 
 public sealed record Error(string Description)
 {
     public static Error None = new("");
-}
-
-public static class ErrorExtensions
-{
-    public static void LogError(this Error error, ILogger logger)
-    {
-        logger.Error("{Message}", error.Description);
-    }
-
-    public static Error LogAndReturn(this Error error, ILogger logger)
-    {
-        error.LogError(logger);
-        return error;
-    }
 }
 
 public class Result
@@ -33,25 +17,13 @@ public class Result
         Error = Error.None;
     }
 
-    protected Result(Error error)
-    {
-        Error = error;
-    }
+    protected Result(Error error) => Error = error;
 
-    public static Result Success()
-    {
-        return new Result();
-    }
+    public static Result Success() => new Result();
 
-    public static Result Failure(Error error)
-    {
-        return new Result(error);
-    }
+    public static Result Failure(Error error) => new Result(error);
 
-    public static implicit operator Result(Error error)
-    {
-        return Failure(error);
-    }
+    public static implicit operator Result(Error error) => Failure(error);
 }
 
 public sealed class Result<T> : Result
@@ -79,28 +51,13 @@ public sealed class Result<T> : Result
     private Result(Error error)
         : base(error) { }
 
-    public static Result<T> Success(T value)
-    {
-        return new Result<T>(value);
-    }
+    public static Result<T> Success(T value) => new Result<T>(value);
 
-    private static new Result<T> Failure(Error error)
-    {
-        return new Result<T>(error);
-    }
+    private static new Result<T> Failure(Error error) => new Result<T>(error);
 
-    public static implicit operator Result<T>(T value)
-    {
-        return Success(value);
-    }
+    public static implicit operator Result<T>(T value) => Success(value);
 
-    public static implicit operator T(Result<T> result)
-    {
-        return result.Value;
-    }
+    public static implicit operator T(Result<T> result) => result.Value;
 
-    public static implicit operator Result<T>(Error error)
-    {
-        return Failure(error);
-    }
+    public static implicit operator Result<T>(Error error) => Failure(error);
 }

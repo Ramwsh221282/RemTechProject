@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\common_src\RemTech.Common\RemTech.Common.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Scraper\Commands\"/>
+        <Folder Include="Scraper\Models\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="PuppeteerExtraSharp" Version="2.0.0"/>
+        <PackageReference Include="PuppeteerSharp" Version="15.0.0"/>
+    </ItemGroup>
+
+</Project>
