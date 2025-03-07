@@ -20,6 +20,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\AvitoParser.Main\AvitoParser.Main.csproj"/>
+        <ProjectReference Include="..\AvitoParser.PDK\AvitoParser.PDK.csproj"/>
     </ItemGroup>
 
 </Project>
