@@ -4,10 +4,14 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\common_src\RemTech.Common\RemTech.Common.csproj"/>
+        <ProjectReference Include="..\..\AvitoParser.PDK\AvitoParser.PDK.csproj">
+            <Private>false</Private>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </ProjectReference>
     </ItemGroup>
 
 </Project>
