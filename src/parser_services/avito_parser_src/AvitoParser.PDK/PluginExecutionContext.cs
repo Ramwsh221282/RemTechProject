@@ -17,14 +17,15 @@ public class PluginExecutionContext
         PluginResolver resolver
     ) => (_logger, _pathValidator, _resolver) = (logger, pathValidator, resolver);
 
-    public async Task<Result> ExecutePlugin(
-        string pluginPath,
-        string pluginName,
-        AvitoPluginPayload? payload = null
-    )
+    public async Task<Result> ExecutePlugin(PluginCommand command)
     {
-        (WeakReference, Result) execution = await Execute(pluginPath, pluginName, payload);
-        while (execution.Item1.IsAlive)
+        (WeakReference, Result) execution = await Execute(
+            command.PluginPath,
+            command.PluginName,
+            command.Payload
+        );
+
+        for (int index = 0; index < 10 && execution.Item1.IsAlive; index++)
         {
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -33,14 +34,15 @@ public class PluginExecutionContext
         return execution.Item2;
     }
 
-    public async Task<Result<U>> ExecutePlugin<U>(
-        string pluginPath,
-        string pluginName,
-        AvitoPluginPayload? payload = null
-    )
+    public async Task<Result<U>> ExecutePlugin<U>(PluginCommand command)
     {
-        (WeakReference, Result<U>) execution = await Execute<U>(pluginPath, pluginName, payload);
-        while (execution.Item1.IsAlive)
+        (WeakReference, Result<U>) execution = await Execute<U>(
+            command.PluginPath,
+            command.PluginName,
+            command.Payload
+        );
+
+        for (int index = 0; index < 10 && execution.Item1.IsAlive; index++)
         {
             GC.Collect();
             GC.WaitForPendingFinalizers();
