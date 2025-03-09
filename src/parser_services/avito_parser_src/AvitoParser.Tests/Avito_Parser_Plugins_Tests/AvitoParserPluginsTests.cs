@@ -56,6 +56,12 @@ public class AvitoParserPluginsTests
                         new PluginPayload(logger, context, page)
                     )
                 );
+            IEnumerable<ScrapedSourceUrl> urls = advertisementLinksResult.Value;
+            foreach (ScrapedSourceUrl urlResult in urls)
+            {
+                logger.Information("Url: {Url}", urlResult.SourceUrl);
+            }
+
             Assert.True(advertisementLinksResult.IsSuccess);
         }
         catch (Exception ex)
