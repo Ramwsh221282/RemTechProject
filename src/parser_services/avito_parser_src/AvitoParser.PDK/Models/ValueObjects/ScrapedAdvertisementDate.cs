@@ -1,17 +1,13 @@
-﻿using RemTechCommon.Utils.ResultPattern;
-
-namespace AvitoParser.PDK.Models.ValueObjects;
+﻿namespace AvitoParser.PDK.Models.ValueObjects;
 
 public record ScrapedAdvertisementDate
 {
-    public ulong UnixTime { get; }
+    public DateTime Date { get; }
 
-    public static ScrapedAdvertisementDate Default => new(0);
+    public static ScrapedAdvertisementDate Default => new(DateTime.MinValue);
 
-    public ScrapedAdvertisementDate(ulong unixTime) => UnixTime = unixTime;
-
-    public static Result<ScrapedAdvertisementDate> Create(ulong unixTime) =>
-        unixTime == 0
-            ? new Error("Invalid unix time representation")
-            : new ScrapedAdvertisementDate(unixTime);
+    public ScrapedAdvertisementDate(DateTime date)
+    {
+        Date = date;
+    }
 }

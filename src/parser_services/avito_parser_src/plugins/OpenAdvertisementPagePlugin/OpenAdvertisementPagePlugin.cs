@@ -4,10 +4,10 @@ using RemTech.Common.Plugin.PDK;
 using RemTechCommon.Utils.ResultPattern;
 using Serilog;
 
-namespace CreateAvitoCataloguePagePlugin;
+namespace OpenAdvertisementPagePlugin;
 
-[Plugin(PluginName = nameof(CreateAvitoCataloguePagePlugin))]
-public sealed class CreateAvitoCataloguePagePlugin : IPlugin<IPage>
+[Plugin(PluginName = nameof(OpenAdvertisementPagePlugin))]
+public sealed class OpenAdvertisementPagePlugin : IPlugin<IPage>
 {
     private const string script =
         @"() => {    
@@ -45,7 +45,7 @@ public sealed class CreateAvitoCataloguePagePlugin : IPlugin<IPage>
         Result<ILogger> loggerUnwrap = resolver.Resolve<ILogger>();
         if (loggerUnwrap.IsFailure)
             return PluginPDKErrors.PluginDependencyMissingError(
-                nameof(CreateAvitoCataloguePagePlugin),
+                nameof(OpenAdvertisementPagePlugin),
                 nameof(ILogger)
             );
         ILogger logger = loggerUnwrap.Value;
@@ -53,7 +53,7 @@ public sealed class CreateAvitoCataloguePagePlugin : IPlugin<IPage>
         Result<IBrowser> browserUnwrap = resolver.Resolve<IBrowser>();
         if (browserUnwrap.IsFailure)
             return logger.PluginDependencyMissingError(
-                nameof(CreateAvitoCataloguePagePlugin),
+                nameof(OpenAdvertisementPagePlugin),
                 nameof(IBrowser)
             );
         IBrowser browser = browserUnwrap.Value;
@@ -61,44 +61,36 @@ public sealed class CreateAvitoCataloguePagePlugin : IPlugin<IPage>
         Result<ScrapedSourceUrl> urlUnwrap = resolver.Resolve<ScrapedSourceUrl>();
         if (urlUnwrap.IsFailure)
             return logger.PluginDependencyMissingError(
-                nameof(CreateAvitoCataloguePagePlugin),
+                nameof(OpenAdvertisementPagePlugin),
                 nameof(ScrapedSourceUrl)
             );
-        ScrapedSourceUrl url = urlUnwrap.Value;
+        string url = urlUnwrap.Value.SourceUrl;
 
         Result<PluginExecutionContext> contextUnwrap = resolver.Resolve<PluginExecutionContext>();
         if (contextUnwrap.IsFailure)
-            return logger.PluginDependencyMissingError(
-                nameof(CreateAvitoCataloguePagePlugin),
+            return PluginPDKErrors.PluginDependencyMissingError(
+                nameof(OpenAdvertisementPagePlugin),
                 nameof(PluginExecutionContext)
             );
         PluginExecutionContext context = contextUnwrap.Value;
 
-        IPage page = await browser.NewPageAsync();
-
-        await page.EvaluateFunctionOnNewDocumentAsync(script);
-
-        await page.GoToAsync(
-            url.SourceUrl,
-            new NavigationOptions { WaitUntil = [WaitUntilNavigation.DOMContentLoaded] }
-        );
-
-        PluginCommand scrollBottomCommand = new PluginCommand(
-            "ScrollBottomPlugin",
-            new PluginPayload(logger, page)
-        );
-        Result scrollingResult = await context.ExecutePlugin(scrollBottomCommand);
-        if (scrollingResult.IsFailure)
-            return scrollingResult.Error;
-
-        PluginCommand scrollTopCommand = new PluginCommand(
-            "ScrollTopPlugin",
-            new PluginPayload(logger, page)
-        );
-
-        Result scrollingTopResult = await context.ExecutePlugin(scrollTopCommand);
-        return scrollingTopResult.IsFailure
-            ? scrollingTopResult.Error
-            : Result<IPage>.Success(page);
+        try
+        {
+            IPage page = await browser.NewPageAsync();
+            await page.EvaluateFunctionOnNewDocumentAsync(script);
+            await page.GoToAsync(url, WaitUntilNavigation.DOMContentLoaded);
+            await context.Execute("ScrollBottomPlugin", new PluginPayload(logger, page));
+            await context.Execute("ScrollTopPlugin", new PluginPayload(logger, page));
+            return Result<IPage>.Success(page);
+        }
+        catch (Exception ex)
+        {
+            logger.Fatal(
+                "{Context} failed. Exception: {Ex}",
+                nameof(OpenAdvertisementPagePlugin),
+                ex.Message
+            );
+            return new Error("Failed to open advertisement page. Plugin inner exception");
+        }
     }
 }

@@ -5,22 +5,18 @@ namespace AvitoParser.PDK.Models.ValueObjects;
 public record ScrapedPublisher
 {
     public string Name { get; }
-    public string Description { get; }
 
-    public static ScrapedPublisher Default => new(string.Empty, string.Empty);
+    public static ScrapedPublisher Default => new(string.Empty);
 
-    private ScrapedPublisher(string name, string description)
+    private ScrapedPublisher(string name)
     {
         Name = name;
-        Description = description;
     }
 
-    public static Result<ScrapedPublisher> Create(string? name, string? description)
+    public static Result<ScrapedPublisher> Create(string? name)
     {
         if (string.IsNullOrWhiteSpace(name))
             return new Error("Publisher name is empty");
-        if (string.IsNullOrWhiteSpace(description))
-            return new Error("Publisher description is empty");
-        return new ScrapedPublisher(name, description);
+        return new ScrapedPublisher(name);
     }
 }

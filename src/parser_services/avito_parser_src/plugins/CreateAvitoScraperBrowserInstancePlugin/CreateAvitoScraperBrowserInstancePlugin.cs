@@ -30,7 +30,18 @@ public sealed class CreateAvitoScraperBrowserInstancePlugin : IPlugin<IBrowser>
         PluginExecutionContext context = contextUnwrap.Value;
 
         PuppeteerLaunchOptions options = new PuppeteerLaunchOptions(
-            Arguments: ["--start-maximized"],
+            Arguments:
+            [
+                "--start-maximized",
+                "--no-sandbox",
+                "--disable-infobars",
+                "--disable-dev-shm-usage",
+                "--disable-web-security",
+                "--disable-extensions",
+                "--disable-setuid-sandbox",
+                "--ignore-certificate-errors",
+                "--disable-blink-features=AutomationControlled",
+            ],
             Headless: false
         );
 

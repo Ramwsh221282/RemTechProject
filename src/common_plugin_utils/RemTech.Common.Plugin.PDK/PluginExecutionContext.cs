@@ -123,3 +123,28 @@ public class PluginExecutionContext
         }
     }
 }
+
+public static class PluginExecutionContextExtensions
+{
+    public static async Task<Result<U>> Execute<U>(
+        this PluginExecutionContext context,
+        string pluginName,
+        PluginPayload? payload = null
+    )
+    {
+        PluginCommand command = new PluginCommand(pluginName, payload);
+        Result<U> result = await context.ExecutePlugin<U>(command);
+        return result;
+    }
+
+    public static async Task<Result> Execute(
+        this PluginExecutionContext context,
+        string pluginName,
+        PluginPayload? payload = null
+    )
+    {
+        PluginCommand command = new PluginCommand(pluginName, payload);
+        Result result = await context.ExecutePlugin(command);
+        return result;
+    }
+}
