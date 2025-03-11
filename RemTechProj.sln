@@ -133,6 +133,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateAdvertisementDatePlug
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreatePublisherPlugin", "src\parser_services\avito_parser_src\plugins\CreatePublisherPlugin\CreatePublisherPlugin.csproj", "{53684FD4-81DC-49CE-A164-1330141116C4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreatePagedCatalogueUrls", "src\parser_services\avito_parser_src\plugins\CreatePagedCatalogueUrls\CreatePagedCatalogueUrls.csproj", "{FB738F0F-AF9E-481D-95FD-C303FCD259EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParseAvitoCatalogueByUrlPlugin", "src\parser_services\avito_parser_src\plugins\ParseAvitoCatalogueByUrlPlugin\ParseAvitoCatalogueByUrlPlugin.csproj", "{006AA2D4-5190-4F6E-B360-E3F942B3A877}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -731,6 +735,30 @@ Global
 		{53684FD4-81DC-49CE-A164-1330141116C4}.Release|x64.Build.0 = Release|Any CPU
 		{53684FD4-81DC-49CE-A164-1330141116C4}.Release|x86.ActiveCfg = Release|Any CPU
 		{53684FD4-81DC-49CE-A164-1330141116C4}.Release|x86.Build.0 = Release|Any CPU
+		{FB738F0F-AF9E-481D-95FD-C303FCD259EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB738F0F-AF9E-481D-95FD-C303FCD259EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB738F0F-AF9E-481D-95FD-C303FCD259EB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FB738F0F-AF9E-481D-95FD-C303FCD259EB}.Debug|x64.Build.0 = Debug|Any CPU
+		{FB738F0F-AF9E-481D-95FD-C303FCD259EB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FB738F0F-AF9E-481D-95FD-C303FCD259EB}.Debug|x86.Build.0 = Debug|Any CPU
+		{FB738F0F-AF9E-481D-95FD-C303FCD259EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB738F0F-AF9E-481D-95FD-C303FCD259EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB738F0F-AF9E-481D-95FD-C303FCD259EB}.Release|x64.ActiveCfg = Release|Any CPU
+		{FB738F0F-AF9E-481D-95FD-C303FCD259EB}.Release|x64.Build.0 = Release|Any CPU
+		{FB738F0F-AF9E-481D-95FD-C303FCD259EB}.Release|x86.ActiveCfg = Release|Any CPU
+		{FB738F0F-AF9E-481D-95FD-C303FCD259EB}.Release|x86.Build.0 = Release|Any CPU
+		{006AA2D4-5190-4F6E-B360-E3F942B3A877}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{006AA2D4-5190-4F6E-B360-E3F942B3A877}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{006AA2D4-5190-4F6E-B360-E3F942B3A877}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{006AA2D4-5190-4F6E-B360-E3F942B3A877}.Debug|x64.Build.0 = Debug|Any CPU
+		{006AA2D4-5190-4F6E-B360-E3F942B3A877}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{006AA2D4-5190-4F6E-B360-E3F942B3A877}.Debug|x86.Build.0 = Debug|Any CPU
+		{006AA2D4-5190-4F6E-B360-E3F942B3A877}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{006AA2D4-5190-4F6E-B360-E3F942B3A877}.Release|Any CPU.Build.0 = Release|Any CPU
+		{006AA2D4-5190-4F6E-B360-E3F942B3A877}.Release|x64.ActiveCfg = Release|Any CPU
+		{006AA2D4-5190-4F6E-B360-E3F942B3A877}.Release|x64.Build.0 = Release|Any CPU
+		{006AA2D4-5190-4F6E-B360-E3F942B3A877}.Release|x86.ActiveCfg = Release|Any CPU
+		{006AA2D4-5190-4F6E-B360-E3F942B3A877}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -799,5 +827,7 @@ Global
 		{7BCA784F-E4EB-4D5B-A8C2-538BFA5BF97C} = {07477264-17F3-4BD2-A181-A1FF37931F32}
 		{5EE9136F-55C0-4C42-9FC0-250998963A77} = {07477264-17F3-4BD2-A181-A1FF37931F32}
 		{53684FD4-81DC-49CE-A164-1330141116C4} = {07477264-17F3-4BD2-A181-A1FF37931F32}
+		{FB738F0F-AF9E-481D-95FD-C303FCD259EB} = {07477264-17F3-4BD2-A181-A1FF37931F32}
+		{006AA2D4-5190-4F6E-B360-E3F942B3A877} = {07477264-17F3-4BD2-A181-A1FF37931F32}
 	EndGlobalSection
 EndGlobal

@@ -78,7 +78,15 @@ public sealed class OpenAdvertisementPagePlugin : IPlugin<IPage>
         {
             IPage page = await browser.NewPageAsync();
             await page.EvaluateFunctionOnNewDocumentAsync(script);
-            await page.GoToAsync(url, WaitUntilNavigation.DOMContentLoaded);
+            await page.GoToAsync(
+                url,
+                new NavigationOptions()
+                {
+                    WaitUntil = [WaitUntilNavigation.DOMContentLoaded],
+                    Timeout = 300000,
+                }
+            );
+            Console.WriteLine("Loaded");
             await context.Execute("ScrollBottomPlugin", new PluginPayload(logger, page));
             await context.Execute("ScrollTopPlugin", new PluginPayload(logger, page));
             return Result<IPage>.Success(page);

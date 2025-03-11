@@ -112,7 +112,7 @@ public sealed class LoginInAvitoPlugin : IPlugin<IPage>
             return new Error("Failed to get email input element");
         }
 
-        await emailInputElement.TypeAsync(loginData.Email, new TypeOptions() { Delay = 500 });
+        await emailInputElement.TypeAsync(loginData.Email, new TypeOptions() { Delay = 100 });
 
         IElementHandle? passwordInputElement = await page.QuerySelectorAsync(
             "input[data-marker='login-form/password/input']"
@@ -126,7 +126,7 @@ public sealed class LoginInAvitoPlugin : IPlugin<IPage>
             return new Error("Failed to get password input element");
         }
 
-        await passwordInputElement.TypeAsync(loginData.Password, new TypeOptions() { Delay = 500 });
+        await passwordInputElement.TypeAsync(loginData.Password, new TypeOptions() { Delay = 100 });
 
         IElementHandle? authButtonElement = null;
         attempts = 0;
@@ -152,11 +152,7 @@ public sealed class LoginInAvitoPlugin : IPlugin<IPage>
 
         await authButtonElement.ClickAsync();
         IResponse response = await page.WaitForNavigationAsync(
-            new NavigationOptions()
-            {
-                WaitUntil = [WaitUntilNavigation.Networkidle0],
-                Timeout = 300000,
-            }
+            new NavigationOptions() { WaitUntil = [WaitUntilNavigation.Load], Timeout = 300000 }
         );
         if (response.Ok)
             return Result<IPage>.Success(page);
