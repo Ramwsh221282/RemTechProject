@@ -4,8 +4,7 @@ using Rabbit.RPC.Client.Abstractions;
 using RemTechAvito.Application.Abstractions.Handlers;
 using RemTechAvito.Application.ParserProfileManagement.CreateProfile;
 using RemTechAvito.Application.ParserProfileManagement.UpdateProfile;
-using RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.
-    ParseTransportAdvertisementsCatalogue;
+using RemTechAvito.Application.TransportAdvertisementsManagement.TransportAdvertisements.Commands.ParseTransportAdvertisementsCatalogue;
 using RemTechAvito.Contracts.Common.Responses.ParserProfileManagement;
 using RemTechAvito.Core.ParserProfileManagement.ValueObjects;
 using RemTechAvito.Infrastructure.Contracts.Repository;
