@@ -1,10 +1,6 @@
-﻿using System.Diagnostics;
-using System.Text;
-using AvitoParser.PDK.Models;
+﻿using AvitoParser.PDK.Models;
 using AvitoParser.PDK.Models.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
-using PuppeteerExtraSharp;
-using PuppeteerExtraSharp.Plugins.ExtraStealth;
 using PuppeteerSharp;
 using RemTech.Common.Plugin.PDK;
 using RemTech.Puppeteer.Scraper.Plugin.PDK;
@@ -34,7 +30,7 @@ public sealed class Parse_Drom_Advertisement_Tests
         string inputLink = "https://auto.drom.ru/spec/bull/loader/all";
 
         PuppeteerLaunchOptions launchOptions = new PuppeteerLaunchOptions(
-            Headless: false,
+            Headless: true,
             Arguments: ["--start-maximized"]
         );
 
@@ -56,7 +52,14 @@ public sealed class Parse_Drom_Advertisement_Tests
         );
         Assert.True(ads.IsSuccess);
 
-        ScrapedAdvertisement[] advertisements = ads.Value.ToArray();
-        Assert.NotNull(advertisements);
+        IEnumerable<ScrapedAdvertisement> catalogueAds = ads.Value;
+        Result<IEnumerable<ScrapedAdvertisement>> completedAds = await context.Execute<
+            IEnumerable<ScrapedAdvertisement>
+        >(
+            "CompleteDromAdvertisementsPlugin",
+            new PluginPayload(logger, context, catalogueAds, browser)
+        );
+
+        Assert.True(completedAds.IsSuccess);
     }
 }
