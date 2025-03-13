@@ -69,7 +69,7 @@ public class AvitoParserPluginsTests
         PluginExecutionContext context = _provider.GetRequiredService<PluginExecutionContext>();
         ILogger logger = _provider.GetRequiredService<ILogger>();
         ScrapedSourceUrl catalogue = ScrapedSourceUrl.Create(
-            "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki/merlo-ASgBAgICAkRU4E3cxg2Arz8?cd=1"
+            "https://www.avito.ru/all/gruzoviki_i_spetstehnika/pogruzchiki/lugong-ASgBAgICAkRU4E3cxg2y0mY?cd=1"
         );
         Result<IEnumerable<ScrapedAdvertisement>> advertisements = await context.Execute<
             IEnumerable<ScrapedAdvertisement>
