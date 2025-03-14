@@ -1,7 +1,6 @@
-﻿using AvitoParser.PDK.Sinking.Models;
-using Rabbit.RPC.Client.Abstractions;
+﻿using Rabbit.RPC.Client.Abstractions;
 
-namespace AvitoParser.PDK.Sink;
+namespace AvitoParser.PDK.Sinking.Models;
 
 public record SinkScrapedAdvertisementsContract(
     ScrapedAdvertisementSink[] Advertisements,

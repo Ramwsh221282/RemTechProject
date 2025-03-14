@@ -3,7 +3,7 @@ using AvitoParser.PDK.Models.ValueObjects;
 
 namespace AvitoParser.PDK.Sinking.Models;
 
-public class ScrapedAdvertisementSink
+public sealed record ScrapedAdvertisementSink
 {
     public ulong AdvertisementId { get; } = 0;
     public DateTime AdvertisementDate { get; } = DateTime.MinValue;
