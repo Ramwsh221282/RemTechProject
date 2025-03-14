@@ -155,6 +155,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mongodb_data", "mongodb_dat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTech.MongoDb.Service", "src\data_services\mongodb_data\RemTech.MongoDb.Service\RemTech.MongoDb.Service.csproj", "{F8517961-6E7A-4A20-AFB0-CCABD5BDCC67}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTech.MongoDb.Service.Tests", "src\data_services\mongodb_data\RemTech.MongoDb.Service.Tests\RemTech.MongoDb.Service.Tests.csproj", "{7AC92D4D-DDB5-4625-8275-63652C94709C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -837,6 +839,18 @@ Global
 		{F8517961-6E7A-4A20-AFB0-CCABD5BDCC67}.Release|x64.Build.0 = Release|Any CPU
 		{F8517961-6E7A-4A20-AFB0-CCABD5BDCC67}.Release|x86.ActiveCfg = Release|Any CPU
 		{F8517961-6E7A-4A20-AFB0-CCABD5BDCC67}.Release|x86.Build.0 = Release|Any CPU
+		{7AC92D4D-DDB5-4625-8275-63652C94709C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AC92D4D-DDB5-4625-8275-63652C94709C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AC92D4D-DDB5-4625-8275-63652C94709C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7AC92D4D-DDB5-4625-8275-63652C94709C}.Debug|x64.Build.0 = Debug|Any CPU
+		{7AC92D4D-DDB5-4625-8275-63652C94709C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7AC92D4D-DDB5-4625-8275-63652C94709C}.Debug|x86.Build.0 = Debug|Any CPU
+		{7AC92D4D-DDB5-4625-8275-63652C94709C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AC92D4D-DDB5-4625-8275-63652C94709C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AC92D4D-DDB5-4625-8275-63652C94709C}.Release|x64.ActiveCfg = Release|Any CPU
+		{7AC92D4D-DDB5-4625-8275-63652C94709C}.Release|x64.Build.0 = Release|Any CPU
+		{7AC92D4D-DDB5-4625-8275-63652C94709C}.Release|x86.ActiveCfg = Release|Any CPU
+		{7AC92D4D-DDB5-4625-8275-63652C94709C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -916,5 +930,6 @@ Global
 		{9E64A2E1-468C-4645-BB98-6505778AB8EE} = {0C90F861-0D19-456F-89AC-1E4B6B26EB98}
 		{326327E3-895F-4482-9834-1A1A93EB1A65} = {9E64A2E1-468C-4645-BB98-6505778AB8EE}
 		{F8517961-6E7A-4A20-AFB0-CCABD5BDCC67} = {326327E3-895F-4482-9834-1A1A93EB1A65}
+		{7AC92D4D-DDB5-4625-8275-63652C94709C} = {326327E3-895F-4482-9834-1A1A93EB1A65}
 	EndGlobalSection
 EndGlobal
