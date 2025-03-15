@@ -21,13 +21,13 @@ internal sealed class DateCreatedSerializer : IBsonSerializer<DateCreated>
     )
     {
         var writer = context.Writer;
-        writer.WriteDateTime(value.Date.ToUnix());
+        writer.WriteDateTime(value.Date.ToUnixFromDateOnly());
     }
 
     public DateCreated Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
     {
         var reader = context.Reader;
-        DateOnly date = reader.ReadDateTime().FromUnix();
+        DateOnly date = reader.ReadDateTime().FromUnixToDateOnly();
         return new DateCreated(date);
     }
 

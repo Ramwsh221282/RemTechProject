@@ -37,7 +37,7 @@ internal sealed class TransportTypeSerializer : IBsonSerializer<TransportType>
         writer.WriteString(value.Link);
 
         writer.WriteName("date_created");
-        writer.WriteDateTime(value.CreatedOn.ToUnix());
+        writer.WriteDateTime(value.CreatedOn.ToUnixFromDateOnly());
 
         if (value.Type == TransportType.USER_TYPE)
         {
@@ -89,7 +89,7 @@ internal sealed class TransportTypeSerializer : IBsonSerializer<TransportType>
                     link = reader.ReadString();
                     break;
                 case "date_created":
-                    createdOn = reader.ReadDateTime().FromUnix();
+                    createdOn = reader.ReadDateTime().FromUnixToDateOnly();
                     break;
                 case "type_user_additions":
                     reader.ReadStartArray();

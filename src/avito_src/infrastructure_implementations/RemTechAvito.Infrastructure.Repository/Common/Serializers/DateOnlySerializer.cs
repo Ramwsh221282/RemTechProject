@@ -20,13 +20,13 @@ internal sealed class DateOnlySerializer : IBsonSerializer<DateOnly>
     )
     {
         var writer = context.Writer;
-        writer.WriteDateTime(value.ToUnix());
+        writer.WriteDateTime(value.ToUnixFromDateOnly());
     }
 
     public DateOnly Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
     {
         var reader = context.Reader;
-        return reader.ReadDateTime().FromUnix();
+        return reader.ReadDateTime().FromUnixToDateOnly();
     }
 
     public void Serialize(
