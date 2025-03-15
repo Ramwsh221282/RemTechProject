@@ -1,0 +1,6 @@
+@RemTech.MainApi_HostAddress = http://localhost:5104
+
+GET {{RemTech.MainApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
