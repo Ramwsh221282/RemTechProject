@@ -4,13 +4,12 @@ public static class DateConverters
 {
     public static long ToUnixFromDateOnly(this DateOnly date) =>
         new DateTimeOffset(
-            DateTime.SpecifyKind(date.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc)
+            date.ToDateTime(TimeOnly.MinValue),
+            TimeSpan.Zero
         ).ToUnixTimeMilliseconds();
 
     public static long ToUnixFromDateTime(this DateTime date) =>
-        new DateTimeOffset(
-            DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc)
-        ).ToUnixTimeMilliseconds();
+        new DateTimeOffset(DateTime.SpecifyKind(date, DateTimeKind.Utc)).ToUnixTimeMilliseconds();
 
     public static DateOnly FromUnixToDateOnly(this long unixDate) =>
         DateOnly.FromDateTime(DateTimeOffset.FromUnixTimeMilliseconds(unixDate).UtcDateTime);

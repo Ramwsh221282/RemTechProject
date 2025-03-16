@@ -16,6 +16,15 @@ public sealed record Parser
         [GuardedParameter(typeof(ParserStateGuard))] ParserState state,
         [GuardedParameter(typeof(ParserLinksGuard))] ParserLink[] links
     ) => (Name, Schedule, State, Links) = (name, schedule, state, links);
+
+    [GuardedConstructor]
+    private Parser([GuardedParameter(typeof(ParserNameGuard))] ParserName name) =>
+        (Name, Schedule, State, Links) = (
+            name,
+            new ParserSchedule(1, DateTime.Now, DateTime.Now.AddHours(1)),
+            new ParserState("Отключен"),
+            Array.Empty<ParserLink>()
+        );
 }
 
 public sealed record ParserSchedule(int RepeatEveryHours, DateTime LastRun, DateTime NextRun);

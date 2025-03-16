@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Rabbit.RPC.Client.Abstractions;
 using RemTech.MainApi.Common.Configurations;
 
 namespace RemTech.MainApi.ParsersManagement.Configurations;
