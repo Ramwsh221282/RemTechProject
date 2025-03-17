@@ -1,17 +1,17 @@
-using RemTech.MainApi.ParsersManagement.DependencyInjection;
-using RemTech.MainApi.ParsersManagement.Endpoints;
+using RemTech.MainApi.Common.Extensions;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
-
-builder.Services.RegisterParserDependencies();
-
+builder.Services.RegisterServices();
 var app = builder.Build();
-app.MapParserEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
+app.MapAllEndpoints();
+app.Run();

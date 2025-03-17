@@ -1,25 +1,18 @@
-﻿using Rabbit.RPC.Client.Abstractions;
+﻿using RemTech.MainApi.Common.Attributes;
 using RemTech.MainApi.ParsersManagement.Configurations;
-using RemTech.MainApi.ParsersManagement.Messages.DataServiceMessages;
-using RemTech.MainApi.ParsersManagement.Services;
+using RemTech.MainApi.ParsersManagement.Messages;
 
 namespace RemTech.MainApi.ParsersManagement.DependencyInjection;
 
+[DependencyInjection]
 public static class ParserManagementDependencyInjection
 {
+    [ServicesRegistration]
     public static void RegisterParserDependencies(this IServiceCollection services)
     {
-        services.AddScoped<ParserDataServiceMessager>(_ =>
-        {
-            ParserDataServiceConfiguration conf = ParserDataServiceConfiguration.Create();
-            MultiCommunicationPublisher publisher = new MultiCommunicationPublisher(
-                conf.QueueName,
-                conf.HostName,
-                conf.UserName,
-                conf.Password
-            );
-            return new ParserDataServiceMessager(publisher);
-        });
-        services.AddScoped<ParserManagementService>();
+        ParserDataServiceConfiguration dataServiceConfiguration =
+            ParserDataServiceConfiguration.Create();
+        services.AddSingleton(dataServiceConfiguration);
+        services.AddSingleton<DataServiceMessagerFactory>();
     }
 }
