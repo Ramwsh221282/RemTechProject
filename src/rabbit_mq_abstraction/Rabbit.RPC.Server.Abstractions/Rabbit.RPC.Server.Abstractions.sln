@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rabbit.RPC.Server.Abstractions", "Rabbit.RPC.Server.Abstractions.csproj", "{9F5DEBF0-A7CC-04A8-816D-B752A2E202FB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9F5DEBF0-A7CC-04A8-816D-B752A2E202FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F5DEBF0-A7CC-04A8-816D-B752A2E202FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F5DEBF0-A7CC-04A8-816D-B752A2E202FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F5DEBF0-A7CC-04A8-816D-B752A2E202FB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7139ADBB-D655-440C-950C-799CD5A48084}
+	EndGlobalSection
+EndGlobal

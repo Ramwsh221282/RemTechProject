@@ -38,12 +38,26 @@ internal sealed class CommunicationContext : IDisposable
         BasicProperties properties = await GenerateCorellationProperties(replyQueueName, ct);
         TaskCompletionSource<ContractActionResult> callback = RegisterReplyQueue(properties);
         await SendMessage(message, queueName, properties, ct);
+
         using CancellationTokenRegistration ctr = ct.Register(() =>
         {
             _callbacks.TryRemove(properties.CorrelationId!, out _);
             callback.TrySetCanceled();
         });
-        return await callback.Task;
+        try
+        {
+            return await callback.Task;
+        }
+        catch (TaskCanceledException taskCancelled)
+        {
+            _logger.Information("Task cancelled. {Source}", taskCancelled.Source);
+            return new ContractActionResult("Operation cancelled", false, new());
+        }
+        catch (OperationCanceledException operationCancelled)
+        {
+            _logger.Information("Operation cancelled. {Source}", operationCancelled.Source);
+            return new ContractActionResult("Operation cancelled", false, new());
+        }
     }
 
     private async Task<string> CreateTemporaryQueueName(CancellationToken ct = default)
@@ -63,7 +77,7 @@ internal sealed class CommunicationContext : IDisposable
             consumer: _consumer,
             cancellationToken: ct
         );
-        BasicProperties properties = new BasicProperties()
+        BasicProperties properties = new()
         {
             CorrelationId = Guid.NewGuid().ToString(),
             ReplyTo = replyQueueName,
@@ -75,8 +89,9 @@ internal sealed class CommunicationContext : IDisposable
         BasicProperties properties
     )
     {
-        TaskCompletionSource<ContractActionResult> taskCompletionSource =
-            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TaskCompletionSource<ContractActionResult> taskCompletionSource = new(
+            TaskCreationOptions.RunContinuationsAsynchronously
+        );
         _callbacks.TryAdd(properties.CorrelationId!, taskCompletionSource);
         return taskCompletionSource;
     }
