@@ -31,7 +31,7 @@ public sealed record ParserSchedule(int RepeatEveryHours, DateTime LastRun, Date
 
 public sealed record ParserState(string State)
 {
-    public static string[] AllowedStates => ["Работает", "Запущен", "Отключен"];
+    public static string[] AllowedStates => ["Ожидание", "Работает", "Отключен"];
 }
 
 public sealed record ParserLink(string Url);

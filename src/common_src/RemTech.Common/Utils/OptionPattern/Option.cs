@@ -36,3 +36,10 @@ public sealed record Some<T> : Option<T>
 
     public static Option<U> Create<U>(U value) => new Some<U>(value);
 }
+
+public static class OptionExtensions
+{
+    public static Option<T> AsNone<T>(this object? value) => Option<T>.None();
+
+    public static Option<T> AsSome<T>(this object value) => Option<T>.Some((T)value);
+}

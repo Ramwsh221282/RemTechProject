@@ -1,23 +1,16 @@
+using SharedParsersLibrary.ParserBehaviorFacade;
+
 namespace AvitoParserService;
 
-public class Worker : BackgroundService
+public class Worker(ParserManagementFacade facade) : BackgroundService
 {
-    private readonly ILogger<Worker> _logger;
-
-    public Worker(ILogger<Worker> logger)
-    {
-        _logger = logger;
-    }
+    private readonly ParserManagementFacade _facade = facade;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-            }
-            await Task.Delay(1000, stoppingToken);
+            await _facade.InvokeBasicBehavior(stoppingToken);
         }
     }
 }
