@@ -8,9 +8,11 @@ namespace DromParserService.Features.ScrapeConcreteAdvertisement.Decorators;
 
 public sealed class ScrapeAdvertisementDescriptionDecorator(
     IScrapeConcreteAdvertisementHandler handler,
-    ScrapeConcreteAdvertisementContext context
+    ScrapeConcreteAdvertisementContext context,
+    Serilog.ILogger logger
 ) : IScrapeConcreteAdvertisementHandler
 {
+    private readonly Serilog.ILogger _logger = logger;
     private readonly IScrapeConcreteAdvertisementHandler _handler = handler;
     private readonly ScrapeConcreteAdvertisementContext _context = context;
 
@@ -25,12 +27,26 @@ public sealed class ScrapeAdvertisementDescriptionDecorator(
             _selector
         );
         if (!descriptionElement.HasValue)
-            return await _handler.Handle(command);
+        {
+            _logger.Error(
+                "{Context} no description found. Url: {Url}",
+                nameof(ScrapeAdvertisementDateDecorator),
+                _context.Advertisement.Value.SourceUrl
+            );
+            return Option<ScrapedAdvertisement>.None();
+        }
 
         await using IElementHandle description = descriptionElement.Value;
         Option<string> text = await description.GetElementText();
         if (!text.HasValue)
-            return await _handler.Handle(command);
+        {
+            _logger.Error(
+                "{Context} no description found. Url: {Url}",
+                nameof(ScrapeAdvertisementDateDecorator),
+                _context.Advertisement.Value.SourceUrl
+            );
+            return Option<ScrapedAdvertisement>.None();
+        }
 
         _context.Advertisement.Value.Description = text.Value;
         return await _handler.Handle(command);

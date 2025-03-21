@@ -9,9 +9,11 @@ namespace DromParserService.Features.ScrapeConcreteAdvertisement.Decorators;
 
 public sealed class ScrapeAdvertisementDateDecorator(
     IScrapeConcreteAdvertisementHandler handler,
-    ScrapeConcreteAdvertisementContext context
+    ScrapeConcreteAdvertisementContext context,
+    Serilog.ILogger logger
 ) : IScrapeConcreteAdvertisementHandler
 {
+    private readonly Serilog.ILogger _logger = logger;
     private readonly IScrapeConcreteAdvertisementHandler _handler = handler;
     private readonly ScrapeConcreteAdvertisementContext _context = context;
     private const string _selector = "css-pxeubi evnwjo70";
@@ -23,12 +25,26 @@ public sealed class ScrapeAdvertisementDateDecorator(
         IPage page = _context.Page.Value;
         Option<IElementHandle> dateElement = await page.GetElementWithClassFormatter(_selector);
         if (!dateElement.HasValue)
-            return await _handler.Handle(command);
+        {
+            _logger.Error(
+                "{Context} no date found. Url: {Url}",
+                nameof(ScrapeAdvertisementDateDecorator),
+                _context.Advertisement.Value.SourceUrl
+            );
+            return Option<ScrapedAdvertisement>.None();
+        }
 
         await using IElementHandle dateNode = dateElement.Value;
         Option<string> dateText = await dateNode.GetElementText();
         if (!dateText.HasValue)
-            return await _handler.Handle(command);
+        {
+            _logger.Error(
+                "{Context} no date found. Url: {Url}",
+                nameof(ScrapeAdvertisementDateDecorator),
+                _context.Advertisement.Value.SourceUrl
+            );
+            return Option<ScrapedAdvertisement>.None();
+        }
 
         string dateTextValue = dateText.Value;
         string[] splitted = dateTextValue.Split(' ', StringSplitOptions.TrimEntries);

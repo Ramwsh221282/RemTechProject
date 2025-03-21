@@ -1,23 +1,24 @@
+using SharedParsersLibrary.ParserBehaviorFacade;
+
 namespace DromParserService;
 
-public class Worker : BackgroundService
+public class Worker(ParserManagementFacade facade) : BackgroundService
 {
-    private readonly ILogger<Worker> _logger;
-
-    public Worker(ILogger<Worker> logger)
-    {
-        _logger = logger;
-    }
+    private readonly ParserManagementFacade _facade = facade;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _facade.ParserName = "DROM";
         while (!stoppingToken.IsCancellationRequested)
         {
-            if (_logger.IsEnabled(LogLevel.Information))
+            try
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                await _facade.InvokeBasicBehavior(stoppingToken);
             }
-            await Task.Delay(1000, stoppingToken);
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }

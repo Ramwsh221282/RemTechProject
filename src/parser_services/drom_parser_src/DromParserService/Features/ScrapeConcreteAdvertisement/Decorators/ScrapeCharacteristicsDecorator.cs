@@ -9,13 +9,15 @@ namespace DromParserService.Features.ScrapeConcreteAdvertisement.Decorators;
 
 public sealed class ScrapeCharacteristicsDecorator(
     IScrapeConcreteAdvertisementHandler handler,
-    ScrapeConcreteAdvertisementContext context
+    ScrapeConcreteAdvertisementContext context,
+    Serilog.ILogger logger
 ) : IScrapeConcreteAdvertisementHandler
 {
+    private readonly Serilog.ILogger _logger = logger;
     private readonly IScrapeConcreteAdvertisementHandler _handler = handler;
     private readonly ScrapeConcreteAdvertisementContext _context = context;
-
-    private const string containerSelector = "css-10ib5jr";
+    private const string _mainContainer = "css-0 epjhnwz1";
+    private const string _tableSelector = "css-xalqz7 eo7fo180";
 
     public async Task<Option<ScrapedAdvertisement>> Handle(
         ScrapeConcreteAdvertisementCommand command
@@ -23,31 +25,57 @@ public sealed class ScrapeCharacteristicsDecorator(
     {
         IPage page = _context.Page.Value;
         Option<IElementHandle> ctxContainer = await page.GetElementWithClassFormatter(
-            containerSelector
+            _mainContainer
         );
         if (!ctxContainer.HasValue)
-            return await _handler.Handle(command);
+        {
+            _logger.Error(
+                "{Context} no characteristics found. Url: {Url}",
+                nameof(ScrapeCharacteristicsDecorator),
+                _context.Advertisement.Value.SourceUrl
+            );
+            return Option<ScrapedAdvertisement>.None();
+        }
 
         await using IElementHandle container = ctxContainer.Value;
-        Option<IElementHandle> table = await container.GetChildWithoutClassFormatter(
-            string.Intern("table")
-        );
+        Option<IElementHandle> table = await container.GetChildWithClassFormatter(_tableSelector);
         if (!table.HasValue)
-            return await _handler.Handle(command);
+        {
+            _logger.Error(
+                "{Context} no characteristics found. Url: {Url}",
+                nameof(ScrapeCharacteristicsDecorator),
+                _context.Advertisement.Value.SourceUrl
+            );
+            return Option<ScrapedAdvertisement>.None();
+        }
 
         await using IElementHandle tableElement = table.Value;
         Option<IElementHandle> tableBody = await tableElement.GetChildWithoutClassFormatter(
             string.Intern("tbody")
         );
         if (!tableBody.HasValue)
-            return await _handler.Handle(command);
+        {
+            _logger.Error(
+                "{Context} no characteristics found. Url: {Url}",
+                nameof(ScrapeCharacteristicsDecorator),
+                _context.Advertisement.Value.SourceUrl
+            );
+            return Option<ScrapedAdvertisement>.None();
+        }
 
         await using IElementHandle tableBodyValue = tableBody.Value;
         Option<IElementHandle[]> tableRows = await tableBodyValue.GetChildrenWithoutClassFormatter(
             string.Intern("tr")
         );
         if (!tableRows.HasValue)
-            return await _handler.Handle(command);
+        {
+            _logger.Error(
+                "{Context} no characteristics found. Url: {Url}",
+                nameof(ScrapeCharacteristicsDecorator),
+                _context.Advertisement.Value.SourceUrl
+            );
+            return Option<ScrapedAdvertisement>.None();
+        }
 
         IElementHandle[] tableRowsValue = tableRows.Value;
         List<ScrapedCharacteristic> ctx = [];
@@ -57,7 +85,7 @@ public sealed class ScrapeCharacteristicsDecorator(
                 string.Intern("th")
             );
             Option<IElementHandle> ctxValueElement = await tr.GetChildWithoutClassFormatter(
-                string.Intern("th")
+                string.Intern("td")
             );
             if (!ctxNameElement.HasValue || !ctxValueElement.HasValue)
                 continue;
@@ -75,7 +103,7 @@ public sealed class ScrapeCharacteristicsDecorator(
             string value = ctxValueText.Value;
 
             if (value.Contains('*'))
-                value = value.Replace("*", "");
+                value = value.Replace(string.Intern("*"), string.Empty);
             name = name.CleanString();
             value = value.CleanString();
             ctx.Add(new ScrapedCharacteristic { Name = name, Value = value });

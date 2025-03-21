@@ -65,7 +65,6 @@ public sealed class DromScrapeCataloguePages(
             await AppendInContext(advertisements);
             currentPage++;
         }
-        int a = 0;
         await _handler.Handle(command);
     }
 

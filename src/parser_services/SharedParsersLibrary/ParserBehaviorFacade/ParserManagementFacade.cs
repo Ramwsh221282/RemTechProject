@@ -26,6 +26,7 @@ public sealed class ParserManagementFacade(
         {
             _logger.Warning("{Context} Configuration for Parser Service does not exist.");
             await SleepForMinute();
+            return;
         }
 
         Parser parser = parserRequest.Value;
@@ -33,12 +34,14 @@ public sealed class ParserManagementFacade(
         {
             _logger.Warning("{Context} Parsing was not started. State is disabled.", ParserName);
             await SleepForMinute();
+            return;
         }
 
         if (parser.Links.Length == 0)
         {
             _logger.Warning("{Context} Parser was not started. Links count 0.", ParserName);
             await SleepForMinute();
+            return;
         }
 
         parser = parser.SetWorkingState().UpdateSchedule();
@@ -59,7 +62,7 @@ public sealed class ParserManagementFacade(
             ParserName,
             parser.RepeatEveryHours
         );
-        await Task.Delay(TimeSpan.FromHours(parser.RepeatEveryHours));
+        await Task.Delay(TimeSpan.FromHours(parser.RepeatEveryHours), ct);
     }
 
     private async Task SleepForMinute()

@@ -1,6 +1,4 @@
 using DromParserService.Features.Decorators;
-using DromParserService.Features.ScrapeConcreteAdvertisement;
-using Serilog;
 using SharedParsersLibrary.Attributes;
 using SharedParsersLibrary.Contracts;
 using SharedParsersLibrary.Sinking;

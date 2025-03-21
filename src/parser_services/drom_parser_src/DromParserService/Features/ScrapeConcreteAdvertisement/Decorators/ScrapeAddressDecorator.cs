@@ -8,9 +8,11 @@ namespace DromParserService.Features.ScrapeConcreteAdvertisement.Decorators;
 
 public sealed class ScrapeAddressDecorator(
     IScrapeConcreteAdvertisementHandler handler,
-    ScrapeConcreteAdvertisementContext context
+    ScrapeConcreteAdvertisementContext context,
+    Serilog.ILogger logger
 ) : IScrapeConcreteAdvertisementHandler
 {
+    private readonly Serilog.ILogger _logger = logger;
     private readonly IScrapeConcreteAdvertisementHandler _handler = handler;
     private readonly ScrapeConcreteAdvertisementContext _context = context;
     private const string _selector = "css-inmjwf e162wx9x0";
@@ -24,7 +26,14 @@ public sealed class ScrapeAddressDecorator(
             _selector
         );
         if (!elements.HasValue)
-            return await _handler.Handle(command);
+        {
+            _logger.Error(
+                "{Context} address not found. Url: {Url}",
+                nameof(ScrapeAddressDecorator),
+                _context.Advertisement.Value.SourceUrl
+            );
+            return Option<ScrapedAdvertisement>.None();
+        }
 
         IElementHandle[] elementsArray = elements.Value;
         foreach (var element in elementsArray)

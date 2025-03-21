@@ -19,7 +19,6 @@ public sealed class ScrapeConcreteAdvertisementCommandHandler(
         ScrapeConcreteAdvertisementCommand command
     )
     {
-        await _context.Page.Value.DisposeAsync();
-        return _context.Advertisement;
+        return await Task.FromResult(_context.Advertisement);
     }
 }
