@@ -8,9 +8,11 @@ namespace DromParserService.Features.ScrapeConcreteAdvertisement.Decorators;
 
 public sealed class ScrapeAdvertisementPriceDecorator(
     IScrapeConcreteAdvertisementHandler handler,
-    ScrapeConcreteAdvertisementContext context
+    ScrapeConcreteAdvertisementContext context,
+    Serilog.ILogger logger
 ) : IScrapeConcreteAdvertisementHandler
 {
+    private readonly Serilog.ILogger _logger = logger;
     private readonly IScrapeConcreteAdvertisementHandler _handler = handler;
     private readonly ScrapeConcreteAdvertisementContext _context = context;
     private const string containerSelector = "css-pmcte9 e1ab30xp0";
@@ -26,25 +28,45 @@ public sealed class ScrapeAdvertisementPriceDecorator(
             containerSelector
         );
         if (!priceContainer.HasValue)
+        {
+            _logger.Error(
+                "{Context} no price found. Url: {Url}",
+                nameof(ScrapeAdvertisementPriceDecorator),
+                _context.Advertisement.Value.SourceUrl
+            );
             return Option<ScrapedAdvertisement>.None();
+        }
 
         await using IElementHandle priceElement = priceContainer.Value;
         Option<IElementHandle> priceNodeElement = await priceElement.GetChildWithClassFormatter(
             priceNodeSelector
         );
         if (!priceNodeElement.HasValue)
+        {
+            _logger.Error(
+                "{Context} no price found. Url: {Url}",
+                nameof(ScrapeAdvertisementPriceDecorator),
+                _context.Advertisement.Value.SourceUrl
+            );
             return Option<ScrapedAdvertisement>.None();
+        }
 
         await using IElementHandle priceNode = priceNodeElement.Value;
         Option<string> price = await priceNode.GetElementText();
         if (!price.HasValue)
+        {
+            _logger.Error(
+                "{Context} no price found. Url: {Url}",
+                nameof(ScrapeAdvertisementPriceDecorator),
+                _context.Advertisement.Value.SourceUrl
+            );
             return Option<ScrapedAdvertisement>.None();
+        }
         string priceValue = price.Value;
         string onlyDigits = new([.. priceValue.Where(char.IsDigit).Select(c => c)]);
         long priceNumber = long.Parse(onlyDigits);
 
         _context.Advertisement.Value.Price = priceNumber;
-
         Option<IElementHandle> extraInformation = await priceElement.GetChildWithClassFormatter(
             priceExtraSelector
         );

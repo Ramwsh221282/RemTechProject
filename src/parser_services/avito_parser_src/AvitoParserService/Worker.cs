@@ -8,6 +8,7 @@ public class Worker(ParserManagementFacade facade) : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _facade.ParserName = "AVITO";
         while (!stoppingToken.IsCancellationRequested)
         {
             await _facade.InvokeBasicBehavior(stoppingToken);

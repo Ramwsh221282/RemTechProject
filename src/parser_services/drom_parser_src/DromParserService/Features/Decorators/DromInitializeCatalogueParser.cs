@@ -17,7 +17,7 @@ public sealed class DromInitializeCatalogueParser(
     public async Task Handle(ScrapeAdvertisementCommand command)
     {
         await _factory.LoadPuppeteerIfNotExists();
-        IBrowser browser = await _factory.CreateStealthBrowserInstance();
+        IBrowser browser = await _factory.CreateStealthBrowserInstance(headless: true);
         _context.Browser = Option<IBrowser>.Some(browser);
         await _handler.Handle(command);
     }

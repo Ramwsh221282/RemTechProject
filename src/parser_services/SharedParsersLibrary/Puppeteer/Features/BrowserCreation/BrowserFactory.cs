@@ -21,9 +21,9 @@ public sealed class BrowserFactory
         return true;
     }
 
-    public async Task<IBrowser> CreateStealthBrowserInstance()
+    public async Task<IBrowser> CreateStealthBrowserInstance(bool headless = false)
     {
-        LaunchOptions options = CreateLaunchOptions();
+        LaunchOptions options = CreateLaunchOptions(headless);
         PuppeteerExtra extra = new PuppeteerExtra();
         StealthPlugin stealth = new StealthPlugin();
         extra = extra.Use(stealth);
@@ -31,10 +31,10 @@ public sealed class BrowserFactory
         return browser;
     }
 
-    private LaunchOptions CreateLaunchOptions() =>
+    private LaunchOptions CreateLaunchOptions(bool headless) =>
         new LaunchOptions()
         {
-            Headless = false,
+            Headless = headless,
             Args = ["--start-maximized"],
             DefaultViewport = new ViewPortOptions
             {
