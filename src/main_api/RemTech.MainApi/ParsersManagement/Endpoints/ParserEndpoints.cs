@@ -20,7 +20,7 @@ public static class ParserEndpoints
     [EndpointMappingMethod]
     public static void MapParserEndpoints(this WebApplication app)
     {
-        var parserGroup = app.MapGroup("/api/parsers");
+        var parserGroup = app.MapGroup("/api/parsers").RequireCors("frontend");
         parserGroup.MapPost("{name}", Create);
         parserGroup.MapPatch("{name}", Update);
         parserGroup.MapDelete("{name}", Delete);
