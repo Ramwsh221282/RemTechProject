@@ -23,18 +23,6 @@ public sealed class DataServiceMessager
     }
 }
 
-// public abstract record ParserDataServiceMessage : IContract;
-
-// public sealed record SaveParserMessage(ParserDto Parser) : ParserDataServiceMessage;
-//
-// public sealed record UpdateParserMessage(ParserDto Parser) : ParserDataServiceMessage;
-//
-// public sealed record DeleteParserMessage(string Name) : ParserDataServiceMessage;
-//
-// public sealed record GetAllParsersMessage : ParserDataServiceMessage;
-//
-// public sealed record GetConcreteParserMessage(string Name) : ParserDataServiceMessage;
-
 public sealed record ParserDaoResponse(
     string ParserName,
     int RepeatEveryHours,

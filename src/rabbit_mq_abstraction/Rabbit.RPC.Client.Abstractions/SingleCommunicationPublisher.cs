@@ -3,7 +3,7 @@
 namespace Rabbit.RPC.Client.Abstractions;
 
 /// <summary>
-/// Publisher version that creates connection, craetes channel, sends and waits for message then closes channels and connections.
+/// Publisher version that creates connection, creates channel, sends and waits for message then closes channels and connections.
 /// </summary>
 public sealed class SingleCommunicationPublisher : IMessagePublisher
 {

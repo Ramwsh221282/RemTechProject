@@ -7,13 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2"/>
-        <PackageReference Include="Scalar.AspNetCore" Version="2.0.36"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
+        <PackageReference Include="Scalar.AspNetCore" Version="2.0.36" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\common_src\RemTech.Common\RemTech.Common.csproj"/>
-        <ProjectReference Include="..\..\rabbit_mq_abstraction\Rabbit.RPC.Client.Abstractions\Rabbit.RPC.Client.Abstractions.csproj"/>
+        <ProjectReference Include="..\..\common_src\RemTech.Common\RemTech.Common.csproj" />
+        <ProjectReference Include="..\..\rabbit_mq_abstraction\Rabbit.RPC.Client.Abstractions\Rabbit.RPC.Client.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>
