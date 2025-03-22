@@ -1,0 +1,6 @@
+{
+  "QueueName": "DataService",
+  "HostName": "localhost",
+  "UserName": "rmuser",
+  "Password": "rmpassword"
+}
