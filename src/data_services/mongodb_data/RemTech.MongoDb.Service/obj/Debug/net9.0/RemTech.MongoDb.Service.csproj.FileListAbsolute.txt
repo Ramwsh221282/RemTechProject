@@ -6,6 +6,8 @@ D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.S
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\RemTech.MongoDb.Service.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\RemTech.MongoDb.Service.pdb
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\DnsClient.dll
+D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\FluentValidation.dll
+D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\GuardValidationLibrary.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Microsoft.Extensions.Configuration.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Microsoft.Extensions.Configuration.Abstractions.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Microsoft.Extensions.Configuration.Binder.dll
@@ -16,6 +18,7 @@ D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.S
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Microsoft.Extensions.Configuration.UserSecrets.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Microsoft.Extensions.DependencyModel.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Microsoft.Extensions.Diagnostics.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Microsoft.Extensions.FileProviders.Abstractions.dll
@@ -36,9 +39,11 @@ D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.S
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\MongoDB.Bson.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\MongoDB.Driver.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\RabbitMQ.Client.dll
+D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Scrutor.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Serilog.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Serilog.Sinks.Console.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Serilog.Sinks.Debug.dll
+D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Serilog.Sinks.File.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\SharpCompress.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Snappier.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\System.Diagnostics.EventLog.dll
@@ -47,6 +52,8 @@ D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.S
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\runtimes\win\lib\net9.0\System.Diagnostics.EventLog.Messages.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\runtimes\win\lib\net9.0\System.Diagnostics.EventLog.dll
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Rabbit.RPC.Server.Abstractions.dll
+D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\RemTech.Common.dll
+D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\RemTech.Common.pdb
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Rabbit.RPC.Server.Abstractions.pdb
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\obj\Debug\net9.0\RemTech.MongoDb.Service.csproj.AssemblyReference.cache
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\obj\Debug\net9.0\RemTech.MongoDb.Service.GeneratedMSBuildEditorConfig.editorconfig
@@ -60,10 +67,3 @@ D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.S
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\obj\Debug\net9.0\RemTech.MongoDb.Service.pdb
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\obj\Debug\net9.0\RemTech.MongoDb.Service.genruntimeconfig.cache
 D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\obj\Debug\net9.0\ref\RemTech.MongoDb.Service.dll
-D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\FluentValidation.dll
-D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\GuardValidationLibrary.dll
-D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Microsoft.Extensions.DependencyModel.dll
-D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Scrutor.dll
-D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\Serilog.Sinks.File.dll
-D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\RemTech.Common.dll
-D:\RemTechRework\RemTechProject\src\data_services\mongodb_data\RemTech.MongoDb.Service\bin\Debug\net9.0\RemTech.Common.pdb
