@@ -7,34 +7,41 @@ using RemTechCommon.Utils.ResultPattern;
 namespace RemTech.MainApi.AdvertisementsManagement.Features.GetAdvertisements.Decorators;
 
 public sealed class GetAdvertisementsQueryLoggingDecorator(
-    IQueryHandler<GetAdvertisementsQuery, Result<TransportAdvertisement[]>> handler,
+    IQueryHandler<
+        GetAdvertisementsQuery,
+        Result<(TransportAdvertisement[] advertisements, long count)>
+    > handler,
     Serilog.ILogger logger
-) : IQueryHandler<GetAdvertisementsQuery, Result<TransportAdvertisement[]>>
+)
+    : IQueryHandler<
+        GetAdvertisementsQuery,
+        Result<(TransportAdvertisement[] advertisements, long count)>
+    >
 {
     private readonly IQueryHandler<
         GetAdvertisementsQuery,
-        Result<TransportAdvertisement[]>
+        Result<(TransportAdvertisement[] advertisements, long count)>
     > _handler = handler;
     private readonly Serilog.ILogger _logger = logger;
 
-    public async Task<Option<Result<TransportAdvertisement[]>>> Handle(
+    public async Task<Option<Result<(TransportAdvertisement[] advertisements, long count)>>> Handle(
         GetAdvertisementsQuery query,
         CancellationToken ct = default
     )
     {
         _logger.Information("{Context} processing request.", nameof(GetAdvertisementsQuery));
-        Option<Result<TransportAdvertisement[]>> result = await _handler.Handle(query, ct);
+        var result = await _handler.Handle(query, ct);
         if (!result.HasValue)
         {
             _logger.Error(
                 "{Context} result has no value. Finished.",
                 nameof(GetAdvertisementsQuery)
             );
-            return new Error("Result has no value. Internal server error.").AsSome<
-                Result<TransportAdvertisement[]>
-            >();
+            return Option<Result<(TransportAdvertisement[], long)>>.Some(
+                new Error("Result has no value. Internal server error.")
+            );
         }
-        Result<TransportAdvertisement[]> data = result.Value;
+        var data = result.Value;
         if (data.IsFailure)
             _logger.LogError(data.Error, nameof(GetAdvertisementsQuery));
         _logger.Error("{Context} Finished.", nameof(GetAdvertisementsQuery));

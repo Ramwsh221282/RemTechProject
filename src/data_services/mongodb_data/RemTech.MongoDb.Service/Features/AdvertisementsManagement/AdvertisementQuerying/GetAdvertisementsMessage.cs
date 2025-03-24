@@ -7,6 +7,11 @@ using RemTech.MongoDb.Service.Extensions;
 
 namespace RemTech.MongoDb.Service.Features.AdvertisementsManagement.AdvertisementQuerying;
 
+public sealed record TransportAdvertisementDaoResponse(
+    TransportAdvertisement[] Advertisements,
+    long Count
+);
+
 public sealed record GetAdvertisementsMessage(AdvertisementsQuery Query) : IContract;
 
 public sealed class GetAdvertisementsMessageHandler(AdvertisementsRepository repository)
@@ -18,15 +23,22 @@ public sealed class GetAdvertisementsMessageHandler(AdvertisementsRepository rep
 
     public async Task<ContractActionResult> Handle(GetAdvertisementsMessage contract)
     {
-        AdvertisementsQuery query = contract.Query;
-        AdvertisementQueryPayload payload = query.ResolveQueryPayload();
-        PaginationOption pagination = query.Pagination;
+        AdvertisementQueryPayload payload = contract.Query.ResolveQueryPayload();
+        PaginationOption pagination = contract.Query.Pagination;
         _builder.SetPayload(payload);
+
         FilterDefinition<Advertisement> filter = _builder.Build();
-        return (await _repository.GetMany(filter, pagination))
-            .AsChunk()
+        var queryDataTask = _repository.GetMany(filter, pagination);
+        var countDataTask = _repository.GetCount(filter);
+        await Task.WhenAll(queryDataTask, countDataTask);
+
+        TransportAdvertisement[] queryDataResult = queryDataTask
+            .Result.AsChunk()
             .Map(AdvertisementExtensions.ToTransportAdvertisement)
-            .AsArray()
-            .Success();
+            .AsArray();
+        long count = countDataTask.Result;
+        TransportAdvertisementDaoResponse response = new(queryDataResult, count);
+
+        return response.Success();
     }
 }

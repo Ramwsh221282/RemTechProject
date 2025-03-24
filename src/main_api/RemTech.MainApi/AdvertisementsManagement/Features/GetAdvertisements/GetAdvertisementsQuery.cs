@@ -9,4 +9,4 @@ namespace RemTech.MainApi.AdvertisementsManagement.Features.GetAdvertisements;
 public sealed record GetAdvertisementsQuery(
     AdvertisementsFilterOption Option,
     PaginationOption Pagination
-) : IQuery<Result<TransportAdvertisement[]>>;
+) : IQuery<Result<(TransportAdvertisement[] advertisements, long count)>>;

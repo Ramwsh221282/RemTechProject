@@ -28,6 +28,5 @@ builder.Services.AddScoped<
 builder.Services.RegisterRabbitMqService();
 builder.Services.AddSingleton<Worker>();
 builder.Services.AddHostedService<Worker>();
-
 var host = builder.Build();
 host.Run();
