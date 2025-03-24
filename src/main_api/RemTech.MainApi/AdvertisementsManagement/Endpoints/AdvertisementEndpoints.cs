@@ -24,7 +24,7 @@ public static class AdvertisementEndpoints
 
     private static async Task<IResult> GetWithFilters(
         [FromServices]
-            IQueryHandler<GetAdvertisementsQuery, Result<TransportAdvertisement[]>> handler,
+            IQueryHandler<GetAdvertisementsQuery, Result<(TransportAdvertisement[], long)>> handler,
         [FromQuery] int page,
         [FromQuery] int pageSize,
         [FromBody] AdvertisementsFilterOption option,
@@ -33,11 +33,19 @@ public static class AdvertisementEndpoints
     {
         PaginationOption pagination = new(page, pageSize);
         GetAdvertisementsQuery query = new(option, pagination);
-        Option<Result<TransportAdvertisement[]>> queryResult = await handler.Handle(query, ct);
+        Option<Result<(TransportAdvertisement[], long)>> queryResult = await handler.Handle(
+            query,
+            ct
+        );
         return !queryResult.HasValue ? Results.InternalServerError()
             : queryResult.Value.IsFailure ? queryResult.Value.Envelope()
-            : Result<TransportAdvertisementResponse[]>
-                .Success([.. queryResult.Value.Value.Select(r => r.ToResponse())])
+            : Result<TransportAdvertisementResponse>
+                .Success(
+                    new(
+                        [.. queryResult.Value.Value.Item1.Select(r => r.ToResponse())],
+                        queryResult.Value.Value.Item2
+                    )
+                )
                 .Envelope();
     }
 }

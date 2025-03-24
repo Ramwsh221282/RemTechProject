@@ -121,30 +121,44 @@ internal sealed class CommunicationContext : IDisposable
 
     private async Task CreateCallbackListener(object model, BasicDeliverEventArgs ea)
     {
-        string? corellationId = ea.BasicProperties.CorrelationId;
-        if (string.IsNullOrWhiteSpace(corellationId))
+        try
+        {
+            string? corellationId = ea.BasicProperties.CorrelationId;
+            if (string.IsNullOrWhiteSpace(corellationId))
+                await Task.CompletedTask;
+
+            if (!_callbacks.TryRemove(corellationId!, out var taskCompletionSource))
+                await Task.CompletedTask;
+
+            ContractActionResult result = JsonSerializer.Deserialize<ContractActionResult>(
+                ea.Body.Span
+            )!;
+
+            taskCompletionSource!.SetResult(result);
+            if (result.IsSuccess)
+                _logger.Information(
+                    "Client received response: IsSuccess: {IsSuccess}",
+                    result.IsSuccess
+                );
+            else
+                _logger.Error(
+                    "Client received error response: IsSuccess: {IsSuccess} Error: {Error}",
+                    result.IsSuccess,
+                    result.Error.AsMemory()
+                );
+        }
+        catch (TaskCanceledException ex)
+        {
+            _logger.Warning("{Context} task cancelled.", nameof(CommunicationContext));
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.Warning("{Context} task cancelled.", nameof(CommunicationContext));
+        }
+        finally
+        {
             await Task.CompletedTask;
-
-        if (!_callbacks.TryRemove(corellationId!, out var taskCompletionSource))
-            await Task.CompletedTask;
-
-        ContractActionResult result = JsonSerializer.Deserialize<ContractActionResult>(
-            ea.Body.Span
-        )!;
-
-        taskCompletionSource!.SetResult(result);
-        if (result.IsSuccess)
-            _logger.Information(
-                "Client received response: IsSuccess: {IsSuccess}",
-                result.IsSuccess
-            );
-        else
-            _logger.Error(
-                "Client received error response: IsSuccess: {IsSuccess} Error: {Error}",
-                result.IsSuccess,
-                result.Error.AsMemory()
-            );
-        await Task.CompletedTask;
+        }
     }
 
     public void Dispose() => _consumer.ReceivedAsync -= CreateCallbackListener;

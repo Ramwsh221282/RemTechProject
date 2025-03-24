@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RemTech.MongoDb.Service")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+981a6aa826dd280b6c269f6fa94e48bb728b6233")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+842427c57ff8a61cfdee2f0e877cfc9e3e7ad8a3")]
 [assembly: System.Reflection.AssemblyProductAttribute("RemTech.MongoDb.Service")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RemTech.MongoDb.Service")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

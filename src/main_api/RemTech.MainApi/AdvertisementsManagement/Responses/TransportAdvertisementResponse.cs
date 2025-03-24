@@ -3,6 +3,11 @@ using RemTech.MainApi.AdvertisementsManagement.Models;
 namespace RemTech.MainApi.AdvertisementsManagement.Responses;
 
 public sealed record TransportAdvertisementResponse(
+    TransportAdvertisementResponseItem[] Items,
+    long Count
+);
+
+public sealed record TransportAdvertisementResponseItem(
     long Id,
     string Title,
     string Description,
@@ -17,7 +22,7 @@ public sealed record TransportAdvertisementResponse(
 
 public static class TransportAdvertisementResponseExtensions
 {
-    public static TransportAdvertisementResponse ToResponse(
+    public static TransportAdvertisementResponseItem ToResponse(
         this TransportAdvertisement advertisement
     ) =>
         new(

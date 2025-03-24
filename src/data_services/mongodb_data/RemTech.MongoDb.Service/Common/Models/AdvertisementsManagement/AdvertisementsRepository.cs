@@ -50,4 +50,11 @@ public sealed class AdvertisementsRepository
             .Apply(find => find.Skip((pagination!.Page - 1) * pagination.PageSize))
             .Apply(find => find.Limit(pagination!.PageSize))
             .AsList();
+
+    public async Task<long> GetCount(FilterDefinition<Advertisement> filter) =>
+        await _client
+            .GetAdvertisementsDb()
+            .GetAdvertisementsCol()
+            .Find(filter)
+            .CountDocumentsAsync();
 }
