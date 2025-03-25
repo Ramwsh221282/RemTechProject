@@ -3,7 +3,7 @@ using RemTech.MongoDb.Service.Common.Abstractions.QueryBuilder;
 using RemTech.MongoDb.Service.Common.Models.AdvertisementsManagement;
 using RemTech.MongoDb.Service.Common.Models.AdvertisementsManagement.Converters;
 using RemTech.MongoDb.Service.Features.AdvertisementsManagement.AdvertisementQuerying;
-using RemTech.MongoDb.Service.Features.CharacteristicsStore.Features.AddCharacteristics;
+using RemTech.MongoDb.Service.Features.CharacteristicsManagement.Features.AddCharacteristic;
 using RemTechCommon.Utils.CqrsPattern;
 using RemTechCommon.Utils.ResultPattern;
 using ILogger = Serilog.ILogger;
@@ -16,14 +16,14 @@ public sealed class SinkAdvertisementHandler(
     ILogger logger,
     AdvertisementsRepository repository,
     IQueryBuilder<AdvertisementQueryPayload, Advertisement> queryBuilder,
-    IRequestHandler<AddCharacteristicsRequest, Result> addCharacteristics
+    IRequestHandler<AddCharacteristicRequest, Result> addCharacteristics
 ) : IContractHandler<SinkAdvertisement>
 {
     private readonly ILogger _logger = logger;
     private readonly AdvertisementsRepository _repository = repository;
     private readonly IQueryBuilder<AdvertisementQueryPayload, Advertisement> _queryBuilder =
         queryBuilder;
-    private readonly IRequestHandler<AddCharacteristicsRequest, Result> _addCharacteristics =
+    private readonly IRequestHandler<AddCharacteristicRequest, Result> _addCharacteristics =
         addCharacteristics;
     private readonly SinkingAdvertisementValidator _validator = new SinkingAdvertisementValidator();
     private readonly AdvertisementsFactory _factory = new AdvertisementsFactory();
@@ -58,7 +58,7 @@ public sealed class SinkAdvertisementHandler(
         await _repository.Save(advertisement);
         foreach (var ctx in advertisement.Characteristics)
         {
-            AddCharacteristicsRequest addCtx = new(ctx);
+            AddCharacteristicRequest addCtx = new(new(ctx.Name));
             await _addCharacteristics.Handle(addCtx);
         }
 
