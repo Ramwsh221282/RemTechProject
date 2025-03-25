@@ -1,4 +1,6 @@
+global using RemTechCommon.Utils.CqrsPattern;
 using RemTech.MainApi.Common.Extensions;
+using RemTechCommon.Utils.DependencyInjectionHelpers;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);

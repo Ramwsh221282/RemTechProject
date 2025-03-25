@@ -30,7 +30,7 @@ public sealed class AdvertisementQueryBuilder
         payload switch
         {
             AdvertisementQueryPayloadWithFilters => _withFilters,
-            AdvertisementQueryPayloadWithoutFilters => _withFilters,
+            AdvertisementQueryPayloadWithoutFilters => _noFilters,
             _ => throw new UnreachableException(
                 "Unsupported advertisement query payload filter types."
             ),

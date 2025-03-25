@@ -1,37 +1,30 @@
-﻿using RemTech.MainApi.Common.Abstractions;
-using RemTech.MainApi.Common.Extensions;
+﻿using RemTech.MainApi.Common.Extensions;
 using RemTechCommon.Utils.ResultPattern;
 using ILogger = Serilog.ILogger;
 
 namespace RemTech.MainApi.ParsersManagement.Features.DeleteParser.Decorators;
 
-public sealed class DeleteParserLogging : ICommandHandler<DeleteParserCommand, Result>
+public sealed class DeleteParserLogging(
+    IRequestHandler<DeleteParserCommand, Result> handler,
+    ILogger logger
+) : IRequestHandler<DeleteParserCommand, Result>
 {
-    private readonly ILogger _logger;
-    private readonly ICommandHandler<DeleteParserCommand, Result> _handler;
+    private readonly ILogger _logger = logger;
+    private readonly IRequestHandler<DeleteParserCommand, Result> _handler = handler;
 
-    public DeleteParserLogging(ICommandHandler<DeleteParserCommand, Result> handler, ILogger logger)
+    public async Task<Result> Handle(DeleteParserCommand request, CancellationToken ct = default)
     {
-        _logger = logger;
-        _handler = handler;
-    }
-
-    public async Task<Result<Result>> Handle(
-        DeleteParserCommand command,
-        CancellationToken ct = default
-    )
-    {
-        Result deletion = await _handler.Handle(command, ct);
-        if (deletion.IsFailure)
-        {
-            _logger.LogError(deletion.Error, nameof(DeleteParserCommand));
-            return deletion;
-        }
-
-        _logger.LogFromContext(
-            $"Deleted parser with name: {command.ParserName}",
-            nameof(DeleteParserCommand)
-        );
-        return deletion;
+        Result deletion = await _handler.Handle(request, ct);
+        return deletion
+            .ToWhen()
+            .IfFailure(() => _logger.LogError(deletion.Error, nameof(DeleteParserCommand)))
+            .IfSuccess(
+                () =>
+                    _logger.LogFromContext(
+                        $"Deleted parser with name: {request.ParserName}",
+                        nameof(DeleteParserCommand)
+                    )
+            )
+            .BackToResult();
     }
 }

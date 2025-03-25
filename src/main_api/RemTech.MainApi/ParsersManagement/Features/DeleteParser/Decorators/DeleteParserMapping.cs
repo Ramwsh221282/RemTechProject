@@ -1,31 +1,21 @@
-﻿using RemTech.MainApi.Common.Abstractions;
-using RemTech.MainApi.ParsersManagement.Features.Shared;
+﻿using RemTech.MainApi.ParsersManagement.Features.Shared;
 using RemTechCommon.Utils.OptionPattern;
 using RemTechCommon.Utils.ResultPattern;
 
 namespace RemTech.MainApi.ParsersManagement.Features.DeleteParser.Decorators;
 
-public sealed class DeleteParserMapping : ICommandHandler<DeleteParserCommand, Result>
+public sealed class DeleteParserMapping(
+    IRequestHandler<DeleteParserCommand, Result> handler,
+    DeleteParserContext context
+) : IRequestHandler<DeleteParserCommand, Result>
 {
-    private readonly ICommandHandler<DeleteParserCommand, Result> _handler;
-    private readonly DeleteParserContext _context;
+    private readonly IRequestHandler<DeleteParserCommand, Result> _handler = handler;
+    private readonly DeleteParserContext _context = context;
 
-    public DeleteParserMapping(
-        ICommandHandler<DeleteParserCommand, Result> handler,
-        DeleteParserContext context
-    )
+    public async Task<Result> Handle(DeleteParserCommand request, CancellationToken ct = default)
     {
-        _handler = handler;
-        _context = context;
-    }
-
-    public async Task<Result<Result>> Handle(
-        DeleteParserCommand command,
-        CancellationToken ct = default
-    )
-    {
-        ParserQueryPayload payload = new ParserQueryPayload(ServiceName: command.ParserName);
+        ParserQueryPayload payload = new ParserQueryPayload(ServiceName: request.ParserName);
         _context.Payload = Option<ParserQueryPayload>.Some(payload);
-        return await _handler.Handle(command, ct);
+        return await _handler.Handle(request, ct);
     }
 }

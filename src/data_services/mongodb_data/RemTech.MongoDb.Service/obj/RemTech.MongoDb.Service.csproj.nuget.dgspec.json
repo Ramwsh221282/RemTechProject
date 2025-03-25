@@ -4,14 +4,14 @@
     "D:\\RemTechRework\\RemTechProject\\src\\data_services\\mongodb_data\\RemTech.MongoDb.Service\\RemTech.MongoDb.Service.csproj": {}
   },
   "projects": {
-    "D:\\RemTechRework\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj": {
+    "d:\\RemTechRework\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\RemTechRework\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj",
+        "projectUniqueName": "d:\\RemTechRework\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj",
         "projectName": "RemTech.Common",
-        "projectPath": "D:\\RemTechRework\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj",
+        "projectPath": "d:\\RemTechRework\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj",
         "packagesPath": "C:\\Users\\Ramwsh\\.nuget\\packages\\",
-        "outputPath": "D:\\RemTechRework\\RemTechProject\\src\\common_src\\RemTech.Common\\obj\\",
+        "outputPath": "d:\\RemTechRework\\RemTechProject\\src\\common_src\\RemTech.Common\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Ramwsh\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -127,11 +127,11 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "D:\\RemTechRework\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj": {
-                "projectPath": "D:\\RemTechRework\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj"
+              "d:\\RemTechRework\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj": {
+                "projectPath": "d:\\RemTechRework\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj"
               },
-              "D:\\RemTechRework\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj": {
-                "projectPath": "D:\\RemTechRework\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj"
+              "d:\\RemTechRework\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj": {
+                "projectPath": "d:\\RemTechRework\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj"
               }
             }
           }
@@ -181,14 +181,14 @@
         }
       }
     },
-    "D:\\RemTechRework\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj": {
+    "d:\\RemTechRework\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\RemTechRework\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj",
+        "projectUniqueName": "d:\\RemTechRework\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj",
         "projectName": "Rabbit.RPC.Server.Abstractions",
-        "projectPath": "D:\\RemTechRework\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj",
+        "projectPath": "d:\\RemTechRework\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj",
         "packagesPath": "C:\\Users\\Ramwsh\\.nuget\\packages\\",
-        "outputPath": "D:\\RemTechRework\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\obj\\",
+        "outputPath": "d:\\RemTechRework\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Ramwsh\\AppData\\Roaming\\NuGet\\NuGet.Config"

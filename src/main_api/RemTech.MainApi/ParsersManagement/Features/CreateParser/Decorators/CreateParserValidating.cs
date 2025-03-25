@@ -1,21 +1,17 @@
 ﻿using GuardValidationLibrary.GuardedFactory;
-using RemTech.MainApi.Common.Abstractions;
 using RemTech.MainApi.ParsersManagement.Models;
 using RemTechCommon.Utils.OptionPattern;
 using RemTechCommon.Utils.ResultPattern;
 
 namespace RemTech.MainApi.ParsersManagement.Features.CreateParser.Decorators;
 
-public sealed class CreateParserValidating : ICommandHandler<CreateParserCommand, Parser>
+public sealed class CreateParserValidating(
+    IRequestHandler<CreateParserCommand, Result<Parser>> handler,
+    CreateParserContext context
+) : IRequestHandler<CreateParserCommand, Result<Parser>>
 {
-    private readonly ICommandHandler<CreateParserCommand, Parser> _handler;
-    private readonly CreateParserContext _context;
-
-    public CreateParserValidating(CreateParserContext context, CreateParserHandler handler)
-    {
-        _context = context;
-        _handler = handler;
-    }
+    private readonly IRequestHandler<CreateParserCommand, Result<Parser>> _handler = handler;
+    private readonly CreateParserContext _context = context;
 
     public async Task<Result<Parser>> Handle(
         CreateParserCommand command,
@@ -23,10 +19,13 @@ public sealed class CreateParserValidating : ICommandHandler<CreateParserCommand
     )
     {
         var create = GuardedCreator.Create<Parser>([new ParserName(command.ParserName)]);
-        if (!create.IsSuccess)
-            _context.Error = Option<Error>.Some(new Error(create.Error));
-
-        _context.Parser = Option<Parser>.Some(create.Object);
-        return await _handler.Handle(command, ct);
+        return await ResultExtensions
+            .When<Parser>(!create.IsSuccess)
+            .ApplyError(create.Error)
+            .Process(async () =>
+            {
+                _context.Parser = Option<Parser>.Some(create.Object);
+                return await _handler.Handle(command, ct);
+            });
     }
 }

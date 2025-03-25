@@ -3,7 +3,6 @@ using RemTech.MainApi.AdvertisementsManagement.Dtos;
 using RemTech.MainApi.AdvertisementsManagement.Features.GetAdvertisements;
 using RemTech.MainApi.AdvertisementsManagement.Models;
 using RemTech.MainApi.AdvertisementsManagement.Responses;
-using RemTech.MainApi.Common.Abstractions;
 using RemTech.MainApi.Common.Attributes;
 using RemTech.MainApi.Common.Dtos;
 using RemTech.MainApi.Common.Envelope;
@@ -24,7 +23,10 @@ public static class AdvertisementEndpoints
 
     private static async Task<IResult> GetWithFilters(
         [FromServices]
-            IQueryHandler<GetAdvertisementsQuery, Result<(TransportAdvertisement[], long)>> handler,
+            IRequestHandler<
+            GetAdvertisementsQuery,
+            Result<(TransportAdvertisement[], long)>
+        > handler,
         [FromQuery] int page,
         [FromQuery] int pageSize,
         [FromBody] AdvertisementsFilterOption option,

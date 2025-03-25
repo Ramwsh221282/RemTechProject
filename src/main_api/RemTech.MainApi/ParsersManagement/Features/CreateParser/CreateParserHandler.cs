@@ -1,5 +1,4 @@
 ﻿using Rabbit.RPC.Client.Abstractions;
-using RemTech.MainApi.Common.Abstractions;
 using RemTech.MainApi.ParsersManagement.Dtos;
 using RemTech.MainApi.ParsersManagement.Messages;
 using RemTech.MainApi.ParsersManagement.Models;
@@ -9,13 +8,11 @@ namespace RemTech.MainApi.ParsersManagement.Features.CreateParser;
 
 public sealed record SaveParserMessage(ParserDto Parser) : IContract;
 
-public class CreateParserHandler : ICommandHandler<CreateParserCommand, Parser>
+public sealed class CreateParserHandler(DataServiceMessager messager, CreateParserContext context)
+    : IRequestHandler<CreateParserCommand, Result<Parser>>
 {
-    private readonly DataServiceMessager _messager;
-    private readonly CreateParserContext _context;
-
-    public CreateParserHandler(DataServiceMessager messager, CreateParserContext context) =>
-        (_messager, _context) = (messager, context);
+    private readonly DataServiceMessager _messager = messager;
+    private readonly CreateParserContext _context = context;
 
     public async Task<Result<Parser>> Handle(
         CreateParserCommand command,

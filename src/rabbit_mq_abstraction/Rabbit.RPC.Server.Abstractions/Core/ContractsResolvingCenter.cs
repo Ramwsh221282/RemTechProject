@@ -31,11 +31,11 @@ public sealed class ContractsResolvingCenter
         {
             Type requestType = contract.GetType();
             ReadOnlyMemory<char> requestTypeName = requestType.Name.AsMemory();
-            _logger.Information("Received request: {RequestType}", requestTypeName);
+            _logger.Information("Server Received request: {RequestType}", requestTypeName);
 
             if (!_contractHandlers.ContainsKey(requestType))
             {
-                _logger.Error("Request {Type} is not allowed.", requestTypeName);
+                _logger.Error("Server Request {Type} is not allowed.", requestTypeName);
                 return ContractActionResult.Fail($"Request {requestTypeName} is not allowed.");
             }
 
@@ -48,11 +48,11 @@ public sealed class ContractsResolvingCenter
             if (handlerMethod == null)
             {
                 _logger.Error(
-                    "Cannot resolve request: {Type} because no handlers registered.",
+                    "Server Cannot resolve request: {Type} because no handlers registered.",
                     requestTypeName
                 );
                 return ContractActionResult.Fail(
-                    $"Cannot resolve request: {requestTypeName} because no handlers registered."
+                    $"Server Cannot resolve request: {requestTypeName} because no handlers registered."
                 );
             }
 
@@ -61,7 +61,10 @@ public sealed class ContractsResolvingCenter
                     handlerMethod.Invoke(handler, new object[] { contract })!;
             ContractActionResult response = await task;
 
-            _logger.Information("Request of type: {RequestType} is handled", requestTypeName);
+            _logger.Information(
+                "Server Request of type: {RequestType} is handled",
+                requestTypeName
+            );
             return response;
         }
         catch (Exception ex)

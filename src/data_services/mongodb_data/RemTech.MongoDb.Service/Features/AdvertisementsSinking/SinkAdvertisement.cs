@@ -3,6 +3,9 @@ using RemTech.MongoDb.Service.Common.Abstractions.QueryBuilder;
 using RemTech.MongoDb.Service.Common.Models.AdvertisementsManagement;
 using RemTech.MongoDb.Service.Common.Models.AdvertisementsManagement.Converters;
 using RemTech.MongoDb.Service.Features.AdvertisementsManagement.AdvertisementQuerying;
+using RemTech.MongoDb.Service.Features.CharacteristicsStore.Features.AddCharacteristics;
+using RemTechCommon.Utils.CqrsPattern;
+using RemTechCommon.Utils.ResultPattern;
 using ILogger = Serilog.ILogger;
 
 namespace RemTech.MongoDb.Service.Features.AdvertisementsSinking;
@@ -12,13 +15,16 @@ public sealed record SinkAdvertisement(SinkingAdvertisement Advertisement) : ICo
 public sealed class SinkAdvertisementHandler(
     ILogger logger,
     AdvertisementsRepository repository,
-    IQueryBuilder<AdvertisementQueryPayload, Advertisement> queryBuilder
+    IQueryBuilder<AdvertisementQueryPayload, Advertisement> queryBuilder,
+    IRequestHandler<AddCharacteristicsRequest, Result> addCharacteristics
 ) : IContractHandler<SinkAdvertisement>
 {
     private readonly ILogger _logger = logger;
     private readonly AdvertisementsRepository _repository = repository;
     private readonly IQueryBuilder<AdvertisementQueryPayload, Advertisement> _queryBuilder =
         queryBuilder;
+    private readonly IRequestHandler<AddCharacteristicsRequest, Result> _addCharacteristics =
+        addCharacteristics;
     private readonly SinkingAdvertisementValidator _validator = new SinkingAdvertisementValidator();
     private readonly AdvertisementsFactory _factory = new AdvertisementsFactory();
 
@@ -32,7 +38,7 @@ public sealed class SinkAdvertisementHandler(
             AdvertisementId: advertisement.AdvertisementId,
             ServiceName: advertisement.ServiceName
         );
-
+        payload = payload.ResolveQueryPayload();
         _queryBuilder.SetPayload(payload);
         var filter = _queryBuilder.Build();
 
@@ -50,11 +56,18 @@ public sealed class SinkAdvertisementHandler(
         }
 
         await _repository.Save(advertisement);
+        foreach (var ctx in advertisement.Characteristics)
+        {
+            AddCharacteristicsRequest addCtx = new(ctx);
+            await _addCharacteristics.Handle(addCtx);
+        }
+
         _logger.Information(
             "Advertisement with ID: {Id} has been added from Parser: {Parser}",
             advertisement.AdvertisementId,
             contract.Advertisement.FromParser
         );
+
         return ContractActionResult.Success(true);
     }
 }

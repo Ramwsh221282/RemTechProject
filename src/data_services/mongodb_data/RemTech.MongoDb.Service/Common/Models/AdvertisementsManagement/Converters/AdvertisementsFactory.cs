@@ -24,5 +24,5 @@ public sealed class AdvertisementsFactory
 
     public AdvertisementCharacteristic FromSinkedAdvertisement(
         SinkingCharacteristics characteristics
-    ) => new AdvertisementCharacteristic(characteristics.Name, characteristics.Value);
+    ) => new(characteristics.Name, characteristics.Value);
 }

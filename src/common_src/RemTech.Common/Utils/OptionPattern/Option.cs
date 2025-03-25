@@ -2,7 +2,7 @@
 
 public abstract record Option<T>
 {
-    public bool HasValue => (this is Some<T>);
+    public bool HasValue => this is Some<T>;
 
     public T Value
     {
@@ -17,6 +17,8 @@ public abstract record Option<T>
     public static Option<T> Some(T value) => Some<T>.Create(value);
 
     public static Option<T> None() => new None<T>();
+
+    public static implicit operator Option<T>(T value) => Some(value);
 }
 
 public sealed record None<T> : Option<T>

@@ -1,15 +1,18 @@
-﻿using RemTech.MainApi.Common.Abstractions;
-using RemTech.MainApi.Common.Attributes;
-using RemTech.MainApi.ParsersManagement.Responses;
+﻿using RemTech.MainApi.ParsersManagement.Responses;
+using RemTechCommon.Utils.DependencyInjectionHelpers;
+using RemTechCommon.Utils.OptionPattern;
 
 namespace RemTech.MainApi.ParsersManagement.Features.GetParser;
 
 [DependencyInjection]
 public static class GetParserQueryRegistration
 {
-    [ServicesRegistration]
+    [DependencyInjectionMethod]
     public static void Register(this IServiceCollection services)
     {
-        services.AddScoped<IQueryHandler<GetParserQuery, ParserResponse>, GetParserQueryHandler>();
+        services.AddScoped<
+            IRequestHandler<GetParserQuery, Option<ParserResponse>>,
+            GetParserQueryHandler
+        >();
     }
 }

@@ -20,7 +20,6 @@ public sealed class IncomingRequestMapper
     {
         try
         {
-            _logger.Information("Received json: {Json} for mapping", json);
             using JsonDocument doc = JsonDocument.Parse(json);
             if (!doc.RootElement.TryGetProperty("Name", out JsonElement contractNameProperty))
             {
