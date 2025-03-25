@@ -16,4 +16,8 @@
         <ProjectReference Include="..\..\rabbit_mq_abstraction\Rabbit.RPC.Client.Abstractions\Rabbit.RPC.Client.Abstractions.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="CharacteristicsManagement\Models\" />
+    </ItemGroup>
+
 </Project>

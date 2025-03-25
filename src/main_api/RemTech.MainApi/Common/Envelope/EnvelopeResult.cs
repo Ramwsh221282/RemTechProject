@@ -12,6 +12,28 @@ public sealed record EnvelopeResult
 
 public static class EnvelopeResultExtensions
 {
+    public static IResult Envelope<T>(T result, HttpStatusCode code = HttpStatusCode.OK)
+    {
+        EnvelopeResult envelope = new()
+        {
+            Code = code,
+            StatusInfo = string.Empty,
+            Data = result,
+        };
+        return envelope.MatchEnvelope();
+    }
+
+    public static IResult NotFound()
+    {
+        EnvelopeResult envelope = new()
+        {
+            Code = HttpStatusCode.NotFound,
+            StatusInfo = "Not found",
+            Data = null,
+        };
+        return envelope.MatchEnvelope();
+    }
+
     public static IResult Envelope<T>(
         this Result<T> result,
         string? statusInfo = null,
@@ -49,6 +71,7 @@ public static class EnvelopeResultExtensions
             HttpStatusCode.Created => Results.Created(),
             HttpStatusCode.NoContent => Results.NoContent(),
             HttpStatusCode.BadRequest => Results.BadRequest(envelope.StatusInfo),
+            HttpStatusCode.NotFound => Results.NotFound(),
             _ => Results.InternalServerError("Envelope status is not supported."),
         };
 }
