@@ -1,7 +1,7 @@
 ﻿using MongoDB.Driver;
 using RemTech.MongoDb.Service.Common.Models.AdvertisementsManagement;
 using RemTech.MongoDb.Service.Common.Models.ParsersManagement;
-using RemTech.MongoDb.Service.Features.CharacteristicsStore.Models;
+using RemTech.MongoDb.Service.Features.CharacteristicsManagement.Models;
 
 namespace RemTech.MongoDb.Service.Configurations.MongoDbConfiguration;
 
