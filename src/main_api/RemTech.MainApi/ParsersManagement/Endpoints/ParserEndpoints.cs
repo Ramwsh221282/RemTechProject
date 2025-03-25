@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RemTech.MainApi.Common.Abstractions;
 using RemTech.MainApi.Common.Attributes;
 using RemTech.MainApi.ParsersManagement.Dtos;
 using RemTech.MainApi.ParsersManagement.Features.CreateParser;
@@ -30,11 +29,11 @@ public static class ParserEndpoints
 
     private static async Task<IResult> Create(
         [FromRoute] string name,
-        [FromServices] ICommandHandler<CreateParserCommand, Parser> handler,
+        [FromServices] IRequestHandler<CreateParserCommand, Result<Parser>> handler,
         CancellationToken ct
     )
     {
-        CreateParserCommand command = new CreateParserCommand(name);
+        CreateParserCommand command = new(name);
         Result<Parser> result = await handler.Handle(command, ct);
         return result.IsSuccess switch
         {
@@ -45,11 +44,11 @@ public static class ParserEndpoints
 
     private static async Task<IResult> Delete(
         [FromRoute] string name,
-        [FromServices] ICommandHandler<DeleteParserCommand, Result> handler,
+        [FromServices] IRequestHandler<DeleteParserCommand, Result> handler,
         CancellationToken ct
     )
     {
-        DeleteParserCommand command = new DeleteParserCommand(name);
+        DeleteParserCommand command = new(name);
         Result result = await handler.Handle(command, ct);
         return result.IsSuccess ? Results.Ok() : Results.BadRequest(result.Error.Description);
     }
@@ -57,23 +56,23 @@ public static class ParserEndpoints
     private static async Task<IResult> Update(
         [FromRoute] string name,
         [FromBody] ParserDto dto,
-        [FromServices] ICommandHandler<UpdateParserCommand, ParserResponse> handler,
+        [FromServices] IRequestHandler<UpdateParserCommand, Result<ParserResponse>> handler,
         CancellationToken ct
     )
     {
         ParserDto payload = dto with { ParserName = name };
-        UpdateParserCommand command = new UpdateParserCommand(payload);
+        UpdateParserCommand command = new(payload);
         Result<ParserResponse> result = await handler.Handle(command, ct);
         return result.IsSuccess ? Results.Ok() : Results.BadRequest(result.Error.Description);
     }
 
     private static async Task<IResult> Get(
         [FromRoute] string name,
-        [FromServices] IQueryHandler<GetParserQuery, ParserResponse> handler,
+        [FromServices] IRequestHandler<GetParserQuery, Option<ParserResponse>> handler,
         CancellationToken ct
     )
     {
-        GetParserQuery query = new GetParserQuery(name);
+        GetParserQuery query = new(name);
         Option<ParserResponse> parser = await handler.Handle(query, ct);
         return parser.HasValue switch
         {
@@ -83,7 +82,7 @@ public static class ParserEndpoints
     }
 
     private static async Task<IResult> GetAll(
-        [FromServices] IQueryHandler<GetAllParsersQuery, ParserResponse[]> handler,
+        [FromServices] IRequestHandler<GetAllParsersQuery, Option<ParserResponse[]>> handler,
         CancellationToken ct
     )
     {

@@ -1,5 +1,4 @@
 ﻿using Rabbit.RPC.Client.Abstractions;
-using RemTech.MainApi.Common.Abstractions;
 using RemTech.MainApi.ParsersManagement.Features.Shared;
 using RemTech.MainApi.ParsersManagement.Messages;
 using RemTechCommon.Utils.ResultPattern;
@@ -8,21 +7,15 @@ namespace RemTech.MainApi.ParsersManagement.Features.DeleteParser;
 
 public sealed record DeleteParserMessage(ParserQueryPayload Payload) : IContract;
 
-public sealed class DeleteParserCommandHandler : ICommandHandler<DeleteParserCommand, Result>
+public sealed class DeleteParserCommandHandler(
+    DeleteParserContext context,
+    DataServiceMessager messager
+) : IRequestHandler<DeleteParserCommand, Result>
 {
-    private readonly DeleteParserContext _context;
-    private readonly DataServiceMessager _messager;
+    private readonly DeleteParserContext _context = context;
+    private readonly DataServiceMessager _messager = messager;
 
-    public DeleteParserCommandHandler(DeleteParserContext context, DataServiceMessager messager)
-    {
-        _context = context;
-        _messager = messager;
-    }
-
-    public async Task<Result<Result>> Handle(
-        DeleteParserCommand command,
-        CancellationToken ct = default
-    )
+    public async Task<Result> Handle(DeleteParserCommand request, CancellationToken ct = default)
     {
         if (!_context.Payload.HasValue)
             return new Error("Parser was not deleted. Internal server error.");

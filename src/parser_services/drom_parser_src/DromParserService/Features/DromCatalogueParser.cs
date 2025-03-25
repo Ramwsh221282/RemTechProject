@@ -18,48 +18,46 @@ public sealed class DromCatalogueParser(
     private readonly SinkerSenderFactory _factory = factory;
     private readonly DromCatalogueScrapingContext _context = context;
     private readonly IServiceProvider _provider = provider;
+    private const int _batchSize = 5;
+    private readonly SemaphoreSlim _semaphore = new(_batchSize, _batchSize);
 
     public async Task Handle(ScrapeAdvertisementCommand command)
     {
-        IBrowser browser = _context.Browser.Value;
-
-        List<ScrapedAdvertisement> results = [];
-        List<Task<Option<ScrapedAdvertisement>>> tasks = [];
-        int batchSize = 5;
+        _context.Browser.Value.Dispose();
+        var tasks = new List<Task<Option<ScrapedAdvertisement>>>();
         foreach (var advertisement in _context.EnumerateAdvertisements())
         {
-            if (tasks.Count == batchSize)
-            {
-                while (tasks.Count > 0)
-                    await ResolveTasks(results, tasks);
-            }
-            tasks.Add(ScrapeAdvertisement(advertisement, browser));
+            await _semaphore.WaitAsync();
+            tasks.Add(
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        BrowserFactory browserFactory = new();
+                        IBrowser browser = await browserFactory.CreateStealthBrowserInstance(
+                            headless: true
+                        );
+
+                        var result = await ScrapeAdvertisement(advertisement, browser);
+                        if (result.HasValue)
+                            SinkAdvertisement(result.Value);
+
+                        browser.Dispose();
+                        return result;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        return Option<ScrapedAdvertisement>.None();
+                    }
+                    finally
+                    {
+                        _semaphore.Release();
+                    }
+                })
+            );
         }
-        while (tasks.Count > 0)
-            await ResolveTasks(results, tasks);
-
-        await browser.DisposeAsync();
-    }
-
-    private async Task ResolveTasks(
-        List<ScrapedAdvertisement> results,
-        List<Task<Option<ScrapedAdvertisement>>> tasks
-    )
-    {
-        while (tasks.Count != 0)
-        {
-            var task = await Task.WhenAny(tasks);
-            tasks.Remove(task);
-            var result = await task;
-            if (result.HasValue)
-                SinkAdvertisement(result.Value);
-        }
-    }
-
-    private async Task SinkAdvertisement(ScrapedAdvertisement advertisement)
-    {
-        using var sinker = _factory.CreateSinker();
-        await sinker.Sink(advertisement, "DROM");
+        await Task.WhenAll(tasks);
     }
 
     private async Task<Option<ScrapedAdvertisement>> ScrapeAdvertisement(
@@ -67,13 +65,29 @@ public sealed class DromCatalogueParser(
         IBrowser browser
     )
     {
-        string url = advertisement.SourceUrl;
-        await using IPage page = await browser.CreateByDomLoadStrategy(url);
-        await page.ScrollBottom();
-        await page.ScrollTop();
-        ScrapeConcreteAdvertisementCommand command = new(page, advertisement);
-        var handler = _provider.GetRequiredService<IScrapeConcreteAdvertisementHandler>();
-        Option<ScrapedAdvertisement> ad = await handler.Handle(command);
-        return ad;
+        try
+        {
+            string url = advertisement.SourceUrl;
+            IPage page = await browser.CreateByDomLoadStrategy(url);
+            await page.ScrollBottom();
+            await page.ScrollTop();
+            ScrapeConcreteAdvertisementCommand command = new(page, advertisement);
+            var handler = _provider.GetRequiredService<IScrapeConcreteAdvertisementHandler>();
+            Option<ScrapedAdvertisement> ad = await handler.Handle(command);
+            page.Dispose();
+            return ad;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return Option<ScrapedAdvertisement>.None();
+        }
+    }
+
+    private async Task SinkAdvertisement(ScrapedAdvertisement advertisement)
+    {
+        var sinker = _factory.CreateSinker();
+        await sinker.Sink(advertisement, "DROM");
+        sinker.Dispose();
     }
 }

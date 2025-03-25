@@ -1,5 +1,4 @@
 ﻿using Rabbit.RPC.Client.Abstractions;
-using RemTech.MainApi.Common.Abstractions;
 using RemTech.MainApi.ParsersManagement.Dtos;
 using RemTech.MainApi.ParsersManagement.Messages;
 using RemTech.MainApi.ParsersManagement.Responses;
@@ -9,22 +8,15 @@ namespace RemTech.MainApi.ParsersManagement.Features.UpdateParser;
 
 public sealed record UpdateParserMessage(ParserDto Parser) : IContract;
 
-public sealed record UpdateParserCommand(ParserDto NewModel) : ICommand<ParserResponse>;
+public sealed record UpdateParserCommand(ParserDto NewModel) : IRequest<Result<ParserResponse>>;
 
-public sealed record UpdateParserCommandHandler
-    : ICommandHandler<UpdateParserCommand, ParserResponse>
+public sealed class UpdateParserCommandHandler(
+    DataServiceMessagerFactory factory,
+    UpdateParserContext context
+) : IRequestHandler<UpdateParserCommand, Result<ParserResponse>>
 {
-    private readonly DataServiceMessagerFactory _factory;
-    private readonly UpdateParserContext _context;
-
-    public UpdateParserCommandHandler(
-        DataServiceMessagerFactory factory,
-        UpdateParserContext context
-    )
-    {
-        _factory = factory;
-        _context = context;
-    }
+    private readonly DataServiceMessagerFactory _factory = factory;
+    private readonly UpdateParserContext _context = context;
 
     public async Task<Result<ParserResponse>> Handle(
         UpdateParserCommand command,
@@ -35,7 +27,7 @@ public sealed record UpdateParserCommandHandler
             return _context.Error.Value;
 
         if (!_context.UpdatedModel.HasValue)
-            return new Error("Cannot process update parser configuration. Internal server error.");
+            return new Error("Cannot update parser configuration. Internal server error.");
 
         ParserDto dto = _context.UpdatedModel.Value.ToDto();
         UpdateParserMessage message = new UpdateParserMessage(dto);

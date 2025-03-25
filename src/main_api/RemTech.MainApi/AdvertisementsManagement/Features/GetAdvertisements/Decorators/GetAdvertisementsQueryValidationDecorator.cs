@@ -1,41 +1,37 @@
 using RemTech.MainApi.AdvertisementsManagement.Models;
-using RemTech.MainApi.Common.Abstractions;
 using RemTech.MainApi.Common.Dtos;
-using RemTechCommon.Utils.OptionPattern;
+using RemTechCommon.Utils.CqrsPattern;
 using RemTechCommon.Utils.ResultPattern;
 
 namespace RemTech.MainApi.AdvertisementsManagement.Features.GetAdvertisements.Decorators;
 
 public sealed class GetAdvertisementsQueryValidationDecorator(
-    IQueryHandler<
+    IRequestHandler<
         GetAdvertisementsQuery,
         Result<(TransportAdvertisement[] advertisements, long count)>
     > handler
 )
-    : IQueryHandler<
+    : IRequestHandler<
         GetAdvertisementsQuery,
         Result<(TransportAdvertisement[] advertisements, long count)>
     >
 {
-    private readonly IQueryHandler<
+    private readonly IRequestHandler<
         GetAdvertisementsQuery,
         Result<(TransportAdvertisement[] advertisements, long count)>
     > _handler = handler;
 
-    public async Task<Option<Result<(TransportAdvertisement[] advertisements, long count)>>> Handle(
-        GetAdvertisementsQuery query,
+    public async Task<Result<(TransportAdvertisement[] advertisements, long count)>> Handle(
+        GetAdvertisementsQuery request,
         CancellationToken ct = default
     )
     {
-        PaginationOption pagination = query.Pagination;
-        if (pagination.Page <= 0)
-            return new Error("Invalid page option.").AsSome<
-                Result<(TransportAdvertisement[], long)>
-            >();
-        if (pagination.PageSize <= 0)
-            return new Error("Invalid page size option.").AsSome<
-                Result<(TransportAdvertisement[], long)>
-            >();
-        return await _handler.Handle(query, ct);
+        PaginationOption pagination = request.Pagination;
+        return await ResultExtensions
+            .When<(TransportAdvertisement[], long)>(pagination.Page <= 0)
+            .ApplyError("Invalid page option.")
+            .AlsoWhen(pagination.PageSize <= 0)
+            .ApplyError("Invalid page size option.")
+            .Process(() => _handler.Handle(request, ct));
     }
 }

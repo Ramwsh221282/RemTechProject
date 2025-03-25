@@ -8,47 +8,50 @@ namespace DromParserService.Features.ScrapeConcreteAdvertisement.Decorators;
 
 public sealed class ScrapeAddressDecorator(
     IScrapeConcreteAdvertisementHandler handler,
-    ScrapeConcreteAdvertisementContext context,
-    Serilog.ILogger logger
+    ScrapeConcreteAdvertisementContext context
 ) : IScrapeConcreteAdvertisementHandler
 {
-    private readonly Serilog.ILogger _logger = logger;
     private readonly IScrapeConcreteAdvertisementHandler _handler = handler;
     private readonly ScrapeConcreteAdvertisementContext _context = context;
-    private const string _selector = "css-inmjwf e162wx9x0";
+    private const string _containerSelector = "css-0 epjhnwz1";
+    private const string _subContainerSelector = "css-1j8ksy7 eotelyr0";
+    private const string _addressNodeSelector = "css-inmjwf e162wx9x0";
 
     public async Task<Option<ScrapedAdvertisement>> Handle(
         ScrapeConcreteAdvertisementCommand command
     )
     {
         IPage page = _context.Page.Value;
-        Option<IElementHandle[]> elements = await page.GetElementsArrayWithClassFormatter(
-            _selector
-        );
-        if (!elements.HasValue)
-        {
-            _logger.Error(
-                "{Context} address not found. Url: {Url}",
-                nameof(ScrapeAddressDecorator),
-                _context.Advertisement.Value.SourceUrl
-            );
+        var containerElementRequest = await page.GetElementWithClassFormatter(_containerSelector);
+        if (!containerElementRequest.HasValue)
             return Option<ScrapedAdvertisement>.None();
-        }
 
-        IElementHandle[] elementsArray = elements.Value;
-        foreach (var element in elementsArray)
+        await using IElementHandle containerElement = containerElementRequest.Value;
+        var subContainerElementRequest = await containerElement.GetChildWithClassFormatter(
+            _subContainerSelector
+        );
+        if (!subContainerElementRequest.HasValue)
+            return Option<ScrapedAdvertisement>.None();
+
+        await using IElementHandle subContainerElement = subContainerElementRequest.Value;
+        var addressNodeElementsRequest = await subContainerElement.GetChildrenWithClassFormatter(
+            _addressNodeSelector
+        );
+        if (!addressNodeElementsRequest.HasValue)
+            return Option<ScrapedAdvertisement>.None();
+
+        foreach (var addressNode in addressNodeElementsRequest.Value)
         {
-            await using (element)
+            await using (addressNode)
             {
-                Option<string> text = await element.GetElementText();
+                Option<string> text = await addressNode.GetElementText();
                 if (!text.HasValue)
                     continue;
                 string textValue = text.Value;
-                if (textValue.Contains("Город"))
+                if (textValue.Contains("Город:"))
                 {
-                    string[] splitted = textValue.Split(':', StringSplitOptions.TrimEntries);
-                    string addressValue = splitted[^1];
-                    _context.Advertisement.Value.Address = addressValue;
+                    string addressResult = textValue.Replace("Город:", "").Trim();
+                    _context.Advertisement.Value.Address = addressResult;
                     break;
                 }
             }

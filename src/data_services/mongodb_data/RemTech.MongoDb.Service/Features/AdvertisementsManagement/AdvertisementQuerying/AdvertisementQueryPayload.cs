@@ -35,8 +35,24 @@ public record AdvertisementQueryPayload(
 
 public sealed record AdvertisementCharacteristicsQueryPayload(string Name, string Value);
 
-public sealed record AdvertisementQueryPayloadWithFilters(AdvertisementQueryPayload Payload)
-    : AdvertisementQueryPayload;
+public sealed record AdvertisementQueryPayloadWithFilters : AdvertisementQueryPayload
+{
+    public AdvertisementQueryPayloadWithFilters(AdvertisementQueryPayload payload)
+        : base(
+            AdvertisementId: payload.AdvertisementId,
+            Title: payload.Title,
+            Description: payload.Description,
+            Price: payload.Price,
+            PriceExtra: payload.PriceExtra,
+            ServiceName: payload.ServiceName,
+            SourceUrl: payload.SourceUrl,
+            Publisher: payload.Publisher,
+            Address: payload.Address,
+            CreatedAt: payload.CreatedAt,
+            AdvertisementDate: payload.AdvertisementDate,
+            Characteristics: payload.Characteristics
+        ) { }
+}
 
 public sealed record AdvertisementQueryPayloadWithoutFilters() : AdvertisementQueryPayload;
 
@@ -48,6 +64,17 @@ public static class AdvertisementQueryPayloadExtensions
         {
             true => new AdvertisementQueryPayloadWithoutFilters(),
             false => new AdvertisementQueryPayloadWithFilters(query.Payload),
+        };
+    }
+
+    public static AdvertisementQueryPayload ResolveQueryPayload(
+        this AdvertisementQueryPayload payload
+    )
+    {
+        return payload.IsPayloadEmpty switch
+        {
+            true => new AdvertisementQueryPayloadWithoutFilters(),
+            false => new AdvertisementQueryPayloadWithFilters(payload),
         };
     }
 }

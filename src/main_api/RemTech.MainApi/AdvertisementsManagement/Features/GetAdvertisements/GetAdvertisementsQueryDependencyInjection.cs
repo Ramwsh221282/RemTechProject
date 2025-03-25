@@ -1,8 +1,8 @@
 using RemTech.MainApi.AdvertisementsManagement.Features.GetAdvertisements.Decorators;
 using RemTech.MainApi.AdvertisementsManagement.Models;
-using RemTech.MainApi.Common.Abstractions;
-using RemTech.MainApi.Common.Attributes;
 using RemTech.MainApi.ParsersManagement.Messages;
+using RemTechCommon.Utils.CqrsPattern;
+using RemTechCommon.Utils.DependencyInjectionHelpers;
 using RemTechCommon.Utils.ResultPattern;
 
 namespace RemTech.MainApi.AdvertisementsManagement.Features.GetAdvertisements;
@@ -10,11 +10,11 @@ namespace RemTech.MainApi.AdvertisementsManagement.Features.GetAdvertisements;
 [DependencyInjection]
 public static class GetAdvertisementsQueryDependencyInjection
 {
-    [ServicesRegistration]
+    [DependencyInjectionMethod]
     public static void Inject(this IServiceCollection services)
     {
         services.AddScoped<
-            IQueryHandler<GetAdvertisementsQuery, Result<(TransportAdvertisement[], long)>>
+            IRequestHandler<GetAdvertisementsQuery, Result<(TransportAdvertisement[], long)>>
         >(p =>
         {
             Serilog.ILogger logger = p.GetRequiredService<Serilog.ILogger>();

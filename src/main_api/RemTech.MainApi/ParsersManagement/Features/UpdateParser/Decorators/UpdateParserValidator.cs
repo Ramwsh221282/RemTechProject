@@ -1,5 +1,4 @@
 ﻿using GuardValidationLibrary.GuardedFactory;
-using RemTech.MainApi.Common.Abstractions;
 using RemTech.MainApi.ParsersManagement.Dtos;
 using RemTech.MainApi.ParsersManagement.Models;
 using RemTech.MainApi.ParsersManagement.Responses;
@@ -8,19 +7,14 @@ using RemTechCommon.Utils.ResultPattern;
 
 namespace RemTech.MainApi.ParsersManagement.Features.UpdateParser.Decorators;
 
-public sealed class UpdateParserValidator : ICommandHandler<UpdateParserCommand, ParserResponse>
+public sealed class UpdateParserValidator(
+    IRequestHandler<UpdateParserCommand, Result<ParserResponse>> handler,
+    UpdateParserContext context
+) : IRequestHandler<UpdateParserCommand, Result<ParserResponse>>
 {
-    private readonly ICommandHandler<UpdateParserCommand, ParserResponse> _handler;
-    private readonly UpdateParserContext _context;
-
-    public UpdateParserValidator(
-        ICommandHandler<UpdateParserCommand, ParserResponse> handler,
-        UpdateParserContext context
-    )
-    {
-        _handler = handler;
-        _context = context;
-    }
+    private readonly IRequestHandler<UpdateParserCommand, Result<ParserResponse>> _handler =
+        handler;
+    private readonly UpdateParserContext _context = context;
 
     public async Task<Result<ParserResponse>> Handle(
         UpdateParserCommand command,
@@ -36,7 +30,7 @@ public sealed class UpdateParserValidator : ICommandHandler<UpdateParserCommand,
         );
 
         if (!create.IsSuccess)
-            _context.Error = Option<Error>.Some(new Error(create.Error));
+            return new Error(create.Error);
 
         _context.UpdatedModel = Option<Parser>.Some(create.Object);
         return await _handler.Handle(new UpdateParserCommand(dto), ct);
