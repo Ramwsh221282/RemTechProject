@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using RemTech.MongoDb.Service.Common.Abstractions.BsonClassMapping;
 using RemTech.MongoDb.Service.Common.Abstractions.BsonSerialization;
+using RemTech.MongoDb.Service.Features.AdvertisementsManagement.IndexModel;
 
 namespace RemTech.MongoDb.Service.Configurations.MongoDbConfiguration;
 
@@ -14,7 +15,10 @@ public static class MongoDbConfigurationRegistration
         services.AddSingleton(client);
         RegisterSerializers();
         RegisterClassMaps();
-
+        client.GetAdvertisementsDb().GetAdvertisementsCol();
+        client.GetAdvertisementsDb().GetCharacteristicsCol();
+        client.GetParsersDb().GetParsersCol();
+        client.RegisterIndexes();
         return services;
     }
 
