@@ -4,5 +4,7 @@ namespace RemTech.MongoDb.Service.Features.AdvertisementsManagement.Advertisemen
 
 public sealed record AdvertisementsQuery(
     AdvertisementQueryPayload Payload,
-    PaginationOption Pagination
+    PaginationOption Pagination,
+    SortingOption Sorting,
+    PriceFilterCriteria PriceCriteria
 );

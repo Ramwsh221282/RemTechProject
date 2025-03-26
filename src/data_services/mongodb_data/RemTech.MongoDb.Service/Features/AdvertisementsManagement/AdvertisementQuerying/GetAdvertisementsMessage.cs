@@ -23,12 +23,14 @@ public sealed class GetAdvertisementsMessageHandler(AdvertisementsRepository rep
 
     public async Task<ContractActionResult> Handle(GetAdvertisementsMessage contract)
     {
+        SortingOption sorting = contract.Query.Sorting.Specify();
         AdvertisementQueryPayload payload = contract.Query.ResolveQueryPayload();
         PaginationOption pagination = contract.Query.Pagination;
+        PriceFilterCriteria priceCriteria = contract.Query.PriceCriteria.Specify();
         _builder.SetPayload(payload);
+        FilterDefinition<Advertisement> filter = _builder.Build().Accept("Price", priceCriteria);
 
-        FilterDefinition<Advertisement> filter = _builder.Build();
-        var queryDataTask = _repository.GetMany(filter, pagination);
+        var queryDataTask = _repository.GetMany(filter, pagination, sorting);
         var countDataTask = _repository.GetCount(filter);
         await Task.WhenAll(queryDataTask, countDataTask);
 
@@ -38,7 +40,6 @@ public sealed class GetAdvertisementsMessageHandler(AdvertisementsRepository rep
             .AsArray();
         long count = countDataTask.Result;
         TransportAdvertisementDaoResponse response = new(queryDataResult, count);
-
         return response.Success();
     }
 }

@@ -40,7 +40,8 @@ public sealed class AdvertisementsRepository
 
     public async Task<IEnumerable<Advertisement>> GetMany(
         FilterDefinition<Advertisement> filter,
-        PaginationOption? pagination = null
+        PaginationOption? pagination = null,
+        SortingOption? sorting = null
     ) =>
         await _client
             .GetAdvertisementsDb()
@@ -49,6 +50,7 @@ public sealed class AdvertisementsRepository
             .When(pagination != null)
             .Apply(find => find.Skip((pagination!.Page - 1) * pagination.PageSize))
             .Apply(find => find.Limit(pagination!.PageSize))
+            .Apply(find => find.Accept(ad => ad.Price, sorting))
             .AsList();
 
     public async Task<long> GetCount(FilterDefinition<Advertisement> filter) =>

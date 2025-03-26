@@ -130,8 +130,8 @@
               "D:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj": {
                 "projectPath": "D:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj"
               },
-              "d:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj": {
-                "projectPath": "d:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj"
+              "D:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj": {
+                "projectPath": "D:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj"
               }
             }
           }
@@ -181,14 +181,14 @@
         }
       }
     },
-    "d:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj": {
+    "D:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj",
+        "projectUniqueName": "D:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj",
         "projectName": "Rabbit.RPC.Server.Abstractions",
-        "projectPath": "d:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj",
+        "projectPath": "D:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj",
         "packagesPath": "C:\\Users\\Ramwsh\\.nuget\\packages\\",
-        "outputPath": "d:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\obj\\",
+        "outputPath": "D:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Ramwsh\\AppData\\Roaming\\NuGet\\NuGet.Config"

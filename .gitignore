@@ -3,6 +3,9 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+mongodb_data/
+rabbitmq/
+
 # dotenv files
 .env
 

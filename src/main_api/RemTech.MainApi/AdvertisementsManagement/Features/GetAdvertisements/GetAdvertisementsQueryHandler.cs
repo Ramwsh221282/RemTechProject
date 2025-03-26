@@ -1,8 +1,8 @@
 using Rabbit.RPC.Client.Abstractions;
 using RemTech.MainApi.AdvertisementsManagement.Messages.Advertisements;
 using RemTech.MainApi.AdvertisementsManagement.Models;
+using RemTech.MainApi.Common.Dtos;
 using RemTech.MainApi.ParsersManagement.Messages;
-using RemTechCommon.Utils.CqrsPattern;
 using RemTechCommon.Utils.ResultPattern;
 
 namespace RemTech.MainApi.AdvertisementsManagement.Features.GetAdvertisements;
@@ -20,11 +20,15 @@ public sealed class GetAdvertisementsQueryHandler(DataServiceMessager messager)
         CancellationToken ct = default
     )
     {
-        var payload = query.Option.FromFilterOption();
-        var pagination = query.Pagination;
-        AdvertisementsQuery dataServiceQuery = new(payload, pagination);
+        AdvertisementQueryPayload payload = query.Option.FromFilterOption();
+        PaginationOption pagination = query.Pagination;
+        SortingOption sorting = query.Sorting;
+        PriceFilterCriteria priceOpt = query.PriceFilter;
+        AdvertisementsQuery dataServiceQuery = new(payload, pagination, sorting, priceOpt);
+
         GetAdvertisementsMessage message = new(dataServiceQuery);
-        var result = await _messager.Send(message, ct);
+        ContractActionResult result = await _messager.Send(message, ct);
+
         return ResultExtensions
             .When<(TransportAdvertisement[], long)>(!result.IsSuccess)
             .ApplyError(result.Error)

@@ -30,7 +30,7 @@ public static class AdvertisementIndexModel
                     .Ascending("Characteristics.value")
             )
         );
-        collection.Indexes.DropAll();
-        collection.Indexes.CreateMany(indexes);
+        collection.Indexes.DropAllAsync().Wait();
+        collection.Indexes.CreateManyAsync(indexes).Wait();
     }
 }
