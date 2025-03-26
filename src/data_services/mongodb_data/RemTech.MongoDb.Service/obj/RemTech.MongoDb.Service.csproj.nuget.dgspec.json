@@ -4,14 +4,14 @@
     "D:\\RemTechBackend\\RemTechProject\\src\\data_services\\mongodb_data\\RemTech.MongoDb.Service\\RemTech.MongoDb.Service.csproj": {}
   },
   "projects": {
-    "d:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj": {
+    "D:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj",
+        "projectUniqueName": "D:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj",
         "projectName": "RemTech.Common",
-        "projectPath": "d:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj",
+        "projectPath": "D:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj",
         "packagesPath": "C:\\Users\\Ramwsh\\.nuget\\packages\\",
-        "outputPath": "d:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\obj\\",
+        "outputPath": "D:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Ramwsh\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -127,8 +127,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "d:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj": {
-                "projectPath": "d:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj"
+              "D:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj": {
+                "projectPath": "D:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj"
               },
               "d:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj": {
                 "projectPath": "d:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj"

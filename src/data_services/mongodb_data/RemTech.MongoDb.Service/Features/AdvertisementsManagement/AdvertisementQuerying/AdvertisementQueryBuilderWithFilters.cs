@@ -2,6 +2,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using RemTech.MongoDb.Service.Common.Abstractions.QueryBuilder;
 using RemTech.MongoDb.Service.Common.Models.AdvertisementsManagement;
+using RemTechCommon.Utils.Extensions;
 
 namespace RemTech.MongoDb.Service.Features.AdvertisementsManagement.AdvertisementQuerying;
 
@@ -51,7 +52,7 @@ public sealed class AdvertisementQueryBuilderWithFilters
         string? title = _payload!.Title;
         if (string.IsNullOrWhiteSpace(title))
             return;
-        With(new BsonDocument("Title", new BsonDocument("$eq", title)));
+        With(new BsonDocument("Title", CreateRegularExpressionFilter(title)));
     }
 
     private void ApplyDescriptionFilter()
@@ -59,7 +60,7 @@ public sealed class AdvertisementQueryBuilderWithFilters
         string? description = _payload!.Description;
         if (string.IsNullOrWhiteSpace(description))
             return;
-        With(new BsonDocument("Description", new BsonDocument("$eq", description)));
+        With(new BsonDocument("Description", CreateRegularExpressionFilter(description)));
     }
 
     private void ApplyPriceFilter()
@@ -75,7 +76,7 @@ public sealed class AdvertisementQueryBuilderWithFilters
         string? extra = _payload!.PriceExtra;
         if (string.IsNullOrWhiteSpace(extra))
             return;
-        With(new BsonDocument("PriceExtra", new BsonDocument("$eq", extra)));
+        With(new BsonDocument("PriceExtra", CreateRegularExpressionFilter(extra)));
     }
 
     private void ApplyServiceName()
@@ -107,7 +108,7 @@ public sealed class AdvertisementQueryBuilderWithFilters
         string? address = _payload!.Address;
         if (string.IsNullOrWhiteSpace(address))
             return;
-        With(new BsonDocument("Address", new BsonDocument("$eq", address)));
+        With(new BsonDocument("Address", CreateRegularExpressionFilter(address)));
     }
 
     private void ApplyCreatedAt()
@@ -131,18 +132,41 @@ public sealed class AdvertisementQueryBuilderWithFilters
     private void ApplyCharacteristics()
     {
         AdvertisementCharacteristicsQueryPayload[]? ctx = _payload!.Characteristics;
-        if (ctx == null)
+
+        if (ctx == null || ctx.Length == 0)
             return;
-        if (ctx.Length == 0)
-            return;
+
         if (ctx.Any(c => string.IsNullOrEmpty(c.Name) || string.IsNullOrWhiteSpace(c.Value)))
             return;
-        AdvertisementCharacteristic[] converted =
-        [
-            .. ctx.Select(c => new AdvertisementCharacteristic(c.Name, c.Value)),
-        ];
-        With(
-            new BsonDocument("Characteristics", new BsonDocument("$in", new BsonArray(converted)))
-        );
+
+        var converted = ctx.Select(c => new AdvertisementCharacteristic(c.Name, c.Value)).ToArray();
+
+        List<BsonDocument> filters = new List<BsonDocument>();
+
+        foreach (var characteristic in converted)
+        {
+            BsonDocument matchFilter = new BsonDocument(
+                "$elemMatch",
+                new BsonDocument
+                {
+                    { "name", new BsonDocument("$eq", characteristic.Name) },
+                    {
+                        "value",
+                        new BsonDocument(
+                            "$regex",
+                            CreateRegularExpressionFilter(characteristic.Value)
+                        )
+                    },
+                }
+            );
+            BsonDocument finalFilter = new BsonDocument("Characteristics", matchFilter);
+            With(finalFilter);
+        }
+    }
+
+    private static BsonRegularExpression CreateRegularExpressionFilter(string text)
+    {
+        string formatted = text.CleanString();
+        return new BsonRegularExpression($".*{formatted}.*", "i");
     }
 }
