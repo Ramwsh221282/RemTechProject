@@ -13,8 +13,8 @@ public static class CharacteristicsEndpoint
     [EndpointMappingMethod]
     public static void Map(this WebApplication app)
     {
-        app.MapGroup("api/characteristics").RequireCors("frontend");
-        app.MapGet("", GetCharacteristics);
+        var group = app.MapGroup("api/characteristics").RequireCors("frontend");
+        group.MapGet("", GetCharacteristics);
     }
 
     private static async Task<IResult> GetCharacteristics(
