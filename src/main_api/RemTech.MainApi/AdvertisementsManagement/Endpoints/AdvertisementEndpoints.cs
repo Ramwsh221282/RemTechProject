@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using RemTech.MainApi.AdvertisementsManagement.Dtos;
 using RemTech.MainApi.AdvertisementsManagement.Features.GetAdvertisements;
@@ -22,16 +23,13 @@ public static class AdvertisementEndpoints
     }
 
     private static async Task<IResult> GetWithFilters(
-        [FromServices]
-            IRequestHandler<
-            GetAdvertisementsQuery,
-            Result<(TransportAdvertisement[], long)>
-        > handler,
+        [FromServices] IRequestHandler<GetAdvertisementsQuery, Result<(TransportAdvertisement[] ads, long count)>> handler,
         [FromQuery] int page,
         [FromQuery] int pageSize,
         [FromQuery] string? sort,
         [FromQuery] string? priceStart,
         [FromQuery] string? priceEnd,
+        [FromQuery] string? textSearchTerm,
         [FromBody] AdvertisementsFilterOption option,
         CancellationToken ct
     )
@@ -41,23 +39,24 @@ public static class AdvertisementEndpoints
             ? new SortingOption("NONE")
             : new SortingOption(sort);
         PriceFilterCriteria priceOpt = SpecifyCriteria(priceStart, priceEnd);
-        GetAdvertisementsQuery query = new(option, pagination, sortingOpt, priceOpt);
+        TextSearchOption textSearchOpt = new TextSearchOption(textSearchTerm);
+        
+        GetAdvertisementsQuery query = new(option, pagination, sortingOpt, priceOpt, textSearchOpt);
+        Option<Result<(TransportAdvertisement[], long)>> queryResult = await handler.Handle(query, ct);
 
-        Option<Result<(TransportAdvertisement[], long)>> queryResult = await handler.Handle(
-            query,
-            ct
-        );
-
-        return !queryResult.HasValue ? Results.InternalServerError()
-            : queryResult.Value.IsFailure ? queryResult.Value.Envelope()
-            : Result<TransportAdvertisementResponse>
-                .Success(
-                    new(
+        return queryResult.HasValue switch
+        {
+            false => EnvelopeResultExtensions.NotFound(),
+            true when queryResult.Value.IsFailure => queryResult.Value.Envelope(),
+            true when queryResult.Value.IsSuccess => EnvelopeResultExtensions.Envelope
+                (
+                    new TransportAdvertisementResponse(
                         [.. queryResult.Value.Value.Item1.Select(r => r.ToResponse())],
                         queryResult.Value.Value.Item2
                     )
-                )
-                .Envelope();
+                ),
+            _ => EnvelopeResultExtensions.Envelope(HttpStatusCode.InternalServerError)
+        };
     }
 
     private static PriceFilterCriteria SpecifyCriteria(string? priceStart, string? priceEnd) =>

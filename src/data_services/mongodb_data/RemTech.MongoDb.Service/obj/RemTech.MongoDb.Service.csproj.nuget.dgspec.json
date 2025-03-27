@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\RemTechBackend\\RemTechProject\\src\\data_services\\mongodb_data\\RemTech.MongoDb.Service\\RemTech.MongoDb.Service.csproj": {}
+    "D:\\Dev\\RemTechProject\\src\\data_services\\mongodb_data\\RemTech.MongoDb.Service\\RemTech.MongoDb.Service.csproj": {}
   },
   "projects": {
-    "D:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj": {
+    "D:\\Dev\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj",
+        "projectUniqueName": "D:\\Dev\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj",
         "projectName": "RemTech.Common",
-        "projectPath": "D:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj",
+        "projectPath": "D:\\Dev\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj",
         "packagesPath": "C:\\Users\\Ramwsh\\.nuget\\packages\\",
-        "outputPath": "D:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\obj\\",
+        "outputPath": "D:\\Dev\\RemTechProject\\src\\common_src\\RemTech.Common\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Ramwsh\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -101,18 +101,18 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.202/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\RemTechBackend\\RemTechProject\\src\\data_services\\mongodb_data\\RemTech.MongoDb.Service\\RemTech.MongoDb.Service.csproj": {
+    "D:\\Dev\\RemTechProject\\src\\data_services\\mongodb_data\\RemTech.MongoDb.Service\\RemTech.MongoDb.Service.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\RemTechBackend\\RemTechProject\\src\\data_services\\mongodb_data\\RemTech.MongoDb.Service\\RemTech.MongoDb.Service.csproj",
+        "projectUniqueName": "D:\\Dev\\RemTechProject\\src\\data_services\\mongodb_data\\RemTech.MongoDb.Service\\RemTech.MongoDb.Service.csproj",
         "projectName": "RemTech.MongoDb.Service",
-        "projectPath": "D:\\RemTechBackend\\RemTechProject\\src\\data_services\\mongodb_data\\RemTech.MongoDb.Service\\RemTech.MongoDb.Service.csproj",
+        "projectPath": "D:\\Dev\\RemTechProject\\src\\data_services\\mongodb_data\\RemTech.MongoDb.Service\\RemTech.MongoDb.Service.csproj",
         "packagesPath": "C:\\Users\\Ramwsh\\.nuget\\packages\\",
-        "outputPath": "D:\\RemTechBackend\\RemTechProject\\src\\data_services\\mongodb_data\\RemTech.MongoDb.Service\\obj\\",
+        "outputPath": "D:\\Dev\\RemTechProject\\src\\data_services\\mongodb_data\\RemTech.MongoDb.Service\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Ramwsh\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -127,11 +127,11 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "D:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj": {
-                "projectPath": "D:\\RemTechBackend\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj"
+              "D:\\Dev\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj": {
+                "projectPath": "D:\\Dev\\RemTechProject\\src\\common_src\\RemTech.Common\\RemTech.Common.csproj"
               },
-              "D:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj": {
-                "projectPath": "D:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj"
+              "D:\\Dev\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj": {
+                "projectPath": "D:\\Dev\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj"
               }
             }
           }
@@ -177,18 +177,18 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.202/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj": {
+    "D:\\Dev\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj",
+        "projectUniqueName": "D:\\Dev\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj",
         "projectName": "Rabbit.RPC.Server.Abstractions",
-        "projectPath": "D:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj",
+        "projectPath": "D:\\Dev\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\Rabbit.RPC.Server.Abstractions.csproj",
         "packagesPath": "C:\\Users\\Ramwsh\\.nuget\\packages\\",
-        "outputPath": "D:\\RemTechBackend\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\obj\\",
+        "outputPath": "D:\\Dev\\RemTechProject\\src\\rabbit_mq_abstraction\\Rabbit.RPC.Server.Abstractions\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Ramwsh\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -258,7 +258,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.202/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

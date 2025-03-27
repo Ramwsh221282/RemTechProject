@@ -1,8 +1,10 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
+using RemTech.MongoDb.Service.Common.Abstractions.BsonRegularExpressionUtils;
 using RemTech.MongoDb.Service.Common.Abstractions.QueryBuilder;
 using RemTech.MongoDb.Service.Common.Models.AdvertisementsManagement;
 using RemTechCommon.Utils.Extensions;
+
 
 namespace RemTech.MongoDb.Service.Features.AdvertisementsManagement.AdvertisementQuerying;
 
@@ -16,10 +18,7 @@ public sealed class AdvertisementQueryBuilderWithFilters
 
     public FilterDefinition<Advertisement> Build()
     {
-        if (_payload == null)
-            return Empty;
-
-        if (_payload.IsPayloadEmpty)
+        if (_payload == null || _payload.IsPayloadEmpty)
             return Empty;
 
         ApplyIdFilter();
@@ -52,7 +51,8 @@ public sealed class AdvertisementQueryBuilderWithFilters
         string? title = _payload!.Title;
         if (string.IsNullOrWhiteSpace(title))
             return;
-        With(new BsonDocument("Title", CreateRegularExpressionFilter(title)));
+        BsonDocument filter = new BsonDocument("$regex", title.CleanString().CreateBsonRegularExpressionFromString());
+        With(new BsonDocument("Title", filter));
     }
 
     private void ApplyDescriptionFilter()
@@ -60,7 +60,8 @@ public sealed class AdvertisementQueryBuilderWithFilters
         string? description = _payload!.Description;
         if (string.IsNullOrWhiteSpace(description))
             return;
-        With(new BsonDocument("Description", CreateRegularExpressionFilter(description)));
+        BsonDocument filter = new BsonDocument("$regex", description.CleanString().CreateBsonRegularExpressionFromString());
+        With(new BsonDocument("Description", filter));
     }
 
     private void ApplyPriceFilter()
@@ -76,7 +77,8 @@ public sealed class AdvertisementQueryBuilderWithFilters
         string? extra = _payload!.PriceExtra;
         if (string.IsNullOrWhiteSpace(extra))
             return;
-        With(new BsonDocument("PriceExtra", CreateRegularExpressionFilter(extra)));
+        BsonDocument filter = new BsonDocument("$regex", extra.CleanString().CreateBsonRegularExpressionFromString());
+        With(new BsonDocument("PriceExtra", filter));
     }
 
     private void ApplyServiceName()
@@ -108,7 +110,8 @@ public sealed class AdvertisementQueryBuilderWithFilters
         string? address = _payload!.Address;
         if (string.IsNullOrWhiteSpace(address))
             return;
-        With(new BsonDocument("Address", CreateRegularExpressionFilter(address)));
+        BsonDocument filter = new BsonDocument("$regex", address.CleanString().CreateBsonRegularExpressionFromString());
+        With(new BsonDocument("Address", filter));
     }
 
     private void ApplyCreatedAt()
@@ -139,9 +142,9 @@ public sealed class AdvertisementQueryBuilderWithFilters
         if (ctx.Any(c => string.IsNullOrEmpty(c.Name) || string.IsNullOrWhiteSpace(c.Value)))
             return;
 
-        var converted = ctx.Select(c => new AdvertisementCharacteristic(c.Name, c.Value)).ToArray();
-
-        List<BsonDocument> filters = new List<BsonDocument>();
+        IEnumerable<AdvertisementCharacteristic> converted = ctx.Select(
+            c => new AdvertisementCharacteristic(c.Name, c.Value)
+        );
 
         foreach (var characteristic in converted)
         {
@@ -154,7 +157,7 @@ public sealed class AdvertisementQueryBuilderWithFilters
                         "value",
                         new BsonDocument(
                             "$regex",
-                            CreateRegularExpressionFilter(characteristic.Value)
+                            characteristic.Value.CleanString().CreateBsonRegularExpressionFromString()
                         )
                     },
                 }
@@ -162,11 +165,5 @@ public sealed class AdvertisementQueryBuilderWithFilters
             BsonDocument finalFilter = new BsonDocument("Characteristics", matchFilter);
             With(finalFilter);
         }
-    }
-
-    private static BsonRegularExpression CreateRegularExpressionFilter(string text)
-    {
-        string formatted = text.CleanString();
-        return new BsonRegularExpression($".*{formatted}.*", "i");
     }
 }

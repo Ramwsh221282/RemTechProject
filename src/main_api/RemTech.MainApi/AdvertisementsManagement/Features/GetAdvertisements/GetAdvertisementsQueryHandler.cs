@@ -24,7 +24,8 @@ public sealed class GetAdvertisementsQueryHandler(DataServiceMessager messager)
         PaginationOption pagination = query.Pagination;
         SortingOption sorting = query.Sorting;
         PriceFilterCriteria priceOpt = query.PriceFilter;
-        AdvertisementsQuery dataServiceQuery = new(payload, pagination, sorting, priceOpt);
+        TextSearchOption textSearch = query.TextSearch;
+        AdvertisementsQuery dataServiceQuery = new(payload, pagination, sorting, priceOpt, textSearch);
 
         GetAdvertisementsMessage message = new(dataServiceQuery);
         ContractActionResult result = await _messager.Send(message, ct);
