@@ -6,5 +6,6 @@ public sealed record AdvertisementsQuery(
     AdvertisementQueryPayload Payload,
     PaginationOption Pagination,
     SortingOption Sorting,
-    PriceFilterCriteria PriceCriteria
+    PriceFilterCriteria PriceCriteria,
+    TextSearchOption TextSearch
 );

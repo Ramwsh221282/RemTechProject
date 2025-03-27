@@ -22,6 +22,17 @@ public static class EnvelopeResultExtensions
         };
         return envelope.MatchEnvelope();
     }
+    
+    public static IResult Envelope(HttpStatusCode code, string? message = null)
+    {
+        EnvelopeResult envelope = new()
+        {
+            Code = code,
+            StatusInfo = message ?? string.Empty,
+            Data = null,
+        };
+        return envelope.MatchEnvelope();
+    }
 
     public static IResult NotFound()
     {
@@ -72,6 +83,7 @@ public static class EnvelopeResultExtensions
             HttpStatusCode.NoContent => Results.NoContent(),
             HttpStatusCode.BadRequest => Results.BadRequest(envelope.StatusInfo),
             HttpStatusCode.NotFound => Results.NotFound(),
+            HttpStatusCode.InternalServerError => Results.InternalServerError(),
             _ => Results.InternalServerError("Envelope status is not supported."),
         };
 }

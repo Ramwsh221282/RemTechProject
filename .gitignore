@@ -5,6 +5,7 @@
 
 mongodb_data/
 rabbitmq/
+.idea/
 
 # dotenv files
 .env

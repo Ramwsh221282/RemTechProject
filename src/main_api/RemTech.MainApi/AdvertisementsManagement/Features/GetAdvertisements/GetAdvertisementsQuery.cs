@@ -9,5 +9,6 @@ public sealed record GetAdvertisementsQuery(
     AdvertisementsFilterOption Option,
     PaginationOption Pagination,
     SortingOption Sorting,
-    PriceFilterCriteria PriceFilter
+    PriceFilterCriteria PriceFilter,
+    TextSearchOption TextSearch
 ) : IRequest<Result<(TransportAdvertisement[] advertisements, long count)>>;
