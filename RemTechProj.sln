@@ -27,9 +27,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "drom_parser_src", "drom_par
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data_services", "data_services", "{9E64A2E1-468C-4645-BB98-6505778AB8EE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mongodb_data", "mongodb_data", "{326327E3-895F-4482-9834-1A1A93EB1A65}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mongodb_service", "mongodb_service", "{326327E3-895F-4482-9834-1A1A93EB1A65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTech.MongoDb.Service", "src\data_services\mongodb_data\RemTech.MongoDb.Service\RemTech.MongoDb.Service.csproj", "{F8517961-6E7A-4A20-AFB0-CCABD5BDCC67}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTech.MongoDb.Service", "src\data_services\mongodb_service\RemTech.MongoDb.Service\RemTech.MongoDb.Service.csproj", "{F8517961-6E7A-4A20-AFB0-CCABD5BDCC67}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "main_api", "main_api", "{AC16A3EF-2748-4125-BAAD-B99EDF712549}"
 EndProject

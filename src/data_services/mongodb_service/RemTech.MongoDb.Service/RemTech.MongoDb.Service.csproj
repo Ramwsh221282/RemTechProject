@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>dotnet-RemTech.MongoDb.Service-a160cbf6-54be-4d05-8651-004e48e73fd1</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.2" />
+        <PackageReference Include="MongoDB.Driver" Version="3.2.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\common_src\RemTech.Common\RemTech.Common.csproj" />
+      <ProjectReference Include="..\..\..\rabbit_mq_abstraction\Rabbit.RPC.Server.Abstractions\Rabbit.RPC.Server.Abstractions.csproj" />
+    </ItemGroup>
+</Project>
