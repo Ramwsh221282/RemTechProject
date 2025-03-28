@@ -1,5 +1,6 @@
 using System.Text;
 using PuppeteerSharp;
+using RemTechCommon.Utils.Extensions;
 using RemTechCommon.Utils.OptionPattern;
 using SharedParsersLibrary.Contracts;
 using SharedParsersLibrary.Models;
@@ -172,7 +173,7 @@ public sealed class DromScrapeCataloguePages(
             Option<string> hrefAttribute = await title.GetElementAttributeValue("href");
             if (!hrefAttribute.HasValue)
                 continue;
-            string titleValue = titleText.Value;
+            string titleValue = titleText.Value.CleanString();
             string urlValue = hrefAttribute.Value;
 
             ScrapedCharacteristic[] characteristics = new ScrapedCharacteristic[2];

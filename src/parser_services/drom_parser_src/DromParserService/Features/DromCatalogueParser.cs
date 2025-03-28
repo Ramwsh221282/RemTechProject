@@ -9,72 +9,77 @@ using SharedParsersLibrary.Sinking;
 
 namespace DromParserService.Features;
 
+public sealed record ScrapingResult(IPage Page, Option<ScrapedAdvertisement> Result);
+
 public sealed class DromCatalogueParser(
     SinkerSenderFactory factory,
     DromCatalogueScrapingContext context,
     IServiceProvider provider
 ) : IScrapeAdvertisementsHandler
 {
-    private readonly SinkerSenderFactory _factory = factory;
+    private const int BatchSize = 5;
     private readonly DromCatalogueScrapingContext _context = context;
     private readonly IServiceProvider _provider = provider;
-    private const int _batchSize = 5;
-    private readonly SemaphoreSlim _semaphore = new(_batchSize, _batchSize);
+    private readonly SinkerSenderFactory _factory = factory;
 
     public async Task Handle(ScrapeAdvertisementCommand command)
     {
-        _context.Browser.Value.Dispose();
-        var tasks = new List<Task<Option<ScrapedAdvertisement>>>();
+        IBrowser browser = _context.Browser.Value;
+        List<Task<ScrapingResult>> results = [];
+
         foreach (var advertisement in _context.EnumerateAdvertisements())
         {
-            await _semaphore.WaitAsync();
-            tasks.Add(
-                Task.Run(async () =>
-                {
-                    try
-                    {
-                        BrowserFactory browserFactory = new();
-                        IBrowser browser = await browserFactory.CreateStealthBrowserInstance(
-                            headless: true
-                        );
+            IPage page = await browser.CreateByDomLoadStrategy(advertisement.SourceUrl);
+            await page.ScrollBottom();
+            await page.ScrollTop();
 
-                        var result = await ScrapeAdvertisement(advertisement, browser);
-                        if (result.HasValue)
-                            SinkAdvertisement(result.Value);
+            while (results.Count == BatchSize)
+            {
+                await ResolveFinishedTasks(results);
+            }
 
-                        browser.Dispose();
-                        return result;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                        return Option<ScrapedAdvertisement>.None();
-                    }
-                    finally
-                    {
-                        _semaphore.Release();
-                    }
-                })
-            );
+            results.Add(CreateScrapeTask(advertisement, page));
         }
-        await Task.WhenAll(tasks);
+
+        while (results.Count != 0)
+        {
+            await ResolveFinishedTasks(results);
+        }
+
+        browser.Dispose();
+        _context.Browser.Value.Dispose();
+    }
+
+    private async Task<ScrapingResult> CreateScrapeTask(
+        ScrapedAdvertisement advertisement,
+        IPage page
+    )
+    {
+        Option<ScrapedAdvertisement> result = await ScrapeAdvertisement(advertisement, page);
+        return new ScrapingResult(page, result);
+    }
+
+    private async Task ResolveFinishedTasks(List<Task<ScrapingResult>> collection)
+    {
+        Task<ScrapingResult> task = await Task.WhenAny(collection);
+        collection.Remove(task);
+        ScrapingResult result = await task;
+        result.Page.Dispose();
+        if (result.Result.HasValue)
+            SinkAdvertisement(result.Result.Value);
+        await Task.CompletedTask;
     }
 
     private async Task<Option<ScrapedAdvertisement>> ScrapeAdvertisement(
         ScrapedAdvertisement advertisement,
-        IBrowser browser
+        IPage page
     )
     {
         try
         {
-            string url = advertisement.SourceUrl;
-            IPage page = await browser.CreateByDomLoadStrategy(url);
-            await page.ScrollBottom();
-            await page.ScrollTop();
             ScrapeConcreteAdvertisementCommand command = new(page, advertisement);
             var handler = _provider.GetRequiredService<IScrapeConcreteAdvertisementHandler>();
             Option<ScrapedAdvertisement> ad = await handler.Handle(command);
-            page.Dispose();
             return ad;
         }
         catch (Exception ex)

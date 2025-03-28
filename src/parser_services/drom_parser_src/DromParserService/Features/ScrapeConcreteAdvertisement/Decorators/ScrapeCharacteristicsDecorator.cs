@@ -81,34 +81,40 @@ public sealed class ScrapeCharacteristicsDecorator(
         List<ScrapedCharacteristic> ctx = [];
         foreach (var tr in tableRowsValue)
         {
-            Option<IElementHandle> ctxNameElement = await tr.GetChildWithoutClassFormatter(
-                string.Intern("th")
-            );
-            Option<IElementHandle> ctxValueElement = await tr.GetChildWithoutClassFormatter(
-                string.Intern("td")
-            );
-            if (!ctxNameElement.HasValue || !ctxValueElement.HasValue)
-                continue;
-            Option<string> ctxNameText = await ctxNameElement.Value.GetElementText();
-            Option<string> ctxValueText = await ctxValueElement.Value.GetElementText();
-
-            if (!ctxNameText.HasValue || !ctxValueText.HasValue)
+            await using (tr)
             {
+                Option<IElementHandle> ctxNameElement = await tr.GetChildWithoutClassFormatter(
+                    string.Intern("th")
+                );
+                Option<IElementHandle> ctxValueElement = await tr.GetChildWithoutClassFormatter(
+                    string.Intern("td")
+                );
+                if (!ctxNameElement.HasValue || !ctxValueElement.HasValue)
+                    continue;
+                Option<string> ctxNameText = await ctxNameElement.Value.GetElementText();
+                Option<string> ctxValueText = await ctxValueElement.Value.GetElementText();
+
+                if (!ctxNameText.HasValue || !ctxValueText.HasValue)
+                {
+                    await ctxNameElement.Value.DisposeAsync();
+                    await ctxValueElement.Value.DisposeAsync();
+                    continue;
+                }
+
+                string name = ctxNameText.Value;
+                string value = ctxValueText.Value;
+
+                if (value.Contains('*'))
+                    value = value.Replace(string.Intern("*"), string.Empty);
+                name = name.CleanString();
+                if (ctx.Any(c => string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase)))
+                    continue;
+
+                value = value.CleanString();
+                ctx.Add(new ScrapedCharacteristic { Name = name, Value = value });
                 await ctxNameElement.Value.DisposeAsync();
                 await ctxValueElement.Value.DisposeAsync();
-                continue;
             }
-
-            string name = ctxNameText.Value;
-            string value = ctxValueText.Value;
-
-            if (value.Contains('*'))
-                value = value.Replace(string.Intern("*"), string.Empty);
-            name = name.CleanString();
-            value = value.CleanString();
-            ctx.Add(new ScrapedCharacteristic { Name = name, Value = value });
-            await ctxNameElement.Value.DisposeAsync();
-            await ctxValueElement.Value.DisposeAsync();
         }
         ScrapedCharacteristic[] existing = _context.Advertisement.Value.Characteristics;
         ScrapedCharacteristic[] updated = [.. existing, .. ctx];

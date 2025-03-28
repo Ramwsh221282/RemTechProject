@@ -1,4 +1,5 @@
 using PuppeteerSharp;
+using RemTechCommon.Utils.Extensions;
 using RemTechCommon.Utils.OptionPattern;
 using SharedParsersLibrary.Models;
 using SharedParsersLibrary.Puppeteer.Features.ElementBehavior;
@@ -48,7 +49,9 @@ public sealed class ScrapeAdvertisementDescriptionDecorator(
             return Option<ScrapedAdvertisement>.None();
         }
 
-        _context.Advertisement.Value.Description = text.Value;
+        _context.Advertisement.Value.Description = text
+            .Value.Replace("Дополнительно: ", "")
+            .CleanString();
         return await _handler.Handle(command);
     }
 }
