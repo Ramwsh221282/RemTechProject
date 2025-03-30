@@ -1,11 +1,12 @@
+﻿using DromParserService.Features.DromCatalogueScraping.CatalogueScraping;
 using PuppeteerSharp;
 using RemTechCommon.Utils.OptionPattern;
 using SharedParsersLibrary.Contracts;
 using SharedParsersLibrary.Puppeteer.Features.BrowserCreation;
 
-namespace DromParserService.Features.Decorators;
+namespace DromScrapingTests.DromCatalogueScrapingModels.Decorators;
 
-public sealed class DromInitializeCatalogueParser(
+public sealed class DromScrapeAdvertisementsByJsonInitializeDecorator(
     IScrapeAdvertisementsHandler handler,
     DromCatalogueScrapingContext context
 ) : IScrapeAdvertisementsHandler
@@ -19,6 +20,14 @@ public sealed class DromInitializeCatalogueParser(
         await _factory.LoadPuppeteerIfNotExists();
         IBrowser browser = await _factory.CreateStealthBrowserInstance(headless: true);
         _context.Browser = Option<IBrowser>.Some(browser);
-        await _handler.Handle(command);
+
+        try
+        {
+            await _handler.Handle(command);
+        }
+        catch
+        {
+            _context.Dispose();
+        }
     }
 }

@@ -14,3 +14,24 @@ public sealed class ScrapedAdvertisement
     public string Title { get; set; } = string.Empty;
     public DateTime Published { get; set; }
 }
+
+public static class ScrapedAdvertisementExtensions
+{
+    public static ScrapedAdvertisement Clone(this ScrapedAdvertisement advertisement)
+    {
+        return new ScrapedAdvertisement
+        {
+            AdvertisementId = advertisement.AdvertisementId,
+            PhotoUrls = advertisement.PhotoUrls,
+            Characteristics = advertisement.Characteristics,
+            Address = advertisement.Address,
+            Description = advertisement.Description,
+            Price = advertisement.Price,
+            PriceExtra = advertisement.PriceExtra,
+            Publisher = advertisement.Publisher,
+            Published = advertisement.Published,
+            SourceUrl = advertisement.SourceUrl,
+            Title = advertisement.Title,
+        };
+    }
+}

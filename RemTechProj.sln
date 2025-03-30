@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedParsersLibrary", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DromParserService", "src\parser_services\drom_parser_src\DromParserService\DromParserService.csproj", "{6172CE1B-AC36-455B-A0C2-E1D1263CDA44}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DromScrapingTests", "src\parser_services\DromScrapingTests\DromScrapingTests.csproj", "{88934089-CB0C-4F08-AFE2-8B57EF859790}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -145,6 +147,18 @@ Global
 		{6172CE1B-AC36-455B-A0C2-E1D1263CDA44}.Release|x64.Build.0 = Release|Any CPU
 		{6172CE1B-AC36-455B-A0C2-E1D1263CDA44}.Release|x86.ActiveCfg = Release|Any CPU
 		{6172CE1B-AC36-455B-A0C2-E1D1263CDA44}.Release|x86.Build.0 = Release|Any CPU
+		{88934089-CB0C-4F08-AFE2-8B57EF859790}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88934089-CB0C-4F08-AFE2-8B57EF859790}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88934089-CB0C-4F08-AFE2-8B57EF859790}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{88934089-CB0C-4F08-AFE2-8B57EF859790}.Debug|x64.Build.0 = Debug|Any CPU
+		{88934089-CB0C-4F08-AFE2-8B57EF859790}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{88934089-CB0C-4F08-AFE2-8B57EF859790}.Debug|x86.Build.0 = Debug|Any CPU
+		{88934089-CB0C-4F08-AFE2-8B57EF859790}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88934089-CB0C-4F08-AFE2-8B57EF859790}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88934089-CB0C-4F08-AFE2-8B57EF859790}.Release|x64.ActiveCfg = Release|Any CPU
+		{88934089-CB0C-4F08-AFE2-8B57EF859790}.Release|x64.Build.0 = Release|Any CPU
+		{88934089-CB0C-4F08-AFE2-8B57EF859790}.Release|x86.ActiveCfg = Release|Any CPU
+		{88934089-CB0C-4F08-AFE2-8B57EF859790}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -166,5 +180,6 @@ Global
 		{3215257C-FE25-4839-B7F2-A4F746B32379} = {AC16A3EF-2748-4125-BAAD-B99EDF712549}
 		{32DC9202-4387-48D9-B2EF-F23811A0EF45} = {CCE36385-9562-E5B8-F2D9-98C3DDCF3577}
 		{6172CE1B-AC36-455B-A0C2-E1D1263CDA44} = {8E8DF1D5-6DBA-4B31-BAE3-3114A84F4E76}
+		{88934089-CB0C-4F08-AFE2-8B57EF859790} = {CCE36385-9562-E5B8-F2D9-98C3DDCF3577}
 	EndGlobalSection
 EndGlobal
