@@ -12,6 +12,13 @@ public static class IBrowserExtensions
         return await factory.Create(url);
     }
 
+    public static async Task<IPage> CreateByDomLoadNoImages(this IBrowser browser, string url)
+    {
+        IPageCreationStrategy strategy = new DomLoadPageCreationStrategyNoImages(browser);
+        PageFactory factory = strategy.CreateFactoryByStrategy();
+        return await factory.Create(url);
+    }
+
     public static async Task<IPage> CreateByFullLoadstrategy(this IBrowser browser, string url)
     {
         IPageCreationStrategy strategy = new FullLoadPageCreationStrategy(browser);

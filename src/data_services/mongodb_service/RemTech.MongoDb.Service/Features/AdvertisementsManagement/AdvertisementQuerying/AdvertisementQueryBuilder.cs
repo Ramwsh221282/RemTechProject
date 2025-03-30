@@ -19,7 +19,7 @@ public sealed class AdvertisementQueryBuilder
     {
         if (_payload == null)
             return Empty;
-        var builder = GetAppropriateBuilder(_payload);
+        IQueryBuilder<AdvertisementQueryPayload, Advertisement> builder = GetAppropriateBuilder(_payload);
         builder.SetPayload(_payload);
         return builder.Build();
     }

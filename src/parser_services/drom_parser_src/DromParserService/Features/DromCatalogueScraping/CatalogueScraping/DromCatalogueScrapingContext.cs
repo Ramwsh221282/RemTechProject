@@ -1,19 +1,27 @@
-using PuppeteerSharp;
+﻿using PuppeteerSharp;
 using RemTechCommon.Utils.OptionPattern;
 using SharedParsersLibrary.Models;
 
-namespace DromParserService.Features;
+namespace DromParserService.Features.DromCatalogueScraping.CatalogueScraping;
 
 public sealed class DromCatalogueScrapingContext
 {
     private readonly LinkedList<ScrapedAdvertisement> _advertisements = [];
-
-    public int AdvertisementsCount { get; private set; }
-
     public Option<IBrowser> Browser { get; set; } = Option<IBrowser>.None();
+    private bool _isDisposed;
 
     public void AddAdvertisement(ScrapedAdvertisement advertisement) =>
         _advertisements.AddLast(advertisement);
+
+    public void Dispose()
+    {
+        if (_isDisposed)
+            return;
+        if (!Browser.HasValue)
+            return;
+        Browser.Value.Dispose();
+        _isDisposed = true;
+    }
 
     public IEnumerable<ScrapedAdvertisement> EnumerateAdvertisements()
     {
