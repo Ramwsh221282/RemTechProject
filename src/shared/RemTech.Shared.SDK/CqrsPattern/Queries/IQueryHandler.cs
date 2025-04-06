@@ -1,0 +1,7 @@
+namespace RemTech.Shared.SDK.CqrsPattern.Queries;
+
+public interface IQueryHandler<in TQuery, TQueryResult>
+    where TQuery : IQuery<TQueryResult>
+{
+    Task<TQueryResult> Handle(TQuery query, CancellationToken ct = default);
+}
