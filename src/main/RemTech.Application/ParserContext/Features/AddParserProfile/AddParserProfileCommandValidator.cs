@@ -1,7 +1,5 @@
 ﻿using RemTech.Domain.ParserContext.Entities.ParserProfiles.ValueObjects;
 using RemTech.Domain.ParserContext.ValueObjects;
-using RemTech.Shared.SDK.ResultPattern;
-using RemTech.Shared.SDK.Validators;
 
 namespace RemTech.Application.ParserContext.Features.AddParserProfile;
 

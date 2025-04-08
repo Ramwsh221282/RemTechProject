@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using RemTech.Domain.ParserContext.Entities.ParserProfiles;
 using RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses.DaoModels;
 
 namespace RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses.ResponseModels;
@@ -12,16 +13,32 @@ public sealed record ParserProfileResponse(
     string[] Links
 )
 {
-    public static ParserProfileResponse Create(ParserProfileDao dao)
+    public static ParserProfileResponse Create(ParserProfileDao profileDao)
     {
-        Guid id = dao.Id;
-        string Name = dao.Name;
-        string State = dao.State;
-        int repeatEveryHours = (int)(dao.RepeatEverySeconds / 3600);
-        DateTimeOffset nextRunOffset = DateTimeOffset.FromUnixTimeSeconds(dao.NextRunUnixSeconds);
+        Guid id = profileDao.Id;
+        string Name = profileDao.Name;
+        string State = profileDao.State;
+        int repeatEveryHours = (int)(profileDao.RepeatEverySeconds / 3600);
+        DateTimeOffset nextRunOffset = DateTimeOffset.FromUnixTimeSeconds(
+            profileDao.NextRunUnixSeconds
+        );
         DateTime nextRun = nextRunOffset.UtcDateTime;
-        string[] links = InitializeLinksFromJson(dao.Links);
+        string[] links = InitializeLinksFromJson(profileDao.Links);
         return new ParserProfileResponse(id, Name, State, repeatEveryHours, nextRun, links);
+    }
+
+    public static ParserProfileResponse Create(ParserProfile profileDomain)
+    {
+        Guid id = profileDomain.Id.Value;
+        string name = profileDomain.Name.Value;
+        string state = profileDomain.State.State;
+        int repeatHours = (int)(profileDomain.Schedule.RepeatEveryUnixSeconds / 3600);
+        DateTimeOffset nextRunOffset = DateTimeOffset.FromUnixTimeSeconds(
+            profileDomain.Schedule.NextRunUnixSeconds
+        );
+        DateTime nextRun = nextRunOffset.UtcDateTime;
+        string[] links = [.. profileDomain.Links.Links.Select(l => l.Link)];
+        return new ParserProfileResponse(id, name, state, repeatHours, nextRun, links);
     }
 
     private static string[] InitializeLinksFromJson(string linksJson)

@@ -1,3 +1,3 @@
 ﻿namespace RemTech.Shared.SDK.CqrsPattern.Commands;
 
-public interface ICommand<TCommandResult>;
+public interface ICommand;

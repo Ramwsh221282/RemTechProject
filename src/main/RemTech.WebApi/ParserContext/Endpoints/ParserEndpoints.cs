@@ -3,11 +3,9 @@ using RemTech.Application.ParserContext.Dtos;
 using RemTech.Application.ParserContext.Features.AddParserProfile;
 using RemTech.Application.ParserContext.Features.RemoveParserProfile;
 using RemTech.Application.ParserContext.Features.UpdateParserProfile;
-using RemTech.Infrastructure.PostgreSql.ParserContext.Queries;
+using RemTech.Domain.ParserContext.Entities.ParserProfiles;
 using RemTech.Infrastructure.PostgreSql.ParserContext.Queries.GetAllParsers;
 using RemTech.Infrastructure.PostgreSql.ParserContext.Queries.GetByName;
-using RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses;
-using RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses.DaoModels;
 using RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses.ResponseModels;
 using RemTech.Shared.SDK.CqrsPattern.Commands;
 using RemTech.Shared.SDK.CqrsPattern.Queries;
@@ -35,13 +33,18 @@ public static class ParserEndpoints
     private static async Task<IResult> AddProfile(
         [FromRoute] string parserName,
         [FromRoute] string profileName,
-        [FromServices] ICommandHandler<AddParserProfileCommand, UnitResult<Guid>> handler,
+        [FromServices] ICommandHandler<AddParserProfileCommand, UnitResult<ParserProfile>> handler,
         CancellationToken ct
     )
     {
         AddParserProfileCommand command = new(parserName, profileName);
-        UnitResult<Guid> result = await handler.Handle(command, ct);
-        return result.AsEnvelope();
+        UnitResult<ParserProfile> result = await handler.Handle(command, ct);
+
+        if (result.IsFailure)
+            return result.AsEnvelope();
+
+        UnitResult<ParserProfileResponse> response = ParserProfileResponse.Create(result.Result!);
+        return response.AsEnvelope();
     }
 
     private static async Task<IResult> RemoveProfile(
@@ -53,6 +56,7 @@ public static class ParserEndpoints
     {
         RemoveParserProfileCommand command = new(parserName, profileName);
         UnitResult<Guid> result = await handler.Handle(command, ct);
+
         return result.AsEnvelope();
     }
 
@@ -66,6 +70,7 @@ public static class ParserEndpoints
     {
         UpdateParserProfileCommand command = new(parserName, profileName, updatedData);
         UnitResult<Guid> result = await handler.Handle(command, ct);
+
         return result.AsEnvelope();
     }
 
@@ -76,6 +81,7 @@ public static class ParserEndpoints
     {
         GetParserByNameQuery query = new(parserName);
         Option<ParserResponse> response = await handler.Handle(query);
+
         return response.AsEnvelope();
     }
 
@@ -85,6 +91,7 @@ public static class ParserEndpoints
     {
         GetAllParsersQuery query = new();
         ParserResponse[] response = await handler.Handle(query);
+
         return UnitResult<ParserResponse[]>.FromSuccess(response).AsEnvelope();
     }
 }

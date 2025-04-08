@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RemTech.Application.ParserContext.Contracts;
 using RemTech.Application.ParserContext.Features.AddParserProfile.Decorators;
-using RemTech.Shared.SDK.CqrsPattern.Commands;
+using RemTech.Domain.ParserContext.Entities.ParserProfiles;
 using RemTech.Shared.SDK.DependencyInjection;
-using RemTech.Shared.SDK.ResultPattern;
-using RemTech.Shared.SDK.Validators;
 using Serilog;
 
 namespace RemTech.Application.ParserContext.Features.AddParserProfile;
@@ -15,7 +13,7 @@ public static class AddParserProfileCommandInjection
     [InjectionMethod]
     public static void Inject(this IServiceCollection services)
     {
-        services.AddScoped<ICommandHandler<AddParserProfileCommand, UnitResult<Guid>>>(p =>
+        services.AddScoped<ICommandHandler<AddParserProfileCommand, UnitResult<ParserProfile>>>(p =>
         {
             IParserWriteRepository repository = p.GetRequiredService<IParserWriteRepository>();
             ILogger logger = p.GetRequiredService<ILogger>();

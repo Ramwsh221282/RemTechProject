@@ -10,16 +10,32 @@ namespace RemTech.Infrastructure.PostgreSql;
 
 public static class PostgreSqlDependencyInjection
 {
-    public static void InjectPostgres(this IServiceCollection services, string filePath)
+    public static void InjectPostgres(this IServiceCollection services)
     {
-        ConnectionString connectionString = ConnectionStringReader.CreateFromFile(filePath);
-        services.AddSingleton(connectionString);
-        services.AddScoped<ConnectionStringFactory>();
+        ServiceDescriptor? descriptor = services.FirstOrDefault(d =>
+            d.ServiceType == typeof(ConnectionString)
+        );
+
+        if (descriptor == null)
+            throw new ArgumentException(
+                "Строка подключения к БД не проинициализирована в сервисе."
+            );
+
+        ConnectionString connectionString = (ConnectionString)
+            descriptor.KeyedImplementationInstance!;
         services.AddDbContext<ApplicationDbContext>(builder =>
             builder.UseNpgsql(connectionString.Value)
         );
+
         services.InjectRepositories();
         InitializeDapperFluentMapping();
+    }
+
+    public static void InjectConnectionString(this IServiceCollection services, string filePath)
+    {
+        ConnectionString connectionString = ConnectionStringReader.CreateFromFile(filePath);
+        services.AddSingleton(connectionString);
+        services.AddSingleton<ConnectionStringFactory>();
     }
 
     private static void InjectRepositories(this IServiceCollection services)

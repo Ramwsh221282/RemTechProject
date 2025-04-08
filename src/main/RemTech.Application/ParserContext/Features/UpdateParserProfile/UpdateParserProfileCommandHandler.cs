@@ -3,9 +3,6 @@ using RemTech.Application.ParserContext.Dtos;
 using RemTech.Domain.ParserContext;
 using RemTech.Domain.ParserContext.Entities.ParserProfiles;
 using RemTech.Domain.ParserContext.Entities.ParserProfiles.ValueObjects;
-using RemTech.Shared.SDK.CqrsPattern.Commands;
-using RemTech.Shared.SDK.OptionPattern;
-using RemTech.Shared.SDK.ResultPattern;
 
 namespace RemTech.Application.ParserContext.Features.UpdateParserProfile;
 
@@ -19,7 +16,7 @@ public sealed class UpdateParserProfileCommandHandler(IParserWriteRepository rep
         CancellationToken ct = default
     )
     {
-        Option<Parser> parser = await _repository.GetByName(command.ParserName);
+        Option<Parser> parser = await _repository.GetByName(command.ParserName, ct);
         if (parser.HasValue == false)
             return UnitResult<Guid>.FromFailure(
                 new Error($"Не найден парсер с именем: {command.ParserName}"),
@@ -34,7 +31,7 @@ public sealed class UpdateParserProfileCommandHandler(IParserWriteRepository rep
             );
 
         UpdateParserProfileDto data = command.Data;
-        ParserProfileName? name = ToParserProfileName(data.ProfileName);
+        ParserProfileName? name = ToParserProfileName(data.ProfileName, profile.Value);
         ParserProfileState? state = ToParserProfileState(data.ProfileState);
         ParserProfileSchedule? schedule = ToParserProfileSchedule(data.Schedule);
         ParserProfileLinksCollection? links = ToParserProfileLinks(data.Links);
@@ -44,9 +41,11 @@ public sealed class UpdateParserProfileCommandHandler(IParserWriteRepository rep
         return profile.Value.Id.Value;
     }
 
-    private static ParserProfileName? ToParserProfileName(string? name)
+    private static ParserProfileName? ToParserProfileName(string? name, ParserProfile current)
     {
         if (name == null)
+            return null;
+        if (current.Name.Value == name)
             return null;
         return ParserProfileName.Create(name);
     }

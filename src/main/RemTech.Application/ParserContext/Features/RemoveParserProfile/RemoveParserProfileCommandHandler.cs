@@ -1,8 +1,5 @@
 ﻿using RemTech.Application.ParserContext.Contracts;
 using RemTech.Domain.ParserContext;
-using RemTech.Shared.SDK.CqrsPattern.Commands;
-using RemTech.Shared.SDK.OptionPattern;
-using RemTech.Shared.SDK.ResultPattern;
 
 namespace RemTech.Application.ParserContext.Features.RemoveParserProfile;
 

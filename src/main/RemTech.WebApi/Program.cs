@@ -16,7 +16,8 @@ builder.Services.AddCors(conf =>
 });
 
 builder.Services.AddOpenApi();
-builder.Services.InjectPostgres(Constants.PostgreSqlFilePath);
+builder.Services.InjectConnectionString(Constants.PostgreSqlFilePath);
+builder.Services.InjectPostgres();
 builder.Services.InjectMarkedServices();
 builder.Services.AddInitialParsersInDb();
 WebApplication app = builder.Build();

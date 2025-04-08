@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RemTech.Application.ParserContext.Contracts;
 using RemTech.Application.ParserContext.Features.UpdateParserProfile.Decorators;
-using RemTech.Shared.SDK.CqrsPattern.Commands;
 using RemTech.Shared.SDK.DependencyInjection;
-using RemTech.Shared.SDK.ResultPattern;
-using RemTech.Shared.SDK.Validators;
 using Serilog;
 
 namespace RemTech.Application.ParserContext.Features.UpdateParserProfile;
