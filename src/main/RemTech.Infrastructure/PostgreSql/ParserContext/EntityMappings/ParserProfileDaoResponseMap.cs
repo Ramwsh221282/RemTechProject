@@ -1,7 +1,7 @@
 ﻿using Dapper.FluentMap.Mapping;
-using RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses.DaoModels;
+using RemTech.Infrastructure.PostgreSql.ParserContext.DaoModels;
 
-namespace RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses.EntityMappings;
+namespace RemTech.Infrastructure.PostgreSql.ParserContext.EntityMappings;
 
 public sealed class ParserProfileDaoResponseMap : EntityMap<ParserProfileDao>
 {

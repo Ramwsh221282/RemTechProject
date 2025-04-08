@@ -23,11 +23,8 @@ public sealed record ParserProfileSchedule
             return new Error("Некорректное значение часа.");
 
         long repeatEveryUnixSeconds = hour * 3600;
-        long nextRunUnixSeconds = DateTimeOffset
-            .UtcNow.AddSeconds(repeatEveryUnixSeconds)
-            .ToUnixTimeSeconds();
 
-        return new ParserProfileSchedule(repeatEveryUnixSeconds, nextRunUnixSeconds);
+        return new ParserProfileSchedule(repeatEveryUnixSeconds, 0);
     }
 
     public static Result<ParserProfileSchedule> Create(

@@ -4,24 +4,20 @@ using SharedParsersLibrary.Contracts;
 namespace RemTech.Parser.Drom.Scraping.CatalogueScraping;
 
 public sealed class DromScrapeCatalogueHandler(
-    IServiceProvider provider,
-    DromCatalogueScrapingContext context
+    DromCatalogueScrapingContext context,
+    ConcreteAdvertisementScraperFactory factory
 ) : IScrapeAdvertisementsHandler
 {
     private readonly DromCatalogueScrapingContext _context = context;
-    private readonly IServiceProvider _provider = provider;
-    private const int MaxDegreeOfParallelism = 5;
+    private readonly ConcreteAdvertisementScraperFactory _factory = factory;
 
     public async Task Handle(ScrapeAdvertisementsCommand command)
     {
         _context.Dispose();
-        ParallelConcreteAdvertisementScraper concreteAdvertisementScraper = new(
-            "DROM",
-            MaxDegreeOfParallelism,
-            3,
-            _provider
-        );
+        ParallelConcreteAdvertisementScraper concreteAdvertisementScraper = _factory.Create();
+
         await concreteAdvertisementScraper.ExecuteScrape(_context.EnumerateAdvertisements());
+
         while (
             concreteAdvertisementScraper is { FailedResultsCount: > 0, IsReachedMaxCount: false }
         )

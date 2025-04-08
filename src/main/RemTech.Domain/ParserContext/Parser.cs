@@ -7,9 +7,9 @@ namespace RemTech.Domain.ParserContext;
 
 public sealed class Parser
 {
-    private readonly List<ParserProfile> _profiles;
+    private readonly List<ParserProfile> _profiles = [];
     public ParserId Id { get; }
-    public ParserName Name { get; }
+    public ParserName Name { get; } = null!;
     public IReadOnlyCollection<ParserProfile> Profiles => _profiles;
 
     private Parser() { } // ef core constructor.

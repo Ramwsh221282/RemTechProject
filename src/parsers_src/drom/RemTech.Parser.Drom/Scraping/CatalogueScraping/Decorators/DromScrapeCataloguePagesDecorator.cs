@@ -195,7 +195,7 @@ public sealed class DromScrapeCataloguePagesDecorator(
 
     private static string CreatePageUrl(string currentUrl, ref int pageNum)
     {
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder stringBuilder = new();
         stringBuilder.Append(currentUrl);
         stringBuilder.Append($"page{pageNum}/");
         return stringBuilder.ToString();

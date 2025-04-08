@@ -19,7 +19,7 @@ public sealed record ParserProfileLink
 
 public sealed record ParserProfileLinksCollection : IReadOnlyList<ParserProfileLink>
 {
-    private readonly List<ParserProfileLink> _links;
+    private readonly List<ParserProfileLink> _links = [];
     public IReadOnlyList<ParserProfileLink> Links => _links;
 
     private ParserProfileLinksCollection() { } // ef core

@@ -4,6 +4,7 @@ using RemTech.Application.ParserContext.Features.AddParserProfile;
 using RemTech.Application.ParserContext.Features.RemoveParserProfile;
 using RemTech.Application.ParserContext.Features.UpdateParserProfile;
 using RemTech.Domain.ParserContext.Entities.ParserProfiles;
+using RemTech.Infrastructure.PostgreSql.ParserContext.DaoModels;
 using RemTech.Infrastructure.PostgreSql.ParserContext.Queries.GetAllParsers;
 using RemTech.Infrastructure.PostgreSql.ParserContext.Queries.GetByName;
 using RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses.ResponseModels;
@@ -13,6 +14,7 @@ using RemTech.Shared.SDK.OptionPattern;
 using RemTech.Shared.SDK.ResultPattern;
 using RemTech.WebApi.Configuration.Endpoints;
 using RemTech.WebApi.Envelope;
+using RemTech.WebApi.ParserContext.Responses.ResponseModels;
 
 namespace RemTech.WebApi.ParserContext.Endpoints;
 
@@ -76,22 +78,26 @@ public static class ParserEndpoints
 
     private static async Task<IResult> GetParserByName(
         [FromRoute] string parserName,
-        [FromServices] IQueryHandler<GetParserByNameQuery, Option<ParserResponse>> handler
+        [FromServices] IQueryHandler<GetParserByNameQuery, Option<ParserDao>> handler
     )
     {
         GetParserByNameQuery query = new(parserName);
-        Option<ParserResponse> response = await handler.Handle(query);
+        Option<ParserDao> dao = await handler.Handle(query);
 
-        return response.AsEnvelope();
+        return dao.HasValue == false
+            ? UnitResult<ParserResponse>.FromSuccess(null!).AsEnvelope()
+            : UnitResult<ParserResponse>.FromSuccess(ParserResponse.Create(dao.Value)).AsEnvelope();
     }
 
     private static async Task<IResult> GetAllParsers(
-        [FromServices] IQueryHandler<GetAllParsersQuery, ParserResponse[]> handler
+        [FromServices] IQueryHandler<GetAllParsersQuery, ParserDao[]> handler
     )
     {
         GetAllParsersQuery query = new();
-        ParserResponse[] response = await handler.Handle(query);
+        ParserDao[] daos = await handler.Handle(query);
 
-        return UnitResult<ParserResponse[]>.FromSuccess(response).AsEnvelope();
+        return UnitResult<IEnumerable<ParserResponse>>
+            .FromSuccess(daos.Select(ParserResponse.Create))
+            .AsEnvelope();
     }
 }

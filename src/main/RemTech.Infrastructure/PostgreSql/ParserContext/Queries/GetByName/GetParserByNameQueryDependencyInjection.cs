@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses.ResponseModels;
+using RemTech.Infrastructure.PostgreSql.ParserContext.DaoModels;
 using RemTech.Shared.SDK.CqrsPattern.Queries;
 using RemTech.Shared.SDK.DependencyInjection;
 using RemTech.Shared.SDK.OptionPattern;
@@ -13,7 +13,7 @@ public static class GetParserByNameQueryDependencyInjection
     public static void Inject(this IServiceCollection services)
     {
         services.AddScoped<
-            IQueryHandler<GetParserByNameQuery, Option<ParserResponse>>,
+            IQueryHandler<GetParserByNameQuery, Option<ParserDao>>,
             GetParserByNameQueryHandler
         >();
     }

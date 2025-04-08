@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="AdvertisementsContext\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\..\shared\RemTech.Shared.SDK\RemTech.Shared.SDK.csproj" />
     </ItemGroup>
 

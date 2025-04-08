@@ -1,4 +1,4 @@
-﻿namespace RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses.DaoModels;
+﻿namespace RemTech.Infrastructure.PostgreSql.ParserContext.DaoModels;
 
 public sealed class ParserDao
 {

@@ -7,11 +7,11 @@ public sealed class ParserProfile
 {
     public ParserProfileId Id { get; }
     public ParserId ParserId { get; private set; }
-    public Parser Parser { get; private set; }
-    public ParserProfileName Name { get; private set; }
-    public ParserProfileSchedule Schedule { get; private set; }
-    public ParserProfileState State { get; private set; }
-    public ParserProfileLinksCollection Links { get; private set; }
+    public Parser Parser { get; private set; } = null!;
+    public ParserProfileName Name { get; private set; } = null!;
+    public ParserProfileSchedule Schedule { get; private set; } = null!;
+    public ParserProfileState State { get; private set; } = null!;
+    public ParserProfileLinksCollection Links { get; private set; } = null!;
 
     private ParserProfile() { } // ef core
 

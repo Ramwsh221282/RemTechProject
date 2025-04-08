@@ -1,46 +1,117 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses.ResponseModels;
-using RemTech.Shared.SDK.ResultPattern;
+﻿using RemTech.Domain.ParserContext.Entities.ParserProfiles.ValueObjects;
+using RemTech.Infrastructure.PostgreSql.ParserContext.DaoModels;
+using RemTech.Shared.SDK.OptionPattern;
 using Serilog;
 using SharedParsersLibrary.Contracts;
+using SharedParsersLibrary.DatabaseSinking;
 
 namespace SharedParsersLibrary.Models;
 
-public sealed class ParserProcess(ILogger logger, IServiceProvider provider)
+public sealed class ParserProcess(
+    ILogger logger,
+    string parserName,
+    ParserManagementFacade parserFacade,
+    IScrapeAdvertisementHandlerFactory factory
+)
 {
     private readonly ILogger _logger = logger;
-    private readonly IServiceProvider _provider = provider;
-    public string ParserName { get; set; } = string.Empty;
+    private readonly ParserManagementFacade _parserFacade = parserFacade;
+    private readonly IScrapeAdvertisementHandlerFactory _factory = factory;
+    private readonly string _parserName = parserName;
 
     public async Task Invoke(CancellationToken ct = default)
     {
         _logger.Information("{Context} requesting parser configuration...", nameof(ParserProcess));
-        // TODO Request parser configuration.
-    }
-
-    private async Task InvokeScraping(ParserResponse parser)
-    {
-        string[] links = [.. parser.Profiles.SelectMany(p => p.Links)];
-
-        foreach (string link in links)
+        Option<ParserDao> parserOption = await _parserFacade.GetParser(_parserName);
+        if (parserOption.HasValue == false)
         {
-            ScrapeAdvertisementsCommand command = new(link);
+            _logger.Warning(
+                "{Context} parser context {Name} was not found.",
+                nameof(ParserProcess),
+                _parserName
+            );
+            return;
+        }
 
-            IScrapeAdvertisementsHandler handler =
-                _provider.GetRequiredService<IScrapeAdvertisementsHandler>();
+        ParserDao response = parserOption.Value;
+        List<ParserProfileDao> profiles = response.Profiles;
+        foreach (ParserProfileDao profile in profiles)
+        {
+            if (!IsProfileNextRunDateNow(profile))
+            {
+                _logger.Warning(
+                    "{Context} profile {Name} time to run is not now yet.",
+                    nameof(ParserProcess),
+                    profile.Name
+                );
+                continue;
+            }
 
-            await handler.Handle(command);
+            string[] links = profile.GetDeserializedLinksArray();
+
+            if (links.Length == 0)
+            {
+                _logger.Warning(
+                    "{Context} profile {Name} has no links set.",
+                    nameof(ParserProcess),
+                    profile.Name
+                );
+                continue;
+            }
+
+            if (IsProfileDisabled(profile))
+            {
+                _logger.Warning(
+                    "{Context} profile {Name} is disabled.",
+                    nameof(ParserProcess),
+                    profile.Name
+                );
+                continue;
+            }
+
+            await ProcessProfile(profile, links);
         }
     }
 
-    private async Task SleepForMinute()
+    private static bool IsProfileNextRunDateNow(ParserProfileDao profile)
     {
-        // TODO perform SQL query to request a parser with given ParserName.
+        long seconds = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        return seconds >= profile.NextRunUnixSeconds;
     }
 
-    private async Task<Result<ParserResponse>> RequestParser()
+    private static bool IsProfileDisabled(ParserProfileDao profile)
     {
-        // TODO perform SQL query to request a parser with given ParserName.
-        throw new NotImplementedException();
+        return profile.State == ParserProfileState.Disabled.State;
+    }
+
+    private async Task ProcessProfile(ParserProfileDao profile, string[] links)
+    {
+        foreach (string link in links)
+        {
+            ScrapeAdvertisementsCommand command = new(link);
+            IScrapeAdvertisementsHandler handler = _factory.Create();
+            await _parserFacade.MakeWorking(profile);
+
+            try
+            {
+                await handler.Handle(command);
+                _logger.Information(
+                    "{Context} scraped link: {Link}. Success",
+                    nameof(ParserProcess),
+                    link
+                );
+                await _parserFacade.MakeSleeping(profile);
+            }
+            catch (Exception ex)
+            {
+                _logger.Fatal(
+                    "{Context} scraped link: {Link}. Exception: {Ex}",
+                    nameof(ParserProcess),
+                    link,
+                    ex.Message
+                );
+                await _parserFacade.MakeSleeping(profile);
+            }
+        }
     }
 }

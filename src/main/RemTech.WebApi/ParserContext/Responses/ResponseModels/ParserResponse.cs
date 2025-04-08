@@ -1,4 +1,5 @@
-﻿using RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses.DaoModels;
+﻿using RemTech.Infrastructure.PostgreSql.ParserContext.DaoModels;
+using RemTech.WebApi.ParserContext.Responses.ResponseModels;
 
 namespace RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses.ResponseModels;
 

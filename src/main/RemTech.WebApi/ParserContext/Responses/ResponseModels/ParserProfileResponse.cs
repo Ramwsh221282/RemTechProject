@@ -1,8 +1,7 @@
-﻿using System.Text.Json;
-using RemTech.Domain.ParserContext.Entities.ParserProfiles;
-using RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses.DaoModels;
+﻿using RemTech.Domain.ParserContext.Entities.ParserProfiles;
+using RemTech.Infrastructure.PostgreSql.ParserContext.DaoModels;
 
-namespace RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses.ResponseModels;
+namespace RemTech.WebApi.ParserContext.Responses.ResponseModels;
 
 public sealed record ParserProfileResponse(
     Guid Id,
@@ -23,7 +22,7 @@ public sealed record ParserProfileResponse(
             profileDao.NextRunUnixSeconds
         );
         DateTime nextRun = nextRunOffset.UtcDateTime;
-        string[] links = InitializeLinksFromJson(profileDao.Links);
+        string[] links = profileDao.GetDeserializedLinksArray();
         return new ParserProfileResponse(id, Name, State, repeatEveryHours, nextRun, links);
     }
 
@@ -39,16 +38,5 @@ public sealed record ParserProfileResponse(
         DateTime nextRun = nextRunOffset.UtcDateTime;
         string[] links = [.. profileDomain.Links.Links.Select(l => l.Link)];
         return new ParserProfileResponse(id, name, state, repeatHours, nextRun, links);
-    }
-
-    private static string[] InitializeLinksFromJson(string linksJson)
-    {
-        using JsonDocument document = JsonDocument.Parse(linksJson);
-        JsonElement linkArray = document.RootElement.GetProperty("Links");
-        string[] links =
-        [
-            .. linkArray.EnumerateArray().Select(item => item.GetProperty("Link").GetString()!),
-        ];
-        return links.ToArray();
     }
 }

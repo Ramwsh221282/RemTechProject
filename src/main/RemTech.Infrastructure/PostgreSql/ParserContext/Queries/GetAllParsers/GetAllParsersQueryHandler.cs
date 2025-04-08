@@ -1,14 +1,13 @@
 ﻿using System.Data;
 using Dapper;
 using RemTech.Infrastructure.PostgreSql.Configuration;
-using RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses.DaoModels;
-using RemTech.Infrastructure.PostgreSql.ParserContext.Queries.Responses.ResponseModels;
+using RemTech.Infrastructure.PostgreSql.ParserContext.DaoModels;
 using RemTech.Shared.SDK.CqrsPattern.Queries;
 
 namespace RemTech.Infrastructure.PostgreSql.ParserContext.Queries.GetAllParsers;
 
 public sealed class GetAllParsersQueryHandler(ConnectionStringFactory factory)
-    : IQueryHandler<GetAllParsersQuery, ParserResponse[]>
+    : IQueryHandler<GetAllParsersQuery, ParserDao[]>
 {
     private const string Sql = """
             SELECT 
@@ -29,10 +28,7 @@ public sealed class GetAllParsersQueryHandler(ConnectionStringFactory factory)
 
     private readonly ConnectionStringFactory _factory = factory;
 
-    public async Task<ParserResponse[]> Handle(
-        GetAllParsersQuery query,
-        CancellationToken ct = default
-    )
+    public async Task<ParserDao[]> Handle(GetAllParsersQuery query, CancellationToken ct = default)
     {
         Dictionary<Guid, ParserDao> daos = [];
         using IDbConnection connection = _factory.Create();
@@ -61,6 +57,6 @@ public sealed class GetAllParsersQueryHandler(ConnectionStringFactory factory)
             },
             splitOn: "id"
         );
-        return daos.Count == 0 ? [] : [.. daos.Values.Select(ParserResponse.Create)];
+        return daos.Count == 0 ? [] : daos.Values.ToArray();
     }
 }
