@@ -17,6 +17,6 @@ public sealed class HasAdvertisementQuery(ConnectionStringFactory factory)
             Sql,
             new { id = advertisement.Id.Value }
         );
-        return count == 0;
+        return count != 0;
     }
 }

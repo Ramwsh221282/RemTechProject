@@ -15,10 +15,13 @@ public sealed class ScrapeConcreteAdvertisementHandler(ScrapeConcreteAdvertiseme
     {
         if (!_context.ScriptElement.HasValue)
             return Option<ScrapedAdvertisement>.None();
+
         DromScrapedJsonAttributesInitializer initializer = new(_context.ScriptElement.Value);
         ScrapedAdvertisement fromCatalogue = command.Advertisement;
+
         fromCatalogue = initializer.Set(fromCatalogue);
         fromCatalogue = fromCatalogue with { PriceExtra = _context.PriceExtra };
+
         _context.DisposeDocument();
         return await Task.FromResult(fromCatalogue);
     }

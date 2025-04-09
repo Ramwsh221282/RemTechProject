@@ -35,6 +35,17 @@ public sealed class ParserProcess(
 
         ParserDao response = parserOption.Value;
         List<ParserProfileDao> profiles = response.Profiles;
+
+        if (profiles.Count == 0)
+        {
+            _logger.Warning(
+                "{Context} parser {Name} has no profiles yet.",
+                nameof(ParserProcess),
+                response.Name
+            );
+            return;
+        }
+
         foreach (ParserProfileDao profile in profiles)
         {
             if (!IsProfileNextRunDateNow(profile))

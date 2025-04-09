@@ -118,7 +118,7 @@ public sealed class ParallelConcreteAdvertisementScraper(
             return;
         }
 
-        if (!await facade.HasAdvertisement(domainModel))
+        if (await facade.HasAdvertisement(domainModel))
         {
             logger.Information("Advertisement with id: {Id} already exists.", advertisement.Id);
             return;

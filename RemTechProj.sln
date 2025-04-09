@@ -31,6 +31,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "avito", "avito", "{961ACB3F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTech.Parser.Drom", "src\parsers_src\drom\RemTech.Parser.Drom\RemTech.Parser.Drom.csproj", "{566DE016-AA99-417E-9D33-9EA1E8232510}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemTech.Parser.Avito", "src\parsers_src\avito\RemTech.Parser.Avito\RemTech.Parser.Avito.csproj", "{2A828F18-45AC-400B-819D-F2A0A46046AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +127,18 @@ Global
 		{566DE016-AA99-417E-9D33-9EA1E8232510}.Release|x64.Build.0 = Release|Any CPU
 		{566DE016-AA99-417E-9D33-9EA1E8232510}.Release|x86.ActiveCfg = Release|Any CPU
 		{566DE016-AA99-417E-9D33-9EA1E8232510}.Release|x86.Build.0 = Release|Any CPU
+		{2A828F18-45AC-400B-819D-F2A0A46046AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A828F18-45AC-400B-819D-F2A0A46046AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A828F18-45AC-400B-819D-F2A0A46046AF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2A828F18-45AC-400B-819D-F2A0A46046AF}.Debug|x64.Build.0 = Debug|Any CPU
+		{2A828F18-45AC-400B-819D-F2A0A46046AF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2A828F18-45AC-400B-819D-F2A0A46046AF}.Debug|x86.Build.0 = Debug|Any CPU
+		{2A828F18-45AC-400B-819D-F2A0A46046AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A828F18-45AC-400B-819D-F2A0A46046AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A828F18-45AC-400B-819D-F2A0A46046AF}.Release|x64.ActiveCfg = Release|Any CPU
+		{2A828F18-45AC-400B-819D-F2A0A46046AF}.Release|x64.Build.0 = Release|Any CPU
+		{2A828F18-45AC-400B-819D-F2A0A46046AF}.Release|x86.ActiveCfg = Release|Any CPU
+		{2A828F18-45AC-400B-819D-F2A0A46046AF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,5 +156,6 @@ Global
 		{2DD02FE9-C598-40FD-B5C1-1611A10BA8D9} = {0C833911-23D5-4C7C-B6F6-9629D99533C0}
 		{961ACB3F-EDD4-4AE8-9789-07B7EF3AACF5} = {0C833911-23D5-4C7C-B6F6-9629D99533C0}
 		{566DE016-AA99-417E-9D33-9EA1E8232510} = {2DD02FE9-C598-40FD-B5C1-1611A10BA8D9}
+		{2A828F18-45AC-400B-819D-F2A0A46046AF} = {961ACB3F-EDD4-4AE8-9789-07B7EF3AACF5}
 	EndGlobalSection
 EndGlobal

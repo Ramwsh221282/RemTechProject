@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace RemTech.Shared.SDK.Utils;
 
@@ -15,6 +16,18 @@ public static partial class StringUtils
                 .CleanFromExtraSpaces()
                 .CleanFromNewLines()
                 .CleanFromExtraSpaces();
+
+    public static int GetIntegerFromString(this string input)
+    {
+        StringBuilder integers = new();
+
+        foreach (char t in input.Where(char.IsDigit))
+        {
+            integers.Append(t);
+        }
+
+        return int.Parse(integers.ToString());
+    }
 
     public static int GetWordsCount(this string? input) =>
         string.IsNullOrWhiteSpace(input) ? 0 : input.Count(c => c == ' ') + 1;
