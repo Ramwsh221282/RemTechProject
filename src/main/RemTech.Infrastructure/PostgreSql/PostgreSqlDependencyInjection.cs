@@ -50,6 +50,7 @@ public static class PostgreSqlDependencyInjection
             config.AddMap(new ParserDaoResponseMap());
             config.AddMap(new ParserProfileDaoResponseMap());
             config.AddMap(new TransportCharacteristicEntityMap());
+            config.AddMap(new AdvertisementEntityMap());
         });
     }
 }

@@ -27,4 +27,6 @@ public static class ArrayUtils
         duplicate = default;
         return true;
     }
+
+    public static bool IsEmpty<T>(this T[] array) => array.Length == 0;
 }

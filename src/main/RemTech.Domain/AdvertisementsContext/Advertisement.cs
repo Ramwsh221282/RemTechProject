@@ -10,6 +10,7 @@ public sealed class Advertisement
     public AdvertisementScraperInformation Scraper { get; private set; } = null!;
     public AdvertisementPhotoCollection Photos { get; private set; } = null!;
     public AdvertisementCharacteristicsCollection Characteristics { get; private set; } = null!;
+    public AdvertisementAddress Address { get; private set; } = null!;
 
     private Advertisement()
     {
@@ -22,7 +23,8 @@ public sealed class Advertisement
         AdvertisementPriceInformation price,
         AdvertisementScraperInformation scraper,
         AdvertisementPhotoCollection photos,
-        AdvertisementCharacteristicsCollection characteristics
+        AdvertisementCharacteristicsCollection characteristics,
+        AdvertisementAddress address
     )
     {
         Id = id;
@@ -31,5 +33,6 @@ public sealed class Advertisement
         Scraper = scraper;
         Photos = photos;
         Characteristics = characteristics;
+        Address = address;
     }
 }

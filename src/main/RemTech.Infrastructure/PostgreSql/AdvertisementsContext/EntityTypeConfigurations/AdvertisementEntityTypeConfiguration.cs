@@ -17,6 +17,12 @@ public sealed class AdvertisementEntityTypeConfiguration : IEntityTypeConfigurat
             .HasColumnName("id")
             .HasConversion(toDb => toDb.Value, fromDb => AdvertisementId.Dedicated(fromDb).Value);
 
+        builder
+            .Property(ad => ad.Address)
+            .HasConversion(toDb => toDb.Value, fromDb => AdvertisementAddress.Create(fromDb).Value)
+            .HasColumnName("address")
+            .HasMaxLength(AdvertisementAddress.MAX_ADDRESS_LENGTH);
+
         builder.ComplexProperty(
             ad => ad.Text,
             cpb =>

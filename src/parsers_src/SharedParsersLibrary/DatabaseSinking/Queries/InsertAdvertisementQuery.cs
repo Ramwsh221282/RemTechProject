@@ -11,8 +11,8 @@ public sealed class InsertAdvertisementQuery(ConnectionStringFactory factory)
 {
     private const string Sql = """
         INSERT 
-        INTO advertisements (id, price_extra, price_value, published_by, scraper_name, source_url, description, title, characteristics, photos)
-        VALUES (@id, @price_extra, @price_value, @published_by, @scraper_name, @source_url, @description, @title, @characteristics, @photos)
+        INTO advertisements (id, address, price_extra, price_value, published_by, scraper_name, source_url, description, title, characteristics, photos)
+        VALUES (@id, @address, @price_extra, @price_value, @published_by, @scraper_name, @source_url, @description, @title, @characteristics, @photos)
         """;
     private readonly ConnectionStringFactory _factory = factory;
 
@@ -26,6 +26,7 @@ public sealed class InsertAdvertisementQuery(ConnectionStringFactory factory)
         string sourceUrl = advertisement.Scraper.SourceUrl;
         string description = advertisement.Text.Description;
         string title = advertisement.Text.Title;
+        string address = advertisement.Address.Value;
         AdvertisementCharacteristicsCollection ctxCol = advertisement.Characteristics;
         AdvertisementPhotoCollection photoCol = advertisement.Photos;
         JsonBTypeParameter<AdvertisementCharacteristicsCollection> ctxJsonb = new(ctxCol);
@@ -37,6 +38,7 @@ public sealed class InsertAdvertisementQuery(ConnectionStringFactory factory)
             new
             {
                 id = id,
+                address = address,
                 price_extra = priceExtra,
                 price_value = priceValue,
                 published_by = publishedBy,

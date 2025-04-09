@@ -74,7 +74,11 @@ public static class ScrapedAdvertisementExtensions
         if (ctx.IsFailure)
             return ctx.Error;
 
-        return new Advertisement(id, text, price, scraper, photos, ctx);
+        Result<AdvertisementAddress> address = AdvertisementAddress.Create(advertisement.Address);
+        if (address.IsFailure)
+            return address.Error;
+
+        return new Advertisement(id, text, price, scraper, photos, ctx, address);
     }
 
     private static Result<AdvertisementPhotoCollection> GetPhotos(

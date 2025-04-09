@@ -22,11 +22,17 @@ public sealed record AdvertisementPhotoCollection : IReadOnlyList<AdvertisementP
         IEnumerable<AdvertisementPhoto> photos
     )
     {
-        AdvertisementPhoto[] array = photos.ToArray();
+        AdvertisementPhoto[] array = [.. photos];
+
+        if (array.IsEmpty())
+        {
+            string message = "Фотографии список фотографий пуст.";
+            return new Error(message);
+        }
 
         if (!array.AreAllUnique(DuplicateCheck, out AdvertisementPhoto? _))
         {
-            string message = "В объявлении есть дубль ссылки на фотографию";
+            string message = "В объявлении есть дублирование ссылки на фотографию.";
             return new Error(message);
         }
 
