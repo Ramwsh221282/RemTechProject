@@ -1,4 +1,4 @@
-﻿namespace RemTech.Infrastructure.PostgreSql.AdvertisementsContext.Queries.GetAdvertisements.Specification;
+﻿namespace RemTech.Infrastructure.PostgreSql.Shared;
 
 public interface ISpecificationBuilder
 {

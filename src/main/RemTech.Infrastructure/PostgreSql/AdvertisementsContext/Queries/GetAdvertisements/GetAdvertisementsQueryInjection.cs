@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RemTech.Infrastructure.PostgreSql.AdvertisementsContext.DaoModels;
+using RemTech.Infrastructure.PostgreSql.Shared;
 using RemTech.Shared.SDK.CqrsPattern.Queries;
 using RemTech.Shared.SDK.DependencyInjection;
 
@@ -12,7 +13,7 @@ public static class GetAdvertisementsQueryInjection
     public static void Inject(this IServiceCollection services)
     {
         services.AddScoped<
-            IQueryHandler<GetAdvertisementsQuery, AdvertisementDao[]>,
+            IQueryHandler<GetAdvertisementsQuery, PaginatedDaoResponse<AdvertisementDao>>,
             GetAdvertisementsQueryHandler
         >();
     }

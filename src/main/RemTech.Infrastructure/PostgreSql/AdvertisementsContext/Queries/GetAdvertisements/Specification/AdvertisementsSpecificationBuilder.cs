@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Dapper;
+using RemTech.Infrastructure.PostgreSql.Shared;
 using RemTech.Shared.SDK.CqrsPattern.Queries;
-using RemTech.Shared.SDK.Utils;
 
 namespace RemTech.Infrastructure.PostgreSql.AdvertisementsContext.Queries.GetAdvertisements.Specification;
 
@@ -33,10 +33,14 @@ public sealed class AdvertisementsSpecificationBuilder<TQuery>
     )
     {
         string name = option.Name;
-        string value = option.Value.CleanString();
+        string value = option.Value;
 
         _queryBuilder.AppendLine(
-            " AND EXISTS (SELECT 1 FROM jsonb_array_elements(characteristics) AS elem WHERE elem->>'Name' = @name AND elem->>'Value' ILIKE CONCAT('%', @value, '%')) "
+            """
+             AND EXISTS
+             (SELECT 1 FROM jsonb_array_elements(characteristics) as elem
+             WHERE elem->>'Name' = @name AND elem->>'Value' ILIKE CONCAT('%', @value, '%'))
+            """
         );
 
         _parameters.Add("@name", name);

@@ -32,19 +32,19 @@ public static partial class StringUtils
     public static int GetWordsCount(this string? input) =>
         string.IsNullOrWhiteSpace(input) ? 0 : input.Count(c => c == ' ') + 1;
 
-    private static string CleanFromPunctuation(this string input)
+    public static string CleanFromPunctuation(this string input)
     {
         string withoutPunctuation = PunctuationCleanRegex().Replace(input, " ");
         return withoutPunctuation;
     }
 
-    private static string CleanFromExtraSpaces(this string input)
+    public static string CleanFromExtraSpaces(this string input)
     {
         string withoutExtraSpaces = ExtraSpacesCleanRegex().Replace(input, " ").Trim();
         return withoutExtraSpaces;
     }
 
-    private static string CleanFromNewLines(this string input)
+    public static string CleanFromNewLines(this string input)
     {
         string withoutNewLines = NewLineCleanRegex().Replace(input, " ").ReplaceLineEndings();
         return withoutNewLines;

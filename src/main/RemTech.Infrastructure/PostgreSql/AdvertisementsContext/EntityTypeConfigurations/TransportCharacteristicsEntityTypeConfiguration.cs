@@ -19,10 +19,5 @@ public sealed class TransportCharacteristicsEntityTypeConfiguration
             .Property(c => c.Name)
             .HasMaxLength(AdvertisementCharacteristic.MAX_CHARACTERISTIC_LENGTH)
             .HasColumnName("name");
-
-        builder
-            .Property(c => c.Value)
-            .HasMaxLength(AdvertisementCharacteristic.MAX_CHARACTERISTIC_LENGTH)
-            .HasColumnName("value");
     }
 }

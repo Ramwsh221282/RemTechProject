@@ -2,6 +2,8 @@
 using RemTech.Infrastructure.PostgreSql.AdvertisementsContext.DaoModels;
 using RemTech.Infrastructure.PostgreSql.AdvertisementsContext.Queries.GetAdvertisementById;
 using RemTech.Infrastructure.PostgreSql.AdvertisementsContext.Queries.GetAdvertisements;
+using RemTech.Infrastructure.PostgreSql.AdvertisementsContext.Queries.GetCharacteristics;
+using RemTech.Infrastructure.PostgreSql.Shared;
 using RemTech.Shared.SDK.CqrsPattern.Queries;
 using RemTech.Shared.SDK.OptionPattern;
 using RemTech.Shared.SDK.ResultPattern;
@@ -20,6 +22,7 @@ public static class AdvertisementEndpoints
         RouteGroupBuilder group = app.MapGroup("api/advertisements").RequireCors("frontend");
         group.MapGet("{id:long}", GetById);
         group.MapPost(string.Empty, GetCustomized);
+        group.MapGet("characteristics", GetCharacteristics);
     }
 
     private static async Task<IResult> GetById(
@@ -46,18 +49,31 @@ public static class AdvertisementEndpoints
         [FromQuery] int pageSize,
         [FromQuery] string? sort,
         [FromBody] GetAdvertisementsQueryDto? filterData,
-        [FromServices] IQueryHandler<GetAdvertisementsQuery, AdvertisementDao[]> handler,
+        [FromServices]
+            IQueryHandler<GetAdvertisementsQuery, PaginatedDaoResponse<AdvertisementDao>> handler,
         CancellationToken ct
     )
     {
-        PaginationOption pagination = new(page, pageSize);
-        SortMode? sortMode = sort == null ? null : new SortMode(sort);
+        PaginationOptions pagination = new(page, pageSize);
+        SortOptions? sortMode = sort == null ? null : new SortOptions(sort);
         FilterOptions? filter = filterData?.Filter;
 
         GetAdvertisementsQuery query = new(pagination, filter, sortMode);
+        PaginatedDaoResponse<AdvertisementDao> response = await handler.Handle(query, ct);
+        AdvertisementPaginatedResponse result = AdvertisementPaginatedResponse.Create(response);
 
-        AdvertisementDao[] items = await handler.Handle(query, ct);
+        return UnitResult<AdvertisementPaginatedResponse>.FromSuccess(result).AsEnvelope();
+    }
 
-        return UnitResult<AdvertisementDao[]>.FromSuccess(items).AsEnvelope();
+    private static async Task<IResult> GetCharacteristics(
+        [FromServices] IQueryHandler<GetCharacteristicsQuery, TransportCharacteristicDao[]> handler,
+        CancellationToken ct
+    )
+    {
+        GetCharacteristicsQuery query = new();
+        TransportCharacteristicDao[] data = await handler.Handle(query, ct);
+
+        TransportCharacteristicResponse[] response = [.. data.Select(d => d.ToResponse())];
+        return UnitResult<TransportCharacteristicResponse[]>.FromSuccess(response).AsEnvelope();
     }
 }

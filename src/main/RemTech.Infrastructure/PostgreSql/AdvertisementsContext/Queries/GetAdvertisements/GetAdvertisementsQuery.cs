@@ -1,16 +1,15 @@
-﻿using RemTech.Shared.SDK.CqrsPattern.Queries;
+﻿using RemTech.Infrastructure.PostgreSql.Shared;
+using RemTech.Shared.SDK.CqrsPattern.Queries;
 
 namespace RemTech.Infrastructure.PostgreSql.AdvertisementsContext.Queries.GetAdvertisements;
 
 public sealed record GetAdvertisementsQueryDto(FilterOptions? Filter);
 
 public sealed record GetAdvertisementsQuery(
-    PaginationOption Pagination,
+    PaginationOptions Pagination,
     FilterOptions? Filter,
-    SortMode? Sort
+    SortOptions? Sort
 ) : IQuery;
-
-public sealed record PaginationOption(int Page, int PageSize);
 
 public sealed record FilterOptions(
     PriceFilter? PriceFilter,
@@ -22,10 +21,6 @@ public sealed record FilterOptions(
 public sealed record PriceFilter(long? PriceFrom, long? PriceTo);
 
 public sealed record AddressFilter(string Address);
-
-public sealed record TextFilter(string Text);
-
-public sealed record SortMode(string Mode);
 
 public sealed record CharacteristicsFilter(CharacteristicOption[] Characteristics);
 

@@ -56,7 +56,7 @@ public sealed class ParallelConcreteAdvertisementScraper(
                             return result;
                         }
 
-                        _failedResults.TryRemove(advertisement.Id, out ScrapedAdvertisement _);
+                        _failedResults.TryRemove(advertisement.Id, out ScrapedAdvertisement? _);
                         return result;
                     }
                     catch (Exception ex)

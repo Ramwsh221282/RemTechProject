@@ -1,73 +1,173 @@
 ﻿using System.Data;
+using System.Text;
 using Dapper;
 using RemTech.Infrastructure.PostgreSql.AdvertisementsContext.DaoModels;
-using RemTech.Infrastructure.PostgreSql.AdvertisementsContext.Queries.GetAdvertisements.Specification;
 using RemTech.Infrastructure.PostgreSql.Configuration;
+using RemTech.Infrastructure.PostgreSql.Shared;
 using RemTech.Shared.SDK.CqrsPattern.Queries;
+using RemTech.Shared.SDK.Utils;
 
 namespace RemTech.Infrastructure.PostgreSql.AdvertisementsContext.Queries.GetAdvertisements;
 
 public sealed class GetAdvertisementsQueryHandler(ConnectionStringFactory factory)
-    : IQueryHandler<GetAdvertisementsQuery, AdvertisementDao[]>
+    : IQueryHandler<GetAdvertisementsQuery, PaginatedDaoResponse<AdvertisementDao>>
 {
-    private const string Sql = "SELECT * FROM advertisements WHERE 1=1 ";
-
     private readonly ConnectionStringFactory _factory = factory;
 
-    public async Task<AdvertisementDao[]> Handle(
+    public async Task<PaginatedDaoResponse<AdvertisementDao>> Handle(
         GetAdvertisementsQuery query,
         CancellationToken ct = default
     )
     {
-        GenericSpecificationBuilder<GetAdvertisementsQuery> builder = new(Sql, query);
+        SortOptions? sorting = query.Sort;
+        FilterOptions? filter = query.Filter;
+        PaginationOptions pagination = query.Pagination;
 
-        builder = builder
-            .AppendFilterIf(
-                "AND price_value >= @price_from",
-                q => q.Filter?.PriceFilter is { PriceFrom: not null },
-                q => q.Filter!.PriceFilter!.PriceFrom
-            )
-            .AppendFilterIf(
-                "AND price_value <= @price_to",
-                q => q.Filter?.PriceFilter is { PriceTo: not null },
-                q => q.Filter!.PriceFilter!.PriceTo
-            )
-            .AppendFilterIf(
-                "AND address ~ @address",
-                q => q.Filter?.AddressFilter != null,
-                q => q.Filter!.AddressFilter!.Address
-            )
-            .AppendTextSearchIf(
-                q =>
-                    q.Filter?.TextFilter != null
-                    && !string.IsNullOrWhiteSpace(q.Filter.TextFilter.Text),
-                q => q.Filter!.TextFilter!.Text,
-                ["title", "description"]
-            );
+        StringBuilder dataQueryBuilder = new("SELECT * FROM advertisements WHERE 1=1 ");
+        StringBuilder countQueryBuilder = new("SELECT COUNT(*) FROM advertisements WHERE 1=1 ");
+        DynamicParameters dataParameters = new();
+        DynamicParameters countParameters = new();
 
-        AdvertisementsSpecificationBuilder<GetAdvertisementsQuery> adapted = builder.AdaptTo(
-            AdvertisementsSpecificationBuilder<GetAdvertisementsQuery>.AdaptFactory
-        );
-
-        CharacteristicsFilter? ctxFilter = query.Filter?.CharacteristicsFilter;
-        if (ctxFilter != null)
+        if (filter != null)
         {
-            adapted = ctxFilter.Characteristics.Aggregate(
-                adapted,
-                (current, option) => current.AddCharacteristicsTextSearch(option)
-            );
+            if (filter.PriceFilter != null)
+            {
+                PriceFilter price = filter.PriceFilter;
+                if (price.PriceFrom != null)
+                {
+                    dataQueryBuilder.Append(" AND price_value >= @price_from");
+                    countQueryBuilder.Append(" AND price_value >= @price_from");
+                    dataParameters.Add("price_from", price.PriceFrom);
+                    countParameters.Add("price_from", price.PriceFrom);
+                }
+                if (price.PriceTo != null)
+                {
+                    dataQueryBuilder.Append(" AND price_value <= @price_to");
+                    countQueryBuilder.Append(" AND price_value <= @price_to");
+                    dataParameters.Add("price_to", price.PriceTo);
+                    countParameters.Add("price_to", price.PriceTo);
+                }
+            }
+            if (filter.AddressFilter != null)
+            {
+                string addressWord = filter
+                    .AddressFilter.Address.CleanFromNewLines()
+                    .CleanFromPunctuation()
+                    .CleanFromExtraSpaces()
+                    .Trim();
+                dataParameters.Add("address", addressWord);
+                countParameters.Add("address", addressWord);
+                dataQueryBuilder.Append(
+                    " AND to_tsvector(lower(address)) @@ plainto_tsquery(lower(@address))"
+                );
+                countQueryBuilder.Append(
+                    " AND to_tsvector(lower(address)) @@ plainto_tsquery(lower(@address))"
+                );
+            }
+            if (filter.TextFilter != null)
+            {
+                string formatted = filter
+                    .TextFilter.Text.CleanFromPunctuation()
+                    .CleanFromNewLines()
+                    .CleanFromExtraSpaces()
+                    .Trim();
+
+                dataQueryBuilder.Append(
+                    " AND to_tsvector(lower(title) || ' ' || lower(description)) @@ to_tsquery(lower(@word))"
+                );
+                countQueryBuilder.Append(
+                    " AND to_tsvector(lower(title) || ' ' || lower(description)) @@ to_tsquery(lower(@word))"
+                );
+                dataParameters.Add("word", formatted);
+                countParameters.Add("word", formatted);
+            }
+            if (filter.CharacteristicsFilter != null)
+            {
+                CharacteristicOption[] options = filter.CharacteristicsFilter.Characteristics;
+                foreach (CharacteristicOption option in options)
+                {
+                    string name = option.Name;
+                    string value = option.Value;
+
+                    dataQueryBuilder.Append(
+                        """ 
+                        AND 
+                        EXISTS ( 
+                        SELECT 1 FROM jsonb_array_elements(characteristics) AS elem
+                         WHERE elem->>'Name' = @name AND to_tsvector(lower(elem->>'Value')) @@ to_tsquery(lower(@value))
+                          )
+                        """
+                    );
+
+                    countQueryBuilder.Append(
+                        """ 
+                        AND 
+                        EXISTS ( 
+                        SELECT 1 FROM jsonb_array_elements(characteristics) AS elem
+                         WHERE elem->>'Name' = @name AND to_tsvector(lower(elem->>'Value')) @@ to_tsquery(lower(@value))
+                          )
+                        """
+                    );
+
+                    dataParameters.Add("name", name);
+                    dataParameters.Add("value", value);
+                    countParameters.Add("name", name);
+                    countParameters.Add("value", value);
+                }
+            }
+        }
+        if (sorting != null)
+        {
+            string mode = sorting.Mode;
+            if (mode == "ASC")
+            {
+                dataQueryBuilder.Append(" ORDER BY price_value ASC");
+            }
+            if (mode == "DESC")
+            {
+                dataQueryBuilder.Append(" ORDER BY price_value DESC");
+            }
         }
 
-        CustomSqlQuery sqlQuery = adapted
-            .Create()
-            .AddPagination(query.Pagination)
-            .AddSorting(query.Sort);
+        int page = pagination.Page;
+        int pageSize = pagination.PageSize;
+        int offset = (page - 1) * pageSize;
 
-        CommandDefinition command = new(sqlQuery.Sql, sqlQuery.Parameters, cancellationToken: ct);
+        dataQueryBuilder.Append(" LIMIT @limit OFFSET @offset");
+        dataParameters.Add("limit", pageSize);
+        dataParameters.Add("offset", offset);
 
+        string dataSql = dataQueryBuilder.ToString();
+        string countSql = countQueryBuilder.ToString();
+
+        CommandDefinition dataCommand = new(dataSql, dataParameters, cancellationToken: ct);
+        CommandDefinition countCommand = new(countSql, countParameters, cancellationToken: ct);
+
+        Task<int> countTask = ExecuteCountQuery(countCommand);
+        Task<AdvertisementDao[]> dataTask = ExecuteDataQuery(dataCommand);
+
+        await Task.WhenAll(countTask, dataTask);
+
+        int count = await countTask;
+        AdvertisementDao[] data = await dataTask;
+
+        // int count = await ExecuteCountQuery(countCommand);
+        // AdvertisementDao[] data = await ExecuteDataQuery(dataCommand);
+
+        return PaginatedDaoResponse<AdvertisementDao>.Create(data, ref count, pagination);
+    }
+
+    private async Task<int> ExecuteCountQuery(CommandDefinition command)
+    {
+        using IDbConnection connection = _factory.Create();
+        return await connection.ExecuteScalarAsync<int>(command);
+    }
+
+    private async Task<AdvertisementDao[]> ExecuteDataQuery(CommandDefinition command)
+    {
         using IDbConnection connection = _factory.Create();
         IEnumerable<AdvertisementDao> data = await connection.QueryAsync<AdvertisementDao>(command);
-
-        return data.ToArray();
+        AdvertisementDao[] array = [.. data];
+        return array;
     }
 }

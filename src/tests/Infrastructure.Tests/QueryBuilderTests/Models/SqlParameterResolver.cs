@@ -1,9 +1,8 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.RegularExpressions;
 using Dapper;
-using RemTech.Shared.SDK.Utils;
 
-namespace RemTech.Infrastructure.PostgreSql.AdvertisementsContext.Queries.GetAdvertisements.Specification;
+namespace Infrastructure.Tests.QueryBuilderTests.Models;
 
 public static partial class SqlParameterResolver
 {
@@ -115,7 +114,7 @@ public static partial class SqlParameterResolver
         return parameters;
     }
 
-    private static string GetParameterName(this string sql)
+    public static string GetParameterName(this string sql)
     {
         Match _match = _parameterNameParseRegex.Match(sql);
 

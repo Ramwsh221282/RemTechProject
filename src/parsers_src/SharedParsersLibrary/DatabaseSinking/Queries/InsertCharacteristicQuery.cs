@@ -9,8 +9,8 @@ namespace SharedParsersLibrary.DatabaseSinking.Queries;
 public sealed class InsertCharacteristicQuery(ConnectionStringFactory factory)
 {
     private const string Sql = """
-        INSERT INTO characteristics (id, name, value)
-        VALUES (@id, @name, @value)
+        INSERT INTO characteristics (id, name)
+        VALUES (@id, @name)
         """;
     private readonly ConnectionStringFactory _factory = factory;
 
@@ -19,16 +19,7 @@ public sealed class InsertCharacteristicQuery(ConnectionStringFactory factory)
         TransportCharacteristic ctx = new(characteristic);
         Guid id = ctx.Id;
         string name = ctx.Name;
-        string value = ctx.Value;
         using IDbConnection connection = _factory.Create();
-        await connection.ExecuteAsync(
-            Sql,
-            new
-            {
-                id = id,
-                name = name,
-                value = value,
-            }
-        );
+        await connection.ExecuteAsync(Sql, new { id = id, name = name });
     }
 }
