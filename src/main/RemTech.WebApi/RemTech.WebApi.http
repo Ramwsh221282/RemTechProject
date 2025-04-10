@@ -1,0 +1,6 @@
+@RemTech.WebApi_HostAddress = http://localhost:5017
+
+GET {{RemTech.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
