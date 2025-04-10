@@ -3,7 +3,7 @@ using Dapper;
 using RemTech.Shared.SDK.CqrsPattern.Queries;
 using RemTech.Shared.SDK.Utils;
 
-namespace RemTech.Infrastructure.PostgreSql.AdvertisementsContext.Queries.GetAdvertisements.Specification;
+namespace RemTech.Infrastructure.PostgreSql.Shared;
 
 public class GenericSpecificationBuilder<TQuery> : ISpecificationBuilder
     where TQuery : IQuery

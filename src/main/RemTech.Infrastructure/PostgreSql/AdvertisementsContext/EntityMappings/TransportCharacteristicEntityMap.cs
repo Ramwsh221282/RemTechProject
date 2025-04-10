@@ -9,6 +9,5 @@ public sealed class TransportCharacteristicEntityMap : EntityMap<TransportCharac
     {
         Map(c => c.Id).ToColumn("id");
         Map(c => c.Name).ToColumn("name");
-        Map(c => c.Value).ToColumn("value");
     }
 }

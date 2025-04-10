@@ -41,6 +41,10 @@ public static class AdvertisementResponseExtensions
         return response;
     }
 
+    public static AdvertisementCharacteristicResponse FromDao(
+        this AdvertisementCharacteristicDao daoModel
+    ) => new(daoModel.Name, daoModel.Value);
+
     private static AdvertisementCharacteristicResponse[] FromDao(
         this AdvertisementsCharacteristicsDao ctxDao
     )

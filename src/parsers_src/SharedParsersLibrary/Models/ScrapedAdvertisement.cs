@@ -87,7 +87,10 @@ public static class ScrapedAdvertisementExtensions
     {
         Result<AdvertisementPhoto>[] photosResults =
         [
-            .. advertisement.PhotoUrls.Select(AdvertisementPhoto.Create).Where(p => p.IsSuccess),
+            .. advertisement
+                .PhotoUrls.Distinct()
+                .Select(AdvertisementPhoto.Create)
+                .Where(p => p.IsSuccess),
         ];
         AdvertisementPhoto[] photos = [.. photosResults.Select(p => p.Value)];
         Result<AdvertisementPhotoCollection> photoCollection = AdvertisementPhotoCollection.Create(

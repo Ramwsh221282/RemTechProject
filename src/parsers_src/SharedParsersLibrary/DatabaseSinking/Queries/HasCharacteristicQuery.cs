@@ -15,6 +15,6 @@ public sealed class HasCharacteristicQuery(ConnectionStringFactory factory)
         string name = characteristic.Name;
         using IDbConnection connection = _factory.Create();
         int count = await connection.ExecuteScalarAsync<int>(Sql, new { name = name });
-        return count == 0;
+        return count != 0;
     }
 }

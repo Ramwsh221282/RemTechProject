@@ -26,7 +26,7 @@ public sealed class DatabaseSinkingFacade(ConnectionStringFactory factory)
 
         bool has = await _hasCharacteristic.Has(characteristic);
 
-        if (has)
+        if (!has)
             _characteristicsCache.TryAdd(characteristic.Name, characteristic.Value);
 
         return has;
