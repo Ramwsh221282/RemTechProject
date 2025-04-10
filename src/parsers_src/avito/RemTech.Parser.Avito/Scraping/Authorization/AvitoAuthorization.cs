@@ -18,8 +18,8 @@ public sealed class AvitoAuthorization(IBrowser browser)
     private const string userProfileSelector = "a[data-marker='header/username-button']";
     private const string fireWallTitleSelector = "h2[class='firewall-title']";
 
-    private const string test_mail = "jimkrauz@gmail.com";
-    private const string test_password = "9595330zxzO!";
+    private const string test_mail = "xxx";
+    private const string test_password = "xxx";
 
     public async Task<Result> Authorize(int maxRetryCount = 3)
     {
