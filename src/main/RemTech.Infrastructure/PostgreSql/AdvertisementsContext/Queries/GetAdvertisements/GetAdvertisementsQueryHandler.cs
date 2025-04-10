@@ -151,9 +151,6 @@ public sealed class GetAdvertisementsQueryHandler(ConnectionStringFactory factor
         int count = await countTask;
         AdvertisementDao[] data = await dataTask;
 
-        // int count = await ExecuteCountQuery(countCommand);
-        // AdvertisementDao[] data = await ExecuteDataQuery(dataCommand);
-
         return PaginatedDaoResponse<AdvertisementDao>.Create(data, ref count, pagination);
     }
 
